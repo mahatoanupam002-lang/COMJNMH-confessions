@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 const VALID_CATS = new Set(['governance', 'safety', 'academic', 'infrastructure', 'welfare'])
 
 export async function GET() {
+  if (!supabase) return NextResponse.json({ error: 'SUPABASE_URL / SUPABASE_SERVICE_KEY not set in Vercel environment variables' }, { status: 503 })
   const { data, error } = await supabase
     .from('ideas')
     .select('id, title, description, category, author, role, feasibility, votes, created_at')
@@ -14,6 +15,7 @@ export async function GET() {
 }
 
 export async function POST(request) {
+  if (!supabase) return NextResponse.json({ error: 'SUPABASE_URL / SUPABASE_SERVICE_KEY not set in Vercel environment variables' }, { status: 503 })
   let body
   try { body = await request.json() }
   catch { return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }) }

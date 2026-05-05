@@ -4,6 +4,7 @@ import { postToInstagram } from '@/lib/instagram'
 
 // Vercel calls this with Authorization: Bearer <CRON_SECRET>
 export async function GET(request) {
+  if (!supabase) return NextResponse.json({ error: 'SUPABASE_URL / SUPABASE_SERVICE_KEY not set in Vercel environment variables' }, { status: 503 })
   const auth   = request.headers.get('authorization') || ''
   const secret = process.env.CRON_SECRET
 

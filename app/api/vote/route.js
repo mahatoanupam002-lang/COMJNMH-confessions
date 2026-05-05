@@ -10,6 +10,7 @@ function fingerprint(request, ideaId) {
 }
 
 export async function POST(request) {
+  if (!supabase) return NextResponse.json({ error: 'SUPABASE_URL / SUPABASE_SERVICE_KEY not set in Vercel environment variables' }, { status: 503 })
   let body
   try { body = await request.json() }
   catch { return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }) }

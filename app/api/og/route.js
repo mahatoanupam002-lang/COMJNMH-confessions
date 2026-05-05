@@ -12,6 +12,7 @@ const CAT_COLOR = {
 }
 
 export async function GET(request) {
+  if (!supabase) return new Response('SUPABASE_URL / SUPABASE_SERVICE_KEY not set in Vercel environment variables', { status: 503 })
   const { searchParams } = new URL(request.url)
   const id = searchParams.get('id')
 
