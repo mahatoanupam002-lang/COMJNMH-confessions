@@ -5,451 +5,238 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MedReform — COMJNMH Ideas Platform</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Epilogue:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
 <style>
-  :root {
-    --bg: #0a0f0d; --surface: #111815; --surface2: #1a2420;
-    --border: #2a3830; --accent: #4ade80; --accent2: #86efac;
-    --accent-dim: rgba(74,222,128,0.12);
-    --text: #e8f0eb; --text-muted: #7a9485; --text-dim: #4a6358;
-    --red: #f87171; --amber: #fbbf24; --blue: #60a5fa;
+  /* ── Home-only styles ─────────────────────────────────────────────────── */
+  .hero {
+    position: relative; z-index: 1;
+    min-height: calc(100vh - var(--nav-h));
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 80px 40px 60px;
+    max-width: 1100px; margin: 0 auto;
   }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--bg); color:var(--text); font-family:'Epilogue',sans-serif; min-height:100vh; overflow-x:hidden; }
-  body::before {
-    content:''; position:fixed; inset:0;
-    background-image: linear-gradient(var(--border) 1px,transparent 1px), linear-gradient(90deg,var(--border) 1px,transparent 1px);
-    background-size:48px 48px; opacity:0.3; pointer-events:none; z-index:0;
-  }
-  body::after {
-    content:''; position:fixed; top:-200px; right:-200px; width:600px; height:600px;
-    background:radial-gradient(circle,rgba(74,222,128,0.08) 0%,transparent 70%);
-    pointer-events:none; z-index:0;
-  }
-  header {
-    position:sticky; top:0; z-index:10; padding:0 40px;
-    border-bottom:1px solid var(--border);
-    display:flex; align-items:center; justify-content:space-between;
-    height:64px; background:rgba(10,15,13,0.9); backdrop-filter:blur(12px);
-  }
-  .logo { display:flex; align-items:center; gap:10px; }
-  .logo-mark {
-    width:32px; height:32px; background:var(--accent); border-radius:6px;
-    display:flex; align-items:center; justify-content:center;
-    font-family:'DM Mono',monospace; font-size:14px; font-weight:500; color:var(--bg);
-  }
-  .logo-text { font-family:'Instrument Serif',serif; font-size:20px; color:var(--text); letter-spacing:-0.3px; }
-  .logo-sub  { font-family:'DM Mono',monospace; font-size:10px; color:var(--text-muted); letter-spacing:0.1em; text-transform:uppercase; }
-  .header-right { display:flex; align-items:center; gap:16px; }
-  .badge { font-family:'DM Mono',monospace; font-size:11px; padding:4px 10px; border-radius:20px; border:1px solid var(--border); color:var(--text-muted); letter-spacing:0.05em; }
-  .badge.live { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
-  .badge.live::before { content:'● '; animation:pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-  .btn-primary {
-    background:var(--accent); color:var(--bg); border:none; padding:8px 18px;
-    border-radius:6px; font-family:'Epilogue',sans-serif; font-weight:700; font-size:13px;
-    cursor:pointer; transition:all 0.2s; letter-spacing:0.02em;
-  }
-  .btn-primary:hover { background:var(--accent2); transform:translateY(-1px); }
-  .hero { position:relative; z-index:1; padding:80px 40px 60px; max-width:1200px; margin:0 auto; }
+
   .hero-tag {
-    display:inline-flex; align-items:center; gap:8px;
-    font-family:'DM Mono',monospace; font-size:11px; color:var(--accent);
-    letter-spacing:0.15em; text-transform:uppercase; margin-bottom:24px;
-    padding:6px 14px; border:1px solid rgba(74,222,128,0.3); border-radius:20px; background:var(--accent-dim);
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent);
+    letter-spacing: 0.16em; text-transform: uppercase;
+    padding: 6px 14px; border: 1px solid rgba(74,222,128,0.3);
+    border-radius: 20px; background: var(--accent-dim);
+    margin-bottom: 32px; width: fit-content;
   }
-  .hero h1 { font-family:'Instrument Serif',serif; font-size:clamp(42px,6vw,72px); line-height:1.05; letter-spacing:-1px; color:var(--text); max-width:700px; margin-bottom:20px; }
-  .hero h1 em { font-style:italic; color:var(--accent); }
-  .hero p { font-size:16px; color:var(--text-muted); max-width:560px; line-height:1.7; margin-bottom:40px; font-weight:300; }
-  .stats-row { display:flex; gap:40px; padding-top:40px; border-top:1px solid var(--border); }
-  .stat { display:flex; flex-direction:column; gap:4px; }
-  .stat-number { font-family:'Instrument Serif',serif; font-size:32px; color:var(--text); }
-  .stat-label  { font-family:'DM Mono',monospace; font-size:11px; color:var(--text-dim); letter-spacing:0.08em; text-transform:uppercase; }
-  .main { position:relative; z-index:1; max-width:1200px; margin:0 auto; padding:0 40px 80px; display:grid; grid-template-columns:1fr 320px; gap:32px; }
-  .submit-panel { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:28px; margin-bottom:32px; transition:border-color 0.3s; }
-  .submit-panel:focus-within { border-color:rgba(74,222,128,0.4); }
-  .panel-title { font-family:'DM Mono',monospace; font-size:11px; color:var(--text-muted); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:20px; display:flex; align-items:center; gap:8px; }
-  .panel-title::before { content:''; width:20px; height:1px; background:var(--accent); }
-  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
-  .form-group { display:flex; flex-direction:column; gap:8px; }
-  label { font-size:12px; color:var(--text-muted); font-weight:500; letter-spacing:0.03em; }
-  input,textarea,select {
-    background:var(--bg); border:1px solid var(--border); border-radius:8px;
-    padding:10px 14px; color:var(--text); font-family:'Epilogue',sans-serif;
-    font-size:14px; outline:none; transition:border-color 0.2s; width:100%;
+
+  .hero h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(52px, 8vw, 96px);
+    line-height: 1.0; letter-spacing: -2px;
+    color: var(--text); margin-bottom: 24px;
   }
-  input:focus,textarea:focus,select:focus { border-color:rgba(74,222,128,0.5); }
-  input::placeholder,textarea::placeholder { color:var(--text-dim); }
-  select option { background:var(--surface); }
-  textarea { resize:vertical; min-height:100px; line-height:1.6; }
-  .category-chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
-  .chip { padding:6px 14px; border-radius:20px; border:1px solid var(--border); font-size:12px; font-family:'DM Mono',monospace; color:var(--text-muted); cursor:pointer; transition:all 0.2s; background:transparent; letter-spacing:0.02em; }
-  .chip:hover,.chip.active { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
-  .chip.cat-governance.active { border-color:var(--blue);  color:var(--blue);  background:rgba(96,165,250,0.1); }
-  .chip.cat-safety.active     { border-color:var(--red);   color:var(--red);   background:rgba(248,113,113,0.1); }
-  .chip.cat-academic.active   { border-color:var(--amber); color:var(--amber); background:rgba(251,191,36,0.1); }
-  .chip.cat-infrastructure.active { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
-  .chip.cat-welfare.active    { border-color:#c084fc; color:#c084fc; background:rgba(192,132,252,0.1); }
-  .submit-footer { display:flex; align-items:center; justify-content:space-between; margin-top:20px; padding-top:20px; border-top:1px solid var(--border); }
-  .anon-toggle { display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text-muted); cursor:pointer; user-select:none; }
-  .toggle { width:36px; height:20px; background:var(--border); border-radius:10px; position:relative; transition:background 0.2s; flex-shrink:0; }
-  .toggle.on { background:var(--accent); }
-  .toggle::after { content:''; position:absolute; width:14px; height:14px; background:white; border-radius:50%; top:3px; left:3px; transition:left 0.2s; }
-  .toggle.on::after { left:19px; }
-  .filters { display:flex; align-items:center; gap:12px; margin-bottom:24px; flex-wrap:wrap; }
-  .filter-label { font-family:'DM Mono',monospace; font-size:11px; color:var(--text-dim); letter-spacing:0.1em; text-transform:uppercase; }
-  .filter-btn { padding:5px 14px; border-radius:6px; border:1px solid var(--border); background:transparent; color:var(--text-muted); font-size:12px; font-family:'Epilogue',sans-serif; cursor:pointer; transition:all 0.2s; }
-  .filter-btn:hover,.filter-btn.active { background:var(--surface2); color:var(--text); border-color:var(--text-dim); }
-  .ideas-list { display:flex; flex-direction:column; gap:16px; }
-  .idea-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; display:grid; grid-template-columns:48px 1fr; gap:20px; transition:all 0.25s; animation:slideIn 0.4s ease both; }
-  .idea-card:hover { border-color:var(--text-dim); transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,0.4); }
-  @keyframes slideIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
-  .vote-col { display:flex; flex-direction:column; align-items:center; gap:6px; }
-  .vote-btn { width:36px; height:36px; border-radius:8px; border:1px solid var(--border); background:transparent; color:var(--text-dim); font-size:16px; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
-  .vote-btn:hover,.vote-btn.voted { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
-  .vote-count { font-family:'Instrument Serif',serif; font-size:20px; color:var(--text); line-height:1; }
-  .idea-meta { display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
-  .cat-badge { font-family:'DM Mono',monospace; font-size:10px; padding:3px 9px; border-radius:4px; letter-spacing:0.08em; text-transform:uppercase; font-weight:500; }
-  .cat-badge.governance   { background:rgba(96,165,250,0.15); color:var(--blue); }
-  .cat-badge.safety       { background:rgba(248,113,113,0.15); color:var(--red); }
-  .cat-badge.academic     { background:rgba(251,191,36,0.15);  color:var(--amber); }
-  .cat-badge.infrastructure { background:var(--accent-dim);   color:var(--accent); }
-  .cat-badge.welfare      { background:rgba(192,132,252,0.15); color:#c084fc; }
-  .idea-author { font-size:12px; color:var(--text-dim); font-family:'DM Mono',monospace; }
-  .idea-time   { font-size:12px; color:var(--text-dim); margin-left:auto; font-family:'DM Mono',monospace; }
-  .idea-title  { font-size:17px; font-weight:700; color:var(--text); margin-bottom:8px; line-height:1.35; letter-spacing:-0.2px; }
-  .idea-text   { font-size:14px; color:var(--text-muted); line-height:1.65; margin-bottom:16px; font-weight:300; }
-  .idea-footer { display:flex; align-items:center; gap:16px; }
-  .idea-action { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-dim); cursor:pointer; padding:5px 10px; border-radius:6px; transition:all 0.2s; font-family:'DM Mono',monospace; }
-  .idea-action:hover { background:var(--surface2); color:var(--text-muted); }
-  .feasibility { margin-left:auto; display:flex; align-items:center; gap:6px; font-size:11px; font-family:'DM Mono',monospace; color:var(--text-dim); }
-  .feasibility-bar  { width:60px; height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
-  .feasibility-fill { height:100%; border-radius:2px; }
-  .empty-state { text-align:center; padding:60px 20px; color:var(--text-dim); display:none; }
-  .empty-state h3 { font-family:'Instrument Serif',serif; font-size:24px; color:var(--text-muted); margin-bottom:8px; }
-  .sidebar-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; margin-bottom:20px; }
-  .sidebar-title { font-family:'DM Mono',monospace; font-size:11px; color:var(--text-muted); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:20px; display:flex; align-items:center; gap:8px; }
-  .sidebar-title::before { content:''; width:14px; height:1px; background:var(--accent); }
-  .problem-item { display:flex; align-items:flex-start; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); }
-  .problem-item:last-child { border-bottom:none; }
-  .problem-dot { width:8px; height:8px; border-radius:50%; margin-top:5px; flex-shrink:0; }
-  .problem-dot.critical { background:var(--red); box-shadow:0 0 8px var(--red); }
-  .problem-dot.moderate { background:var(--amber); }
-  .problem-dot.tracked  { background:var(--accent); }
-  .problem-name { font-size:13px; color:var(--text); font-weight:500; margin-bottom:3px; }
-  .problem-desc { font-size:11px; color:var(--text-dim); font-family:'DM Mono',monospace; line-height:1.5; }
-  .cat-row { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
-  .cat-row:last-child { margin-bottom:0; }
-  .cat-name     { font-size:12px; color:var(--text-muted); width:110px; flex-shrink:0; }
-  .cat-bar-wrap { flex:1; height:6px; background:var(--border); border-radius:3px; overflow:hidden; }
-  .cat-bar-fill { height:100%; border-radius:3px; transition:width 1s ease; }
-  .cat-count    { font-family:'DM Mono',monospace; font-size:11px; color:var(--text-dim); width:24px; text-align:right; }
-  .contributor  { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); }
-  .contributor:last-child { border-bottom:none; }
-  .avatar { width:32px; height:32px; border-radius:8px; background:var(--surface2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:var(--accent); font-family:'DM Mono',monospace; flex-shrink:0; }
-  .contributor-info { flex:1; }
-  .contributor-name  { font-size:13px; color:var(--text); font-weight:500; }
-  .contributor-role  { font-size:11px; color:var(--text-dim); font-family:'DM Mono',monospace; }
-  .contributor-score { font-family:'Instrument Serif',serif; font-size:18px; color:var(--accent); }
-  .toast { position:fixed; bottom:32px; right:32px; background:var(--surface); border:1px solid var(--accent); border-radius:10px; padding:14px 20px; font-size:14px; color:var(--text); z-index:1000; transform:translateY(100px); opacity:0; transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1); display:flex; align-items:center; gap:10px; }
-  .toast.show { transform:translateY(0); opacity:1; }
-  .toast-icon { color:var(--accent); font-size:18px; }
-  ::-webkit-scrollbar { width:6px; }
-  ::-webkit-scrollbar-track { background:var(--bg); }
-  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
-  ::-webkit-scrollbar-thumb:hover { background:var(--text-dim); }
-  @media (max-width:900px) {
-    .main { grid-template-columns:1fr; }
-    .sidebar { display:none; }
-    .hero,.main { padding-left:24px; padding-right:24px; }
-    .hero { padding-top:48px; padding-bottom:40px; }
-    header { padding:0 24px; }
-    .form-row { grid-template-columns:1fr; }
-    .stats-row { gap:24px; }
+  .hero h1 em { font-style: italic; color: var(--accent); }
+
+  .hero-sub {
+    font-size: 18px; color: var(--text-muted);
+    max-width: 540px; line-height: 1.7;
+    font-weight: 300; margin-bottom: 48px;
+  }
+
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 64px; }
+  .btn-lg { padding: 14px 32px; font-size: 15px; border-radius: 10px; }
+
+  .stats-row {
+    display: flex; gap: 48px; padding-top: 40px;
+    border-top: 1px solid var(--border); flex-wrap: wrap;
+  }
+  .stat { display: flex; flex-direction: column; gap: 4px; }
+  .stat-number { font-family: 'Instrument Serif', serif; font-size: 40px; color: var(--text); line-height: 1; }
+  .stat-label  { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* ── Problems section ─────────────────────────────────────────────────── */
+  .section {
+    position: relative; z-index: 1;
+    max-width: 1100px; margin: 0 auto; padding: 0 40px 80px;
+  }
+
+  .section-head {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 28px;
+  }
+  .section-head h2 {
+    font-family: 'DM Mono', monospace; font-size: 12px;
+    color: var(--text-muted); letter-spacing: 0.14em; text-transform: uppercase;
+  }
+  .section-head::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .problems-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;
+  }
+
+  .problem-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+    transition: border-color 0.2s;
+  }
+  .problem-card:hover { border-color: var(--text-dim); }
+
+  .problem-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    margin-bottom: 14px; flex-shrink: 0;
+  }
+  .problem-dot.critical { background: var(--red); box-shadow: 0 0 10px rgba(248,113,113,0.5); }
+  .problem-dot.moderate { background: var(--amber); }
+  .problem-dot.tracked  { background: var(--accent); }
+
+  .problem-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .problem-desc { font-size: 12px; color: var(--text-dim); font-family: 'DM Mono', monospace; line-height: 1.55; }
+
+  /* ── Top ideas preview ────────────────────────────────────────────────── */
+  .ideas-preview { display: flex; flex-direction: column; gap: 14px; }
+
+  .preview-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 24px;
+    display: flex; align-items: flex-start; gap: 20px;
+    text-decoration: none; color: inherit;
+    transition: all 0.2s;
+  }
+  .preview-card:hover { border-color: var(--text-dim); transform: translateX(4px); }
+
+  .preview-votes {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    min-width: 40px;
+  }
+  .preview-votes .arrow { color: var(--accent); font-size: 14px; }
+  .preview-votes .count { font-family: 'Instrument Serif', serif; font-size: 22px; color: var(--text); }
+
+  .preview-body { flex: 1; min-width: 0; }
+  .preview-title { font-size: 15px; font-weight: 700; color: var(--text); margin: 8px 0 6px; line-height: 1.35; }
+  .preview-snip  { font-size: 13px; color: var(--text-muted); line-height: 1.5; font-weight: 300; }
+
+  .see-all {
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 8px;
+  }
+
+  @media (max-width: 700px) {
+    .hero { padding: 48px 20px 40px; min-height: auto; }
+    .section { padding: 0 20px 60px; }
+    .stats-row { gap: 28px; }
+    .stat-number { font-size: 32px; }
   }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">
+<!-- Desktop header -->
+<header class="site-header">
+  <a href="/" class="logo">
     <div class="logo-mark">M+</div>
     <div>
       <div class="logo-text">MedReform</div>
       <div class="logo-sub">COMJNMH · Kalyani</div>
     </div>
-  </div>
-  <div class="header-right">
-    <span class="badge live">Open Platform</span>
-    <span class="badge">Est. 2025</span>
-    <button class="btn-primary" onclick="document.getElementById('title-input').focus()">+ Submit Idea</button>
-  </div>
+  </a>
+  <nav class="desktop-nav">
+    <a href="/" class="nav-link active">Home</a>
+    <a href="/ideas" class="nav-link">Ideas</a>
+    <a href="/submit" class="nav-link">Submit</a>
+  </nav>
+  <span class="badge live">Open Platform</span>
 </header>
 
+<!-- Hero -->
 <div class="hero">
-  <div class="hero-tag">🏥 Student &amp; Faculty Reform Initiative</div>
-  <h1>Fix what’s <em>broken.</em><br>Build what’s missing.</h1>
-  <p>A structured space for students, residents, and faculty to surface real problems and propose actionable solutions for COMJNMH Kalyani — anonymously if needed.</p>
+  <div class="hero-tag">🏥 Student &amp; Faculty Reform · COMJNMH Kalyani</div>
+  <h1>Fix what's<br><em>broken.</em></h1>
+  <p class="hero-sub">A platform for students, residents, and faculty to surface real problems and propose actionable solutions — anonymously if needed.</p>
+  <div class="hero-actions">
+    <a href="/ideas" class="btn btn-primary btn-lg">Browse Ideas →</a>
+    <a href="/submit" class="btn btn-ghost btn-lg">Submit Anonymously</a>
+  </div>
   <div class="stats-row">
-    <div class="stat"><span class="stat-number" id="stat-ideas">7</span><span class="stat-label">Ideas submitted</span></div>
+    <div class="stat"><span class="stat-number" id="stat-ideas">7</span><span class="stat-label">Ideas</span></div>
     <div class="stat"><span class="stat-number" id="stat-votes">178</span><span class="stat-label">Votes cast</span></div>
-    <div class="stat"><span class="stat-number" id="stat-contributors">34</span><span class="stat-label">Contributors</span></div>
     <div class="stat"><span class="stat-number">0</span><span class="stat-label">Implemented</span></div>
+    <div class="stat"><span class="stat-number">5</span><span class="stat-label">Known problems</span></div>
   </div>
 </div>
 
-<div class="main">
-  <div class="content-col">
-    <div class="submit-panel">
-      <div class="panel-title">Submit an idea or problem</div>
-      <div class="form-group" style="margin-bottom:16px">
-        <label>Category</label>
-        <div class="category-chips">
-          <button class="chip cat-governance active" onclick="selectCat(this,'governance')">Governance</button>
-          <button class="chip cat-safety"            onclick="selectCat(this,'safety')">Safety</button>
-          <button class="chip cat-academic"          onclick="selectCat(this,'academic')">Academic</button>
-          <button class="chip cat-infrastructure"    onclick="selectCat(this,'infrastructure')">Infrastructure</button>
-          <button class="chip cat-welfare"           onclick="selectCat(this,'welfare')">Student Welfare</button>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Title</label>
-          <input id="title-input" type="text" placeholder="e.g. Outsource hostel maintenance to private firm" maxlength="200">
-        </div>
-        <div class="form-group">
-          <label>Your role</label>
-          <select id="role-select">
-            <option value="">Select role</option>
-            <option>MBBS Student (Phase I)</option>
-            <option>MBBS Student (Phase II)</option>
-            <option>MBBS Student (Clinical)</option>
-            <option>PG Resident</option>
-            <option>Junior Faculty</option>
-            <option>Senior Faculty</option>
-            <option>Staff</option>
-            <option>Alumni</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group" style="margin-bottom:16px">
-        <label>Describe the problem &amp; your proposed solution</label>
-        <textarea id="desc-input" placeholder="What's broken? What would fix it? Be specific — vague complaints get less traction than concrete proposals." maxlength="2000"></textarea>
-      </div>
-      <div class="form-group" style="margin-bottom:0">
-        <label>Feasibility (your estimate)</label>
-        <input type="range" id="feasibility-input" min="0" max="100" value="50" style="accent-color:var(--accent)">
-      </div>
-      <div class="submit-footer">
-        <div class="anon-toggle" onclick="toggleAnon()">
-          <div class="toggle" id="anon-toggle"></div>
-          <span id="anon-label">Post anonymously</span>
-        </div>
-        <button class="btn-primary" onclick="submitIdea()">Submit →</button>
-      </div>
+<!-- Known Problems -->
+<div class="section">
+  <div class="section-head"><h2>Known Problems</h2></div>
+  <div class="problems-grid">
+    <div class="problem-card">
+      <div class="problem-dot critical"></div>
+      <div class="problem-name">Campus snake sightings</div>
+      <div class="problem-desc">Recurring &amp; unresolved. Multiple years, zero action taken.</div>
     </div>
-
-    <div class="filters">
-      <span class="filter-label">Sort:</span>
-      <button class="filter-btn active" onclick="setSort(this,'top')">Top voted</button>
-      <button class="filter-btn"        onclick="setSort(this,'new')">Newest</button>
-      <button class="filter-btn"        onclick="setSort(this,'feasible')">Most feasible</button>
-      <span class="filter-label" style="margin-left:8px">Filter:</span>
-      <button class="filter-btn active" onclick="setCat(this,'all')">All</button>
-      <button class="filter-btn"        onclick="setCat(this,'governance')">Governance</button>
-      <button class="filter-btn"        onclick="setCat(this,'safety')">Safety</button>
-      <button class="filter-btn"        onclick="setCat(this,'academic')">Academic</button>
+    <div class="problem-card">
+      <div class="problem-dot critical"></div>
+      <div class="problem-name">Hostel hygiene</div>
+      <div class="problem-desc">Chronic complaints. No facility management in place.</div>
     </div>
-
-    <div class="ideas-list" id="ideas-list"></div>
-    <div class="empty-state" id="empty-state">
-      <h3>No ideas yet in this category</h3>
-      <p>Be the first to submit one.</p>
+    <div class="problem-card">
+      <div class="problem-dot moderate"></div>
+      <div class="problem-name">Library outdated</div>
+      <div class="problem-desc">No new acquisitions since 2021 reported.</div>
     </div>
-  </div>
-
-  <div class="sidebar">
-    <div class="sidebar-card">
-      <div class="sidebar-title">Known Problems</div>
-      <div class="problem-item"><div class="problem-dot critical"></div><div><div class="problem-name">Campus snake sightings</div><div class="problem-desc">Recurring, unresolved<br>Multiple years, zero action</div></div></div>
-      <div class="problem-item"><div class="problem-dot critical"></div><div><div class="problem-name">Hostel hygiene</div><div class="problem-desc">Chronic complaints<br>No facility management</div></div></div>
-      <div class="problem-item"><div class="problem-dot moderate"></div><div><div class="problem-name">Library outdated</div><div class="problem-desc">No new acquisitions<br>since 2021 reported</div></div></div>
-      <div class="problem-item"><div class="problem-dot moderate"></div><div><div class="problem-name">CBME compliance gap</div><div class="problem-desc">DOPS logged on paper<br>not in practice</div></div></div>
-      <div class="problem-item"><div class="problem-dot tracked"></div><div><div class="problem-name">Equipment procurement lag</div><div class="problem-desc">Clinical depts most affected<br>12–18 mo average delay</div></div></div>
+    <div class="problem-card">
+      <div class="problem-dot moderate"></div>
+      <div class="problem-name">CBME compliance gap</div>
+      <div class="problem-desc">DOPS logged on paper, not in practice.</div>
     </div>
-    <div class="sidebar-card">
-      <div class="sidebar-title">Ideas by Category</div>
-      <div class="cat-row"><span class="cat-name">Governance</span><div class="cat-bar-wrap"><div class="cat-bar-fill" id="bar-governance" style="background:var(--blue)"></div></div><span class="cat-count" id="count-governance">3</span></div>
-      <div class="cat-row"><span class="cat-name">Safety</span><div class="cat-bar-wrap"><div class="cat-bar-fill" id="bar-safety" style="background:var(--red)"></div></div><span class="cat-count" id="count-safety">1</span></div>
-      <div class="cat-row"><span class="cat-name">Academic</span><div class="cat-bar-wrap"><div class="cat-bar-fill" id="bar-academic" style="background:var(--amber)"></div></div><span class="cat-count" id="count-academic">1</span></div>
-      <div class="cat-row"><span class="cat-name">Infrastructure</span><div class="cat-bar-wrap"><div class="cat-bar-fill" id="bar-infrastructure" style="background:var(--accent)"></div></div><span class="cat-count" id="count-infrastructure">2</span></div>
-      <div class="cat-row"><span class="cat-name">Welfare</span><div class="cat-bar-wrap"><div class="cat-bar-fill" id="bar-welfare" style="background:#c084fc"></div></div><span class="cat-count" id="count-welfare">0</span></div>
-    </div>
-    <div class="sidebar-card">
-      <div class="sidebar-title">Top Contributors</div>
-      <div class="contributor"><div class="avatar">AR</div><div class="contributor-info"><div class="contributor-name">Anonymous Resident</div><div class="contributor-role">PG · Surgery</div></div><div class="contributor-score">47</div></div>
-      <div class="contributor"><div class="avatar">S3</div><div class="contributor-info"><div class="contributor-name">3rd Year Student</div><div class="contributor-role">MBBS · Clinical</div></div><div class="contributor-score">31</div></div>
-      <div class="contributor"><div class="avatar">JF</div><div class="contributor-info"><div class="contributor-name">Junior Faculty</div><div class="contributor-role">Dept. of Medicine</div></div><div class="contributor-score">28</div></div>
+    <div class="problem-card">
+      <div class="problem-dot tracked"></div>
+      <div class="problem-name">Equipment procurement lag</div>
+      <div class="problem-desc">12–18 month average delay across clinical departments.</div>
     </div>
   </div>
 </div>
 
+<!-- Top ideas preview -->
+<div class="section">
+  <div class="section-head"><h2>Top ideas right now</h2></div>
+  <div class="ideas-preview" id="preview-list"></div>
+  <div class="see-all" style="margin-top:24px">
+    <a href="/ideas" class="btn btn-ghost">See all ideas →</a>
+  </div>
+</div>
+
+<!-- Mobile bottom nav -->
+<nav class="mobile-nav">
+  <a href="/" class="mob-tab active"><span class="mob-icon">⌂</span><span>Home</span></a>
+  <a href="/ideas" class="mob-tab"><span class="mob-icon">≡</span><span>Ideas</span></a>
+  <a href="/submit" class="mob-tab submit-tab"><span class="mob-icon">+</span><span>Submit</span></a>
+</nav>
+
+<!-- Toast -->
 <div class="toast" id="toast">
   <span class="toast-icon" id="toast-icon">✓</span>
-  <span id="toast-msg">Idea submitted successfully</span>
+  <span id="toast-msg"></span>
 </div>
 
+<script src="/data.js"></script>
 <script>
-const STORE_KEY = 'comjnmh_ideas_v1';
-const VOTED_KEY = 'comjnmh_voted_v1';
-const FORMSPREE_ID = 'YOUR_FORMSPREE_ID';
+  var ideas = getIdeas();
 
-const SEED = [
-  { id:1, votes:47, category:'infrastructure', title:'Outsource hostel and campus facility management to a private contractor', text:'The administration is not equipped to run facilities. Outsourcing hostel maintenance, groundskeeping, and pest control to a professional FM company removes this from the medical college plate entirely. NMC does not prohibit this. Cost can be built into hostel fees.', author:'Anonymous Resident', role:'PG Resident', time:'3 days ago', feasibility:78 },
-  { id:2, votes:38, category:'governance',     title:'Mandatory HoD rotation every 3 years with performance review', text:'Several department heads have held their chairs for 8-12 years. Stale leadership = stale departments. Institute a formal rotation policy tied to CBME and research output benchmarks. AIIMS Delhi does this. We should too.', author:'Junior Faculty', role:'Junior Faculty', time:'5 days ago', feasibility:45 },
-  { id:3, votes:31, category:'safety',         title:'Emergency snake response protocol + habitat removal drive', text:'This is a physical safety issue that has persisted for years. Immediate fix: empanel a professional pest control/wildlife service. Medium term: clear overgrown vegetation in a 100m radius around hostels. This costs less than 2L and could be done in a week.', author:'3rd Year Student', role:'MBBS Student (Clinical)', time:'1 week ago', feasibility:90 },
-  { id:4, votes:24, category:'governance',     title:'Digital grievance portal with mandatory 14-day resolution SLA', text:'Current system: complain to warden, warden files report, nothing happens. Proposed: an online portal where complaints are timestamped, assigned to a named responsible officer, and tracked publicly. No new budget needed, just implementation.', author:'Anonymous Student', role:'MBBS Student (Phase II)', time:'1 week ago', feasibility:62 },
-  { id:5, votes:18, category:'academic',       title:'Quarterly guest lecture series from AIIMS Kalyani faculty', text:'AIIMS Kalyani is 10 minutes away. A formal MoU for quarterly joint seminars and case conference sharing would cost almost nothing but dramatically update clinical exposure. This is a massive underutilized proximity advantage.', author:'Senior Faculty', role:'Senior Faculty', time:'2 weeks ago', feasibility:70 },
-  { id:6, votes:12, category:'infrastructure', title:'Decentralize minor maintenance budgets to department level', text:'Departments currently wait months for a 5000 repair because everything routes through central admin. Give each department a small discretionary maintenance budget for non-capital items. Faster turnaround, less bottleneck, more accountability.', author:'Anonymous Faculty', role:'Junior Faculty', time:'2 weeks ago', feasibility:55 },
-  { id:7, votes:8,  category:'governance',     title:'Student representation on college academic committee', text:'No state college in WB has formal student reps on the academic committee. One elected student from each batch, non-voting observer status, to surface ground realities the administration systematically fails to hear.', author:'Anonymous', role:'MBBS Student (Clinical)', time:'3 weeks ago', feasibility:38 },
-];
+  // Update stats
+  document.getElementById('stat-ideas').textContent = ideas.length;
+  document.getElementById('stat-votes').textContent = totalVotes(ideas);
 
-let ideas = SEED;
-try { const r = localStorage.getItem(STORE_KEY); if (r) { const p = JSON.parse(r); if (Array.isArray(p) && p.length) ideas = p; } } catch {}
-
-let votedSet = new Set();
-try { votedSet = new Set(JSON.parse(localStorage.getItem(VOTED_KEY) || '[]')); } catch {}
-
-let selectedCat = 'governance', anonMode = false, sortMode = 'top', catFilter = 'all';
-
-function save() {
-  try { localStorage.setItem(STORE_KEY, JSON.stringify(ideas)); } catch {}
-  try { localStorage.setItem(VOTED_KEY, JSON.stringify([...votedSet])); } catch {}
-}
-
-function selectCat(el, cat) {
-  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active'); selectedCat = cat;
-}
-
-function toggleAnon() {
-  anonMode = !anonMode;
-  document.getElementById('anon-toggle').classList.toggle('on', anonMode);
-  document.getElementById('anon-label').textContent = anonMode ? 'Posting anonymously' : 'Post anonymously';
-}
-
-function setSort(el, mode) {
-  document.querySelectorAll('.filter-btn').forEach((b,i) => { if(i<3) b.classList.remove('active'); });
-  el.classList.add('active'); sortMode = mode; renderIdeas();
-}
-
-function setCat(el, cat) {
-  const btns = document.querySelectorAll('.filter-btn');
-  btns.forEach((b,i) => { if(i>=3) b.classList.remove('active'); });
-  el.classList.add('active'); catFilter = cat; renderIdeas();
-}
-
-function showToast(msg, icon) {
-  icon = icon || '✓';
-  document.getElementById('toast-msg').textContent = msg;
-  document.getElementById('toast-icon').textContent = icon;
-  const t = document.getElementById('toast');
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-function submitIdea() {
-  const title = document.getElementById('title-input').value.trim();
-  const desc  = document.getElementById('desc-input').value.trim();
-  const role  = document.getElementById('role-select').value;
-  const feas  = parseInt(document.getElementById('feasibility-input').value);
-  if (!title || !desc) { showToast('Please fill in title and description', '⚠'); return; }
-  if (FORMSPREE_ID !== 'YOUR_FORMSPREE_ID') {
-    fetch('https://formspree.io/f/' + FORMSPREE_ID, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ title, description:desc, category:selectedCat, role, feasibility:feas, anonymous:anonMode })
-    }).catch(function(){});
-  }
-  const idea = { id:Date.now(), votes:1, category:selectedCat, title, text:desc,
-    author: anonMode ? 'Anonymous' : (role || 'Community Member'),
-    role: role || 'Community Member', time:'Just now', feasibility:feas };
-  ideas.unshift(idea); votedSet.add(idea.id); save();
-  document.getElementById('title-input').value = '';
-  document.getElementById('desc-input').value  = '';
-  document.getElementById('feasibility-input').value = 50;
-  updateStats(); updateCatCounts(); renderIdeas();
-  showToast('Idea submitted. Thank you.');
-}
-
-function vote(id) {
-  const idea = ideas.find(i => i.id === id);
-  if (!idea) return;
-  if (votedSet.has(id)) { idea.votes = Math.max(0, idea.votes-1); votedSet.delete(id); }
-  else { idea.votes++; votedSet.add(id); }
-  save(); updateStats(); renderIdeas();
-}
-
-function updateStats() {
-  document.getElementById('stat-ideas').textContent        = ideas.length;
-  document.getElementById('stat-votes').textContent        = ideas.reduce((s,i) => s+i.votes, 0);
-  document.getElementById('stat-contributors').textContent = ideas.length;
-}
-
-function updateCatCounts() {
-  const cats = ['governance','safety','academic','infrastructure','welfare'];
-  let max = 1, counts = {};
-  cats.forEach(c => { counts[c] = ideas.filter(i => i.category===c).length; max = Math.max(max, counts[c]); });
-  cats.forEach(c => {
-    const el = document.getElementById('count-'+c);
-    const bar = document.getElementById('bar-'+c);
-    if (el) el.textContent = counts[c];
-    if (bar) bar.style.width = (counts[c]/max*100)+'%';
-  });
-}
-
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function renderIdeas() {
-  let list = ideas.slice();
-  if (catFilter !== 'all') list = list.filter(i => i.category === catFilter);
-  if      (sortMode==='top')      list.sort((a,b) => b.votes - a.votes);
-  else if (sortMode==='new')      list.sort((a,b) => b.id - a.id);
-  else                            list.sort((a,b) => b.feasibility - a.feasibility);
-  const container = document.getElementById('ideas-list');
-  const empty     = document.getElementById('empty-state');
-  if (list.length === 0) { container.innerHTML=''; empty.style.display='block'; return; }
-  empty.style.display = 'none';
-  container.innerHTML = list.map((idea,idx) => {
-    const voted  = votedSet.has(idea.id);
-    const fColor = idea.feasibility>70 ? 'var(--accent)' : idea.feasibility>40 ? 'var(--amber)' : 'var(--red)';
-    return '<div class="idea-card" style="animation-delay:'+(idx*0.05)+'s">'+
-      '<div class="vote-col">'+
-        '<button class="vote-btn'+(voted?' voted':'')'" onclick="vote('+idea.id+')">&#9650;</button>'+
-        '<div class="vote-count">'+idea.votes+'</div>'+
-      '</div>'+
-      '<div class="idea-body">'+
-        '<div class="idea-meta">'+
-          '<span class="cat-badge '+idea.category+'">'+idea.category+'</span>'+
-          '<span class="idea-author">'+escHtml(idea.author)+'</span>'+
-          '<span class="idea-time">'+idea.time+'</span>'+
-        '</div>'+
-        '<div class="idea-title">'+escHtml(idea.title)+'</div>'+
-        '<div class="idea-text">'+escHtml(idea.text)+'</div>'+
-        '<div class="idea-footer">'+
-          '<span class="idea-action">💬 Discuss</span>'+
-          '<span class="idea-action">🔗 Share</span>'+
-          '<div class="feasibility"><span>Feasibility</span>'+
-            '<div class="feasibility-bar"><div class="feasibility-fill" style="width:'+idea.feasibility+'%;background:'+fColor+'"></div></div>'+
-            '<span>'+idea.feasibility+'%</span>'+
-          '</div>'+
-        '</div>'+
-      '</div>'+
-    '</div>';
+  // Top 3 preview
+  var top3 = ideas.slice().sort(function(a,b){ return b.votes - a.votes; }).slice(0,3);
+  document.getElementById('preview-list').innerHTML = top3.map(function(idea) {
+    return '<a href="/ideas" class="preview-card">' +
+      '<div class="preview-votes">' +
+        '<span class="arrow">▲</span>' +
+        '<span class="count">' + idea.votes + '</span>' +
+      '</div>' +
+      '<div class="preview-body">' +
+        '<span class="cat-badge ' + idea.category + '">' + idea.category + '</span>' +
+        '<div class="preview-title">' + escHtml(idea.title) + '</div>' +
+        '<div class="preview-snip">' + escHtml(idea.text.slice(0,100)) + '…</div>' +
+      '</div>' +
+    '</a>';
   }).join('');
-}
-
-updateStats(); updateCatCounts(); renderIdeas();
 </script>
 </body>
 </html>
