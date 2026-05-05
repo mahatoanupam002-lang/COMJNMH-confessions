@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ideas — MedReform COMJNMH</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Epilogue:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .page-wrap {
+    position: relative; z-index: 1;
+    max-width: 800px; margin: 0 auto;
+    padding: 40px 40px 80px;
+  }
+
+  .page-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 32px; flex-wrap: wrap; gap: 16px;
+  }
+  .page-head h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 36px; letter-spacing: -0.5px; color: var(--text);
+  }
+  .page-head h1 span {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px; color: var(--text-dim); margin-left: 10px;
+    font-weight: 400; letter-spacing: 0;
+  }
+
+  .filters-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex; gap: 20px; flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-group { display: flex; align-items: center; gap: 8px; }
+
+  .ideas-list { display: flex; flex-direction: column; gap: 16px; }
+
+  /* Floating submit button (desktop) */
+  .fab {
+    position: fixed; bottom: 32px; right: 32px;
+    display: flex; align-items: center; gap: 8px;
+    padding: 13px 24px; border-radius: 50px;
+    background: var(--accent); color: var(--bg);
+    font-family: 'Epilogue', sans-serif;
+    font-size: 14px; font-weight: 700;
+    text-decoration: none; letter-spacing: 0.02em;
+    box-shadow: 0 4px 24px rgba(74,222,128,0.3);
+    transition: all 0.2s; z-index: 40;
+  }
+  .fab:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(74,222,128,0.4); }
+
+  @media (max-width: 700px) {
+    .page-wrap { padding: 24px 16px 80px; }
+    .filters-bar { gap: 12px; }
+    .fab { display: none; } /* mobile uses bottom tab */
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="/" class="logo">
+    <div class="logo-mark">M+</div>
+    <div>
+      <div class="logo-text">MedReform</div>
+      <div class="logo-sub">COMJNMH · Kalyani</div>
+    </div>
+  </a>
+  <nav class="desktop-nav">
+    <a href="/" class="nav-link">Home</a>
+    <a href="/ideas" class="nav-link active">Ideas</a>
+    <a href="/submit" class="nav-link">Submit</a>
+  </nav>
+  <span class="badge live">Open Platform</span>
+</header>
+
+<div class="page-wrap">
+  <div class="page-head">
+    <h1>Ideas <span id="idea-count"></span></h1>
+    <a href="/submit" class="btn btn-primary">+ Submit Idea</a>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <div class="filter-group">
+      <span class="filter-label">Sort</span>
+      <button class="filter-btn active" onclick="setSort(this,'top')">Top</button>
+      <button class="filter-btn" onclick="setSort(this,'new')">New</button>
+      <button class="filter-btn" onclick="setSort(this,'feasible')">Feasible</button>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Category</span>
+      <button class="filter-btn active" onclick="setCat(this,'all')">All</button>
+      <button class="filter-btn" onclick="setCat(this,'governance')">Gov</button>
+      <button class="filter-btn" onclick="setCat(this,'safety')">Safety</button>
+      <button class="filter-btn" onclick="setCat(this,'academic')">Academic</button>
+      <button class="filter-btn" onclick="setCat(this,'infrastructure')">Infra</button>
+      <button class="filter-btn" onclick="setCat(this,'welfare')">Welfare</button>
+    </div>
+  </div>
+
+  <div class="ideas-list" id="ideas-list"></div>
+
+  <div class="empty-state" id="empty-state" style="display:none">
+    <h3>No ideas in this category</h3>
+    <p>Be the first — <a href="/submit" style="color:var(--accent)">submit one</a>.</p>
+  </div>
+</div>
+
+<!-- Floating submit (desktop) -->
+<a href="/submit" class="fab">+ Submit Idea</a>
+
+<!-- Mobile bottom nav -->
+<nav class="mobile-nav">
+  <a href="/" class="mob-tab"><span class="mob-icon">⌂</span><span>Home</span></a>
+  <a href="/ideas" class="mob-tab active"><span class="mob-icon">≡</span><span>Ideas</span></a>
+  <a href="/submit" class="mob-tab submit-tab"><span class="mob-icon">+</span><span>Submit</span></a>
+</nav>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon">✓</span>
+  <span id="toast-msg"></span>
+</div>
+
+<script src="/data.js"></script>
+<script>
+var ideas   = getIdeas();
+var voted   = getVoted();
+var sortMode = 'top';
+var catMode  = 'all';
+
+function setSort(el, mode) {
+  document.querySelectorAll('.filter-btn').forEach(function(b, i) { if(i < 3) b.classList.remove('active'); });
+  el.classList.add('active'); sortMode = mode; render();
+}
+
+function setCat(el, cat) {
+  var btns = document.querySelectorAll('.filter-btn');
+  btns.forEach(function(b, i) { if(i >= 3) b.classList.remove('active'); });
+  el.classList.add('active'); catMode = cat; render();
+}
+
+function vote(id) {
+  var idea = ideas.find(function(i) { return i.id === id; });
+  if (!idea) return;
+  if (voted.has(id)) { idea.votes = Math.max(0, idea.votes - 1); voted.delete(id); }
+  else               { idea.votes++; voted.add(id); }
+  saveIdeas(ideas); saveVoted(voted); render();
+}
+
+function render() {
+  var list = ideas.slice();
+  if (catMode !== 'all') list = list.filter(function(i){ return i.category === catMode; });
+  if      (sortMode === 'top')      list.sort(function(a,b){ return b.votes - a.votes; });
+  else if (sortMode === 'new')      list.sort(function(a,b){ return b.id - a.id; });
+  else                              list.sort(function(a,b){ return b.feasibility - a.feasibility; });
+
+  var container = document.getElementById('ideas-list');
+  var empty     = document.getElementById('empty-state');
+  document.getElementById('idea-count').textContent = '(' + ideas.length + ')';
+
+  if (list.length === 0) { container.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  container.innerHTML = list.map(function(idea, idx) {
+    var v  = voted.has(idea.id);
+    var fc = feasColor(idea.feasibility);
+    return '<div class="idea-card" style="animation-delay:'+(idx*0.04)+'s">' +
+      '<div class="vote-col">' +
+        '<button class="vote-btn'+(v?' voted':'')+'" onclick="vote('+idea.id+')">▲</button>' +
+        '<div class="vote-count">'+idea.votes+'</div>' +
+      '</div>' +
+      '<div>' +
+        '<div class="idea-meta">' +
+          '<span class="cat-badge '+idea.category+'">'+idea.category+'</span>' +
+          '<span class="idea-author">'+escHtml(idea.author)+'</span>' +
+          '<span class="idea-time">'+idea.time+'</span>' +
+        '</div>' +
+        '<div class="idea-title">'+escHtml(idea.title)+'</div>' +
+        '<div class="idea-text">'+escHtml(idea.text)+'</div>' +
+        '<div class="idea-footer">' +
+          '<div class="feasibility">' +
+            '<span>Feasibility</span>' +
+            '<div class="feasibility-bar"><div class="feasibility-fill" style="width:'+idea.feasibility+'%;background:'+fc+'"></div></div>' +
+            '<span>'+idea.feasibility+'%</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// Show toast if redirected after submit
+if (window.location.search.includes('submitted=1')) {
+  showToast('Idea submitted. Thank you!');
+  history.replaceState({}, '', '/ideas');
+}
+
+render();
+</script>
+</body>
+</html>
