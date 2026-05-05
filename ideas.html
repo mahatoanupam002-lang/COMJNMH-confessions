@@ -173,7 +173,7 @@ function render() {
     var fc = feasColor(idea.feasibility);
     return '<div class="idea-card" style="animation-delay:'+(idx*0.04)+'s">' +
       '<div class="vote-col">' +
-        '<button class="vote-btn'+(v?' voted':'')+'" onclick="vote('+idea.id+')">▲</button>' +
+        '<button class="vote-btn'+(v?' voted':''+'" onclick="vote('+idea.id+')">▲</button>' +
         '<div class="vote-count">'+idea.votes+'</div>' +
       '</div>' +
       '<div>' +
