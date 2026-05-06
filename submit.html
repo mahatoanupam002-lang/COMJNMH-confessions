@@ -148,8 +148,8 @@
       <label class="form-label">Identity</label>
       <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
         <label class="anon-toggle" onclick="toggleAnon()">
-          <div class="toggle-track" id="anon-track"></div>
-          <span id="anon-label">Post anonymously</span>
+          <div class="toggle-track on" id="anon-track"></div>
+          <span id="anon-label">Anonymous</span>
         </label>
         <div id="name-wrap" style="display:none;flex:1;min-width:160px">
           <input class="form-input" id="author" type="text" maxlength="40" placeholder="Your name or alias">
@@ -183,7 +183,7 @@
 <script src="/data.js"></script>
 <script>
 var selectedCat = '';
-var isAnon = false;
+var isAnon = true;
 
 function pickCat(el, cat) {
   document.querySelectorAll('#cat-chips .chip').forEach(function(c) { c.classList.remove('active'); });
