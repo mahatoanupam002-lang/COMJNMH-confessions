@@ -148,14 +148,14 @@
       <label class="form-label">Identity</label>
       <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
         <label class="anon-toggle" onclick="toggleAnon()">
-          <div class="toggle-track" id="anon-track"></div>
-          <span id="anon-label">Post anonymously</span>
+          <div class="toggle-track on" id="anon-track"></div>
+          <span id="anon-label">Anonymous</span>
         </label>
         <div id="name-wrap" style="display:none;flex:1;min-width:160px">
           <input class="form-input" id="author" type="text" maxlength="40" placeholder="Your name or alias">
         </div>
       </div>
-      <p class="anon-note" style="margin-top:8px">When anonymous, your submission shows as "Anonymous". No account needed either way.</p>
+      <p class="anon-note" style="margin-top:8px">Toggle off to add your name. No account needed either way.</p>
     </div>
 
     <!-- Submit row -->
@@ -183,7 +183,7 @@
 <script src="/data.js"></script>
 <script>
 var selectedCat = '';
-var isAnon = false;
+var isAnon = true;
 
 function pickCat(el, cat) {
   document.querySelectorAll('#cat-chips .chip').forEach(function(c) { c.classList.remove('active'); });
@@ -198,7 +198,7 @@ function toggleAnon() {
   var label = document.getElementById('anon-label');
   var wrap  = document.getElementById('name-wrap');
   track.classList.toggle('on', isAnon);
-  label.textContent = isAnon ? 'Anonymous' : 'Post anonymously';
+  label.textContent = isAnon ? 'Anonymous' : 'Post with name';
   wrap.style.display = isAnon ? 'none' : 'block';
 }
 
@@ -210,7 +210,6 @@ function updateChar(inputId, countId, max) {
 function submitIdea() {
   var title = document.getElementById('title').value.trim();
   var text  = document.getElementById('text').value.trim();
-  var errEl = document.getElementById('err-msg');
 
   if (!selectedCat) { showErr('Please pick a category.'); return; }
   if (!title)        { showErr('Title is required.'); return; }
