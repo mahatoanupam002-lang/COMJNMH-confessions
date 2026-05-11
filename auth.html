@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login / Register — MedReform</title>
+<meta name="description" content="Sign in to MedReform and share your campus reform ideas.">
+
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Epilogue:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+
+<style>
+  .auth-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(10,15,13,0.98) 0%, rgba(10,15,13,0.95) 100%); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+  
+  .auth-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 48px; max-width: 420px; width: 100%; display: flex; flex-direction: column; gap: 24px; }
+  
+  .auth-card h1 { font-family: 'Instrument Serif', serif; font-size: 32px; color: var(--text); text-align: center; }
+  
+  .auth-tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+  
+  .auth-tab { flex: 1; padding: 12px; text-align: center; border: none; background: transparent; color: var(--text-muted); cursor: pointer; font-family: 'Epilogue', sans-serif; font-weight: 600; border-bottom: 2px solid transparent; transition: all 0.2s; }
+  
+  .auth-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  
+  .auth-form { display: flex; flex-direction: column; gap: 16px; }
+  
+  .auth-form.hidden { display: none; }
+  
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  
+  .form-label { font-family: 'Epilogue', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); text-transform: uppercase; letter-spacing: 0.3px; }
+  
+  .form-input, .form-select { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; color: var(--text); font-family: 'Epilogue', sans-serif; font-size: 14px; transition: all 0.2s; }
+  
+  .form-input:focus, .form-select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
+  
+  .form-error { background: rgba(248, 113, 113, 0.1); color: var(--red); border: 1px solid var(--red); border-radius: 8px; padding: 12px 16px; font-size: 13px; display: none; }
+  
+  .form-error.show { display: block; }
+  
+  .form-button { background: var(--accent); color: var(--bg); border: none; border-radius: 10px; padding: 12px 24px; font-family: 'Epilogue', sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+  
+  .form-button:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(74, 222, 128, 0.2); }
+  
+  .form-button:disabled { opacity: 0.5; cursor: not-allowed; }
+  
+  .auth-link { text-align: center; color: var(--text-muted); font-size: 13px; }
+  
+  .auth-link a { color: var(--accent); cursor: pointer; text-decoration: none; font-weight: 600; }
+  
+  .auth-link a:hover { text-decoration: underline; }
+  
+  .auth-divider { text-align: center; color: var(--text-dim); font-size: 12px; position: relative; }
+  
+  .auth-divider::before, .auth-divider::after { content: ''; position: absolute; top: 50%; width: 35%; height: 1px; background: var(--border); }
+  
+  .auth-divider::before { left: 0; }
+  
+  .auth-divider::after { right: 0; }
+  
+  .loading { opacity: 0.6; pointer-events: none; }
+  
+  @media (max-width: 700px) { .auth-card { padding: 32px 24px; } }
+</style>
+</head>
+<body>
+
+<div class="auth-container">
+  <div class="auth-card">
+    <h1>MedReform</h1>
+    
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('login')">Sign In</button>
+      <button class="auth-tab" onclick="switchTab('register')">Create Account</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <form class="auth-form" id="login-form" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="login-email" placeholder="your@college.edu" required>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="login-password" placeholder="••••••••" required>
+      </div>
+
+      <div class="form-error" id="login-error"></div>
+
+      <button type="submit" class="form-button">Sign In</button>
+
+      <div class="auth-link">
+        <a onclick="resetPassword()">Forgot password?</a>
+      </div>
+    </form>
+
+    <!-- REGISTER FORM -->
+    <form class="auth-form hidden" id="register-form" onsubmit="handleRegister(event)">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-input" id="register-name" placeholder="Your name" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="register-email" placeholder="your@college.edu" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Role</label>
+        <select class="form-select" id="register-role" required>
+          <option value="MBBS Student (Phase I)">MBBS Student (Phase I)</option>
+          <option value="MBBS Student (Phase II)">MBBS Student (Phase II)</option>
+          <option value="MBBS Student (Clinical)" selected>MBBS Student (Clinical)</option>
+          <option value="PG Resident">PG Resident</option>
+          <option value="Junior Faculty">Junior Faculty</option>
+          <option value="Senior Faculty">Senior Faculty</option>
+          <option value="Non-Teaching Staff">Non-Teaching Staff</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="register-password" placeholder="••••••••" minlength="8" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <input type="password" class="form-input" id="register-confirm" placeholder="••••••••" required>
+      </div>
+
+      <div class="form-error" id="register-error"></div>
+
+      <button type="submit" class="form-button">Create Account</button>
+    </form>
+
+    <p class="auth-link">
+      Terms: By signing up, you agree to our <a>Terms of Service</a> and <a>Privacy Policy</a>
+    </p>
+  </div>
+</div>
+
+<div id="sr-live-region" aria-live="polite" aria-atomic="true" style="position: absolute; left: -9999px;"></div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
+
+<!-- Backend -->
+<script src="/firebase-backend.js"></script>
+
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.add('hidden'));
+  
+  if (tab === 'login') {
+    document.querySelectorAll('.auth-tab')[0].classList.add('active');
+    document.getElementById('login-form').classList.remove('hidden');
+  } else {
+    document.querySelectorAll('.auth-tab')[1].classList.add('active');
+    document.getElementById('register-form').classList.remove('hidden');
+  }
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+  const errorEl = document.getElementById('login-error');
+  const button = e.target.querySelector('button');
+  
+  errorEl.classList.remove('show');
+  button.disabled = true;
+  button.textContent = 'Signing in...';
+  
+  const result = await MedReformAuth.login(email, password);
+  
+  if (result.success) {
+    window.location.href = '/';
+  } else {
+    errorEl.textContent = result.error;
+    errorEl.classList.add('show');
+    button.disabled = false;
+    button.textContent = 'Sign In';
+  }
+}
+
+async function handleRegister(e) {
+  e.preventDefault();
+  
+  const name = document.getElementById('register-name').value;
+  const email = document.getElementById('register-email').value;
+  const role = document.getElementById('register-role').value;
+  const password = document.getElementById('register-password').value;
+  const confirm = document.getElementById('register-confirm').value;
+  const errorEl = document.getElementById('register-error');
+  const button = e.target.querySelector('button');
+  
+  errorEl.classList.remove('show');
+  
+  if (password !== confirm) {
+    errorEl.textContent = 'Passwords do not match';
+    errorEl.classList.add('show');
+    return;
+  }
+  
+  button.disabled = true;
+  button.textContent = 'Creating account...';
+  
+  const result = await MedReformAuth.register(email, password, name, role);
+  
+  if (result.success) {
+    window.location.href = '/';
+  } else {
+    errorEl.textContent = result.error;
+    errorEl.classList.add('show');
+    button.disabled = false;
+    button.textContent = 'Create Account';
+  }
+}
+
+async function resetPassword() {
+  const email = prompt('Enter your email address:');
+  if (!email) return;
+  
+  const result = await MedReformAuth.resetPassword(email);
+  if (result.success) {
+    alert('Password reset email sent! Check your inbox.');
+  } else {
+    alert('Error: ' + result.error);
+  }
+}
+
+// Check if user is already logged in
+MedReformAuth.onAuthStateChanged(user => {
+  if (user) {
+    window.location.href = '/';
+  }
+});
+</script>
+</body>
+</html>

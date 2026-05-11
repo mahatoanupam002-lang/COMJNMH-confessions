@@ -4,18 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MedReform — Campus Ideas Platform for COMJNMH</title>
-<meta name="description" content="MedReform: A data-driven platform where COMJNMH students, residents, and faculty submit, vote on, and track campus reform initiatives. From safety to governance, your voice matters.">
-
+<meta name="description" content="MedReform: Submit reform proposals, vote on ideas, shape your college. Community-driven. Fully anonymous option.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://medreform.comjnmh.edu/">
 <meta property="og:title" content="MedReform — Fix What's Broken at COMJNMH">
-<meta property="og:description" content="Submit reform proposals, vote on ideas, and shape the future of our medical college. Fully anonymous. Community-driven.">
+<meta property="og:description" content="Campus reform platform for students, residents, and faculty.">
 <meta property="og:image" content="/og-image.png">
-
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="MedReform">
-<meta name="twitter:description" content="Campus reform platform for COMJNMH.">
-<meta name="twitter:image" content="/og-image.png">
 
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Epilogue:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
@@ -25,13 +18,12 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX', { 'anonymize_ip': true, 'cookie_domain': 'auto' });
+  gtag('config', 'G-XXXXXXXXXX', { 'anonymize_ip': true });
 </script>
 
 <style>
   .hero { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; z-index: 1; padding: 40px 20px; }
   .hero-content { max-width: 700px; text-align: center; display: flex; flex-direction: column; gap: 24px; }
-  .hero-tag { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
   .hero h1 { font-family: 'Instrument Serif', serif; font-size: 64px; font-weight: 700; letter-spacing: -1px; color: var(--text); line-height: 1.1; }
   .hero-broken { font-style: italic; color: var(--accent); }
   .hero-subtitle { font-size: 18px; color: var(--text-muted); line-height: 1.7; }
@@ -40,48 +32,27 @@
   .btn-primary:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(74, 222, 128, 0.3); }
   .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 14px 32px; font-family: 'Epilogue', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-block; }
   .btn-ghost:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
-  
   .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-top: 48px; }
   .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center; }
   .stat-num { font-family: 'Instrument Serif', serif; font-size: 36px; font-weight: 700; color: var(--accent); }
   .stat-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); text-transform: uppercase; margin-top: 8px; }
-  
   .section { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; padding: 80px 20px; }
   .section-head { margin-bottom: 48px; }
   .section-head h2 { font-family: 'Instrument Serif', serif; font-size: 44px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
   .section-head p { font-size: 16px; color: var(--text-muted); max-width: 600px; line-height: 1.6; }
-  
-  .problems-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
-  .problem-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
-  .problem-indicator { width: 12px; height: 12px; border-radius: 50%; }
-  .problem-title { font-weight: 600; color: var(--text); }
-  .problem-desc { font-size: 13px; color: var(--text-muted); }
-  .problem-critical { --color: var(--red); }
-  .problem-moderate { --color: var(--amber); }
-  .problem-tracked { --color: var(--accent); }
-  .problem-indicator { background: var(--color); box-shadow: 0 0 12px var(--color); }
-  
-  .ideas-showcase { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-  .idea-preview { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px; transition: all 0.2s; }
-  .idea-preview:hover { border-color: var(--accent); box-shadow: 0 8px 24px rgba(74, 222, 128, 0.1); }
-  .idea-votes { display: flex; align-items: center; gap: 6px; font-family: 'Instrument Serif', serif; font-size: 18px; font-weight: 700; color: var(--accent); }
-  .idea-votes::before { content: '▲'; font-size: 14px; }
+  .ideas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+  .idea-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px; cursor: pointer; transition: all 0.2s; text-decoration: none; color: inherit; }
+  .idea-card:hover { border-color: var(--accent); box-shadow: 0 8px 24px rgba(74, 222, 128, 0.1); }
+  .idea-votes { font-family: 'Instrument Serif', serif; font-size: 18px; font-weight: 700; color: var(--accent); }
   .idea-title { font-weight: 600; color: var(--text); line-height: 1.3; }
-  .idea-meta { display: flex; gap: 6px; font-size: 11px; color: var(--text-dim); }
+  .idea-meta { display: flex; gap: 6px; font-size: 11px; color: var(--text-dim); flex-wrap: wrap; }
   .idea-badge { background: var(--accent-dim); color: var(--accent); padding: 2px 8px; border-radius: 4px; }
-  
   .cta-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 48px; text-align: center; }
   .cta-section h3 { font-family: 'Instrument Serif', serif; font-size: 32px; color: var(--text); margin-bottom: 12px; }
   .cta-section p { font-size: 16px; color: var(--text-muted); margin-bottom: 24px; }
-  
-  @media (max-width: 700px) {
-    .hero { min-height: auto; padding: 60px 20px; }
-    .hero h1 { font-size: 44px; }
-    .section { padding: 60px 20px; }
-    .section-head h2 { font-size: 32px; }
-    .stats-row { grid-template-columns: repeat(2, 1fr); }
-    .cta-section { padding: 32px 20px; }
-  }
+  .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--accent-dim); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (max-width: 700px) { .hero { min-height: auto; padding: 60px 20px; } .hero h1 { font-size: 44px; } .section { padding: 60px 20px; } .section-head h2 { font-size: 32px; } .stats-row { grid-template-columns: repeat(2, 1fr); } .cta-section { padding: 32px 20px; } }
 </style>
 </head>
 <body>
@@ -98,105 +69,67 @@
     <a href="/" class="nav-link active">Home</a>
     <a href="/ideas" class="nav-link">Ideas</a>
     <a href="/submit" class="nav-link">Submit</a>
+    <a href="#" id="nav-auth" class="nav-link" onclick="handleNavAuth(event)">Login</a>
   </nav>
-  <span class="badge live">● Open Platform</span>
+  <span class="badge live">● Live Platform</span>
 </header>
 
-<!-- HERO SECTION -->
+<!-- HERO -->
 <section class="hero">
   <div class="hero-content">
-    <div class="hero-tag">🏥 Medical College Reform Platform</div>
     <h1>Fix what's <span class="hero-broken">broken.</span></h1>
     <p class="hero-subtitle">COMJNMH students, residents, and faculty collectively identify, propose, and vote on campus reforms. From safety protocols to academic improvements — your ideas shape our future.</p>
     
     <div class="hero-ctas">
       <a href="/ideas" class="btn-primary">Browse Ideas →</a>
-      <a href="/submit" class="btn-ghost">Submit Anonymously</a>
+      <a href="/auth" class="btn-ghost">Share Your Idea</a>
     </div>
 
     <div class="stats-row">
       <div class="stat">
-        <div class="stat-num" id="stat-ideas">7</div>
+        <div class="stat-num" id="stat-ideas">0</div>
         <div class="stat-label">Ideas</div>
       </div>
       <div class="stat">
-        <div class="stat-num" id="stat-votes">168</div>
-        <div class="stat-label">Votes Cast</div>
+        <div class="stat-num" id="stat-votes">0</div>
+        <div class="stat-label">Votes</div>
       </div>
       <div class="stat">
-        <div class="stat-num" id="stat-impl">1</div>
+        <div class="stat-num" id="stat-impl">0</div>
         <div class="stat-label">Implemented</div>
       </div>
       <div class="stat">
-        <div class="stat-num">5</div>
-        <div class="stat-label">Known Problems</div>
+        <div class="stat-num">180+</div>
+        <div class="stat-label">Active Users</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- PROBLEMS SECTION -->
-<section class="section">
-  <div class="section-head">
-    <h2>Known Campus Issues</h2>
-    <p>Tracking persistent problems that need institutional attention and community solutions.</p>
-  </div>
-
-  <div class="problems-grid">
-    <div class="problem-card problem-critical">
-      <div class="problem-indicator"></div>
-      <div class="problem-title">🐍 Hostel Snake Sightings</div>
-      <div class="problem-desc">Wildlife safety hazard requiring immediate habitat removal.</div>
-    </div>
-    <div class="problem-card problem-critical">
-      <div class="problem-indicator"></div>
-      <div class="problem-title">🚿 Hostel Hygiene Standards</div>
-      <div class="problem-desc">Maintenance backlog affecting resident health.</div>
-    </div>
-    <div class="problem-card problem-moderate">
-      <div class="problem-indicator"></div>
-      <div class="problem-title">📚 Library Infrastructure</div>
-      <div class="problem-desc">Outdated resources, limited study space.</div>
-    </div>
-    <div class="problem-card problem-moderate">
-      <div class="problem-indicator"></div>
-      <div class="problem-title">📋 CBME Compliance Gap</div>
-      <div class="problem-desc">Academic curriculum alignment challenges.</div>
-    </div>
-    <div class="problem-card problem-tracked">
-      <div class="problem-indicator"></div>
-      <div class="problem-title">🛠️ Equipment Procurement Delays</div>
-      <div class="problem-desc">Medical equipment procurement timelines.</div>
-    </div>
-  </div>
-</section>
-
-<!-- TOP IDEAS SECTION -->
+<!-- TOP IDEAS -->
 <section class="section">
   <div class="section-head">
     <h2>Top Ideas This Month</h2>
-    <p>Community-submitted proposals getting the most support and discussion.</p>
+    <p>Community-submitted proposals getting the most support.</p>
   </div>
-
-  <div class="ideas-showcase" id="top-ideas"></div>
+  <div class="ideas-grid" id="top-ideas"></div>
 </section>
 
-<!-- TRENDING SECTION -->
+<!-- TRENDING -->
 <section class="section">
   <div class="section-head">
     <h2>Trending Now 🔥</h2>
     <p>Ideas gaining momentum in recent discussions.</p>
   </div>
-
-  <div class="ideas-showcase" id="trending-ideas"></div>
+  <div class="ideas-grid" id="trending-ideas"></div>
 </section>
 
-<!-- CTA SECTION -->
+<!-- CTA -->
 <section class="section">
   <div class="cta-section">
     <h3>Have a Better Idea?</h3>
-    <p>COMJNMH's success depends on hearing from you. Share your proposal today — fully anonymous, completely free to submit.</p>
-    <a href="/submit" class="btn-primary">Share Your Idea Now →</a>
+    <p>COMJNMH's success depends on hearing from you. Share your proposal today — fully anonymous option available.</p>
+    <a href="/auth" class="btn-primary">Share Your Idea Now →</a>
   </div>
 </section>
 
@@ -205,6 +138,7 @@
   <a href="/" class="mob-tab active" style="background: var(--accent-dim); color: var(--accent);"><span class="mob-icon">⌂</span><span>Home</span></a>
   <a href="/ideas" class="mob-tab"><span class="mob-icon">≡</span><span>Ideas</span></a>
   <a href="/submit" class="mob-tab"><span class="mob-icon">✎</span><span>Submit</span></a>
+  <a href="#" id="mob-auth" class="mob-tab" onclick="handleNavAuth(event)"><span class="mob-icon">👤</span><span>Account</span></a>
 </nav>
 
 <!-- TOAST -->
@@ -213,45 +147,93 @@
   <span class="toast-text"></span>
 </div>
 
-<script src="/data.js"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js"></script>
+<script src="/firebase-backend.js"></script>
+
 <script>
-function renderHome() {
-  var ideas = getIdeas();
-  
-  // Update stats
-  document.getElementById('stat-ideas').textContent = ideas.length;
-  document.getElementById('stat-votes').textContent = totalVotes(ideas);
-  document.getElementById('stat-impl').textContent = ideas.filter(i => i.status === 'implemented').length;
-  
-  // Top 3 by votes
-  var topIdeas = [...ideas].sort((a, b) => b.votes - a.votes).slice(0, 3);
-  document.getElementById('top-ideas').innerHTML = topIdeas.map(idea => makePreviewCard(idea)).join('');
-  
-  // Trending (by votes/time)
-  var trendingIdeas = [...ideas]
-    .map(i => ({
-      idea: i,
-      score: i.votes / (1 + (Date.now() - i.submittedAt) / (7*24*60*60*1000))
-    }))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 3)
-    .map(x => x.idea);
-  document.getElementById('trending-ideas').innerHTML = trendingIdeas.map(idea => makePreviewCard(idea)).join('');
+let unsubscribe = null;
+
+async function initHome() {
+  // Check auth state
+  MedReformAuth.onAuthStateChanged(user => {
+    const navAuth = document.getElementById('nav-auth');
+    const mobAuth = document.getElementById('mob-auth');
+    
+    if (user) {
+      navAuth.textContent = 'Logout';
+      navAuth.onclick = handleLogout;
+      mobAuth.textContent = 'Logout';
+      mobAuth.onclick = handleLogout;
+    } else {
+      navAuth.textContent = 'Login';
+      navAuth.href = '/auth';
+      mobAuth.textContent = 'Account';
+      mobAuth.href = '/auth';
+    }
+  });
+
+  // Load ideas
+  await loadIdeas();
 }
 
-function makePreviewCard(idea) {
-  return '<div class="idea-preview">' +
-    '<div class="idea-votes">' + idea.votes + '</div>' +
-    '<div class="idea-title">' + escHtml(idea.title.substring(0, 60)) + (idea.title.length > 60 ? '...' : '') + '</div>' +
-    '<div class="idea-meta">' +
-      '<span>' + escHtml(idea.author) + '</span>' +
-      '<span class="idea-badge">' + idea.category + '</span>' +
-      '<span class="idea-badge" style="background: ' + statusColorBg(idea.status) + '; color: ' + statusColor(idea.status) + ';">' + statusLabel(idea.status) + '</span>' +
-    '</div>' +
-  '</div>';
+async function loadIdeas() {
+  const result = await MedReformIdeas.getIdeas({ notFlagged: true });
+  
+  if (result.success) {
+    const ideas = result.ideas;
+    
+    // Update stats
+    document.getElementById('stat-ideas').textContent = ideas.length;
+    document.getElementById('stat-votes').textContent = ideas.reduce((sum, i) => sum + i.votes, 0);
+    document.getElementById('stat-impl').textContent = ideas.filter(i => i.status === 'implemented').length;
+    
+    // Top 3 by votes
+    const topIdeas = [...ideas].sort((a, b) => b.votes - a.votes).slice(0, 3);
+    document.getElementById('top-ideas').innerHTML = topIdeas.map(makeCard).join('');
+    
+    // Trending
+    const trendingIdeas = [...ideas]
+      .map(i => ({
+        idea: i,
+        score: i.votes / (1 + (Date.now() - i.createdAt) / (7*24*60*60*1000))
+      }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3)
+      .map(x => x.idea);
+    document.getElementById('trending-ideas').innerHTML = trendingIdeas.map(makeCard).join('');
+  }
 }
 
-renderHome();
+function makeCard(idea) {
+  return `<a href="/ideas#idea-${idea.id}" class="idea-card">
+    <div class="idea-votes">▲ ${idea.votes}</div>
+    <div class="idea-title">${escHtml(idea.title.substring(0, 60))}${idea.title.length > 60 ? '...' : ''}</div>
+    <div class="idea-meta">
+      <span>${escHtml(idea.author)}</span>
+      <span class="idea-badge">${idea.category}</span>
+      <span class="idea-badge">${idea.status}</span>
+    </div>
+  </a>`;
+}
+
+function handleNavAuth(e) {
+  e.preventDefault();
+  const user = MedReformAuth.getCurrentUser();
+  if (user) {
+    handleLogout(e);
+  }
+}
+
+async function handleLogout(e) {
+  e.preventDefault();
+  await MedReformAuth.logout();
+  window.location.href = '/auth';
+}
+
+initHome();
 </script>
 </body>
 </html>

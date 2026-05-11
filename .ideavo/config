@@ -6,20 +6,32 @@
   "buildSteps": [],
   "runStep": [
     {
-      "name": "Serve Static Files",
+      "name": "Serve Static Files + Firebase Backend",
       "command": "npx http-server . -p 3000 -c-1 --host 0.0.0.0",
       "port": "3000"
     }
   ],
-  "deploySteps": [],
+  "deploySteps": [
+    {
+      "name": "Build (No build step - static files)"
+    },
+    {
+      "name": "Deploy to Vercel"
+    }
+  ],
   "cleanupFiles": [
-    "ideavo-server-*.log"
+    "ideavo-server-*.log",
+    ".env.local"
   ],
   "packageManager": "npm",
   "envPaths": [
     {
       "name": "default",
       "path": ".env"
+    },
+    {
+      "name": "firebase",
+      "path": ".env.firebase"
     }
   ]
 }
