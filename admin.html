@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel — MedReform COMJNMH</title>
+<meta name="description" content="Admin dashboard for managing ideas and overseeing campus reform initiatives at COMJNMH.">
+<meta name="robots" content="noindex, nofollow">
+
+<!-- Open Graph Meta Tags -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://medreform.comjnmh.edu/admin">
+<meta property="og:title" content="Admin Panel — MedReform COMJNMH">
+<meta property="og:description" content="Administrative dashboard for managing ideas and campus reform initiatives.">
+<meta property="og:image" content="/og-image.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Epilogue:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX', {
+    'anonymize_ip': true,
+    'cookie_domain': 'auto'
+  });
+  
+  function trackEvent(category, action, label) {
+    gtag('event', action, {
+      'event_category': category,
+      'event_label': label
+    });
+  }
+</script>
+<style>
+  .admin-wrap {
+    position: relative; z-index: 1;
+    max-width: 1200px; margin: 0 auto;
+    padding: 40px;
+  }
+
+  .admin-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 32px; flex-wrap: wrap; gap: 16px;
+  }
+
+  .admin-header h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 36px; letter-spacing: -0.5px; color: var(--text);
+  }
+
+  .admin-stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px; margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+
+  .stat-val {
+    font-family: 'Instrument Serif', serif;
+    font-size: 32px; color: var(--accent); font-weight: 700;
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; color: var(--text-dim); text-transform: uppercase;
+  }
+
+  .admin-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .admin-idea-row {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+    display: flex; align-items: center; gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .admin-idea-row .id { font-family: 'DM Mono', monospace; color: var(--text-dim); min-width: 30px; }
+  .admin-idea-row .title { flex: 1; min-width: 200px; font-weight: 600; color: var(--text); }
+  .admin-idea-row .votes { font-family: 'Instrument Serif', serif; color: var(--accent); min-width: 50px; }
+  .admin-idea-row .votes-badge {
+    background: var(--accent-dim); color: var(--accent);
+    padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;
+  }
+
+  .admin-controls {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+
+  .admin-btn {
+    padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border);
+    background: transparent; color: var(--text-muted);
+    font-family: 'Epilogue', sans-serif; font-size: 12px; cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .admin-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--text-dim); }
+  .admin-btn.status-submitted { border-color: var(--amber); color: var(--amber); }
+  .admin-btn.status-reviewed { border-color: var(--blue); color: var(--blue); }
+  .admin-btn.status-implemented { border-color: var(--accent); color: var(--accent); }
+  .admin-btn.status-rejected { border-color: var(--red); color: var(--red); }
+
+  .modal {
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center;
+  }
+
+  .modal.open { display: flex; }
+
+  .modal-content {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 32px; max-width: 600px; width: 90%;
+    max-height: 90vh; overflow-y: auto;
+  }
+
+  .modal-header { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+  .modal-body { color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; }
+  .modal-footer { display: flex; gap: 12px; justify-content: flex-end; }
+
+  @media (max-width: 700px) {
+    .admin-wrap { padding: 20px; }
+    .admin-idea-row { flex-direction: column; align-items: flex-start; }
+    .admin-controls { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="/" class="logo">
+    <div class="logo-mark">M+</div>
+    <div>
+      <div class="logo-text">MedReform</div>
+      <div class="logo-sub">COMJNMH · Kalyani</div>
+    </div>
+  </a>
+  <nav class="desktop-nav">
+    <a href="/" class="nav-link">Home</a>
+    <a href="/ideas" class="nav-link">Ideas</a>
+    <a href="/admin" class="nav-link active">Admin</a>
+  </nav>
+  <span class="badge live">Admin Panel</span>
+</header>
+
+<div class="admin-wrap">
+  <div class="admin-header">
+    <h1>Admin Panel</h1>
+    <button class="btn btn-primary" onclick="exportData()">Export Data</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="admin-stats">
+    <div class="stat-card">
+      <div class="stat-val" id="stat-total">0</div>
+      <div class="stat-label">Total Ideas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="stat-submitted">0</div>
+      <div class="stat-label">Submitted</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="stat-reviewed">0</div>
+      <div class="stat-label">Reviewed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="stat-implemented">0</div>
+      <div class="stat-label">Implemented</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="stat-rejected">0</div>
+      <div class="stat-label">Rejected</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="stat-votes">0</div>
+      <div class="stat-label">Total Votes</div>
+    </div>
+  </div>
+
+  <!-- Ideas List -->
+  <h2 style="margin-bottom: 20px; font-family:'Instrument Serif',serif;font-size:24px;color:var(--text)">Manage Ideas</h2>
+  <div class="admin-list" id="admin-list"></div>
+
+  <div class="empty-state" id="empty-admin" style="display:none;margin-top:40px">
+    <h3>No ideas yet</h3>
+    <p>Ideas will appear here once submitted.</p>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal" id="edit-modal">
+  <div class="modal-content">
+    <div class="modal-header">Edit Idea Status</div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveStatusChange()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile bottom nav -->
+<nav class="mobile-nav">
+  <a href="/" class="mob-tab"><span class="mob-icon">⌂</span><span>Home</span></a>
+  <a href="/ideas" class="mob-tab"><span class="mob-icon">≡</span><span>Ideas</span></a>
+  <a href="/admin" class="mob-tab active" style="background:var(--accent-dim);color:var(--accent)"><span class="mob-icon">⚙</span><span>Admin</span></a>
+</nav>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon">✓</span>
+  <span id="toast-msg"></span>
+</div>
+
+<script src="/data.js"></script>
+<script>
+var ideas = getIdeas();
+var currentEditId = null;
+
+function updateStats() {
+  var total = ideas.length;
+  var submitted = ideas.filter(function(i) { return (i.status || 'submitted') === 'submitted'; }).length;
+  var reviewed = ideas.filter(function(i) { return i.status === 'reviewed'; }).length;
+  var implemented = ideas.filter(function(i) { return i.status === 'implemented'; }).length;
+  var rejected = ideas.filter(function(i) { return i.status === 'rejected'; }).length;
+  var votes = totalVotes(ideas);
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-submitted').textContent = submitted;
+  document.getElementById('stat-reviewed').textContent = reviewed;
+  document.getElementById('stat-implemented').textContent = implemented;
+  document.getElementById('stat-rejected').textContent = rejected;
+  document.getElementById('stat-votes').textContent = votes;
+}
+
+function renderIdeas() {
+  var container = document.getElementById('admin-list');
+  var empty = document.getElementById('empty-admin');
+
+  if (ideas.length === 0) {
+    container.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  container.innerHTML = ideas.map(function(idea, idx) {
+    var status = idea.status || 'submitted';
+    return '<div class="admin-idea-row">' +
+      '<div class="id">#' + idea.id + '</div>' +
+      '<div class="title">' + escHtml(idea.title) + '</div>' +
+      '<div class="votes-badge">' + idea.votes + ' votes</div>' +
+      '<div class="admin-controls">' +
+        '<button class="admin-btn status-' + status + '" onclick="editStatus(' + idea.id + ')">' + statusLabel(status) + '</button>' +
+        '<button class="admin-btn" onclick="deleteIdea(' + idea.id + ')">Delete</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function editStatus(ideaId) {
+  currentEditId = ideaId;
+  var idea = ideas.find(function(i) { return i.id === ideaId; });
+  if (!idea) return;
+
+  var status = idea.status || 'submitted';
+  var html = '<p style="margin-bottom:16px"><strong>' + escHtml(idea.title) + '</strong></p>' +
+    '<p style="color:var(--text-muted);margin-bottom:16px">Current status: <strong>' + statusLabel(status) + '</strong></p>' +
+    '<div style="display:flex;flex-direction:column;gap:8px">' +
+    '<label style="display:flex;align-items:center;gap:10px;cursor:pointer">' +
+      '<input type="radio" name="new-status" value="submitted" ' + (status === 'submitted' ? 'checked' : '') + '> Submitted' +
+    '</label>' +
+    '<label style="display:flex;align-items:center;gap:10px;cursor:pointer">' +
+      '<input type="radio" name="new-status" value="reviewed" ' + (status === 'reviewed' ? 'checked' : '') + '> Reviewed' +
+    '</label>' +
+    '<label style="display:flex;align-items:center;gap:10px;cursor:pointer">' +
+      '<input type="radio" name="new-status" value="implemented" ' + (status === 'implemented' ? 'checked' : '') + '> Implemented' +
+    '</label>' +
+    '<label style="display:flex;align-items:center;gap:10px;cursor:pointer">' +
+      '<input type="radio" name="new-status" value="rejected" ' + (status === 'rejected' ? 'checked' : '') + '> Rejected' +
+    '</label>' +
+    '</div>';
+
+  document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function saveStatusChange() {
+  var newStatus = document.querySelector('input[name="new-status"]:checked').value;
+  var idea = ideas.find(function(i) { return i.id === currentEditId; });
+  if (!idea) return;
+
+  idea.status = newStatus;
+  saveIdeas(ideas);
+  trackEvent('admin', 'status_changed', newStatus);
+  closeModal();
+  renderIdeas();
+  updateStats();
+  showToast('Status updated to ' + statusLabel(newStatus), '✓');
+}
+
+function deleteIdea(ideaId) {
+  if (!confirm('Are you sure you want to delete this idea? This cannot be undone.')) return;
+  ideas = ideas.filter(function(i) { return i.id !== ideaId; });
+  saveIdeas(ideas);
+  trackEvent('admin', 'idea_deleted', 'idea_' + ideaId);
+  renderIdeas();
+  updateStats();
+  showToast('Idea deleted', '✓');
+}
+
+function exportData() {
+  var dataStr = JSON.stringify(ideas, null, 2);
+  var dataBlob = new Blob([dataStr], { type: 'application/json' });
+  var url = URL.createObjectURL(dataBlob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'ideas-' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  trackEvent('admin', 'data_exported', ideas.length + '_ideas');
+  showToast('Data exported', '✓');
+}
+
+function closeModal() {
+  document.getElementById('edit-modal').classList.remove('open');
+  currentEditId = null;
+}
+
+function deleteIdea(ideaId) {
+  if (!confirm('Are you sure you want to delete this idea? This cannot be undone.')) return;
+  ideas = ideas.filter(function(i) { return i.id !== ideaId; });
+  saveIdeas(ideas);
+  renderIdeas();
+  updateStats();
+  showToast('Idea deleted', '✓');
+}
+
+function exportData() {
+  var dataStr = JSON.stringify(ideas, null, 2);
+  var dataBlob = new Blob([dataStr], { type: 'application/json' });
+  var url = URL.createObjectURL(dataBlob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'ideas-' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Data exported', '✓');
+}
+
+updateStats();
+renderIdeas();
+</script>
+</body>
+</html>

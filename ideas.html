@@ -4,8 +4,43 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ideas — MedReform COMJNMH</title>
+<meta name="description" content="Browse and vote on ideas for campus reforms at COMJNMH. Join the conversation and help shape the future of our institution.">
+<meta name="keywords" content="COMJNMH, ideas, browse, vote, campus reform">
+
+<!-- Open Graph Meta Tags -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://medreform.comjnmh.edu/ideas">
+<meta property="og:title" content="Ideas — MedReform COMJNMH">
+<meta property="og:description" content="Browse and vote on ideas for campus reforms. Support solutions that matter to you.">
+<meta property="og:image" content="/og-image.png">
+
+<!-- Twitter Card Meta Tags -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ideas — MedReform COMJNMH">
+<meta name="twitter:description" content="Browse and vote on ideas for campus reforms at COMJNMH.">
+<meta name="twitter:image" content="/og-image.png">
+
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Epilogue:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX', {
+    'anonymize_ip': true,
+    'cookie_domain': 'auto'
+  });
+  
+  function trackEvent(category, action, label) {
+    gtag('event', action, {
+      'event_category': category,
+      'event_label': label
+    });
+  }
+</script>
 <style>
   .page-wrap {
     position: relative; z-index: 1;
@@ -75,6 +110,7 @@
     <a href="/" class="nav-link">Home</a>
     <a href="/ideas" class="nav-link active">Ideas</a>
     <a href="/submit" class="nav-link">Submit</a>
+    <a href="/admin" class="nav-link">Admin</a>
   </nav>
   <span class="badge live">Open Platform</span>
 </header>
@@ -85,22 +121,58 @@
     <a href="/submit" class="btn btn-primary">+ Submit Idea</a>
   </div>
 
+  <!-- Search -->
+  <div class="search-box" style="margin-bottom:20px">
+    <input type="text" id="search-input" class="form-input" placeholder="🔍 Search ideas by title, description, or author..." 
+      aria-label="Search ideas"
+      aria-describedby="search-help"
+      oninput="handleSearch()">
+    <small id="search-help" style="display:none">Search across all ideas using keywords from title, description, or author name</small>
+  </div>
+
   <!-- Filters -->
-  <div class="filters-bar">
+  <div class="filters-bar" role="group" aria-label="Sorting options">
     <div class="filter-group">
-      <span class="filter-label">Sort</span>
-      <button class="filter-btn active" onclick="setSort(this,'top')">Top</button>
-      <button class="filter-btn" onclick="setSort(this,'new')">New</button>
-      <button class="filter-btn" onclick="setSort(this,'feasible')">Feasible</button>
+      <span class="filter-label" id="sort-label">Sort</span>
+      <button class="filter-btn active" onclick="setSort(this,'top')" aria-pressed="true" aria-labelledby="sort-label">Top</button>
+      <button class="filter-btn" onclick="setSort(this,'new')" aria-pressed="false" aria-labelledby="sort-label">New</button>
+      <button class="filter-btn" onclick="setSort(this,'feasible')" aria-pressed="false" aria-labelledby="sort-label">Feasible</button>
+      <button class="filter-btn" onclick="setSort(this,'trending')" aria-pressed="false" aria-labelledby="sort-label">Trending</button>
     </div>
-    <div class="filter-group">
-      <span class="filter-label">Category</span>
-      <button class="filter-btn active" onclick="setCat(this,'all')">All</button>
-      <button class="filter-btn" onclick="setCat(this,'governance')">Gov</button>
-      <button class="filter-btn" onclick="setCat(this,'safety')">Safety</button>
-      <button class="filter-btn" onclick="setCat(this,'academic')">Academic</button>
-      <button class="filter-btn" onclick="setCat(this,'infrastructure')">Infra</button>
-      <button class="filter-btn" onclick="setCat(this,'welfare')">Welfare</button>
+    <div class="filter-group" role="group" aria-label="Category filters">
+      <span class="filter-label" id="cat-label">Category</span>
+      <button class="filter-btn active" onclick="setCat(this,'all')" aria-pressed="true" aria-labelledby="cat-label">All</button>
+      <button class="filter-btn" onclick="setCat(this,'governance')" aria-pressed="false" aria-labelledby="cat-label">Gov</button>
+      <button class="filter-btn" onclick="setCat(this,'safety')" aria-pressed="false" aria-labelledby="cat-label">Safety</button>
+      <button class="filter-btn" onclick="setCat(this,'academic')" aria-pressed="false" aria-labelledby="cat-label">Academic</button>
+      <button class="filter-btn" onclick="setCat(this,'infrastructure')" aria-pressed="false" aria-labelledby="cat-label">Infra</button>
+      <button class="filter-btn" onclick="setCat(this,'welfare')" aria-pressed="false" aria-labelledby="cat-label">Welfare</button>
+    </div>
+    <div class="filter-group" role="group" aria-label="Status filters">
+      <span class="filter-label" id="status-label">Status</span>
+      <button class="filter-btn active" onclick="setStatus(this,'all')" aria-pressed="true" aria-labelledby="status-label">All</button>
+      <button class="filter-btn" onclick="setStatus(this,'submitted')" aria-pressed="false" aria-labelledby="status-label">Submitted</button>
+      <button class="filter-btn" onclick="setStatus(this,'reviewed')" aria-pressed="false" aria-labelledby="status-label">Reviewed</button>
+      <button class="filter-btn" onclick="setStatus(this,'implemented')" aria-pressed="false" aria-labelledby="status-label">Implemented</button>
+      <button class="filter-btn" onclick="setStatus(this,'rejected')" aria-pressed="false" aria-labelledby="status-label">Rejected</button>
+    </div>
+  </div>
+
+  <!-- Feasibility Range Filter -->
+  <div class="filters-bar" style="gap: 16px;" role="group" aria-label="Feasibility range filter">
+    <div class="filter-group" style="flex: 1; flex-direction: row; align-items: center; gap: 12px;">
+      <span class="filter-label" style="white-space: nowrap;">Feasibility Range</span>
+      <label for="feas-min" style="display:none">Minimum feasibility percentage</label>
+      <input type="range" id="feas-min" class="form-range" min="0" max="100" value="0" style="flex:1" 
+        aria-label="Minimum feasibility percentage"
+        oninput="handleFeasibilityFilter()">
+      <span style="font-size:12px;color:var(--text-dim);min-width:60px;text-align:center" aria-live="polite" aria-atomic="true">
+        <span id="feas-min-val">0</span>% - <span id="feas-max-val">100</span>%
+      </span>
+      <label for="feas-max" style="display:none">Maximum feasibility percentage</label>
+      <input type="range" id="feas-max" class="form-range" min="0" max="100" value="100" style="flex:1" 
+        aria-label="Maximum feasibility percentage"
+        oninput="handleFeasibilityFilter()">
     </div>
   </div>
 
@@ -134,36 +206,168 @@ var ideas   = getIdeas();
 var voted   = getVoted();
 var sortMode = 'top';
 var catMode  = 'all';
+var statusMode = 'all';
+var searchQuery = '';
+var feasMin = 0;
+var feasMax = 100;
 
 function setSort(el, mode) {
-  document.querySelectorAll('.filter-btn').forEach(function(b, i) { if(i < 3) b.classList.remove('active'); });
-  el.classList.add('active'); sortMode = mode; render();
+  document.querySelectorAll('.filter-btn').forEach(function(b, i) { if(i < 4) { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); } });
+  el.classList.add('active'); 
+  el.setAttribute('aria-pressed', 'true');
+  sortMode = mode; 
+  render();
 }
 
 function setCat(el, cat) {
   var btns = document.querySelectorAll('.filter-btn');
-  btns.forEach(function(b, i) { if(i >= 3) b.classList.remove('active'); });
-  el.classList.add('active'); catMode = cat; render();
+  btns.forEach(function(b, i) { if(i >= 4 && i < 10) { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); } });
+  el.classList.add('active');
+  el.setAttribute('aria-pressed', 'true');
+  catMode = cat; 
+  render();
+}
+
+function setStatus(el, status) {
+  var btns = document.querySelectorAll('.filter-btn');
+  btns.forEach(function(b, i) { if(i >= 10) { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); } });
+  el.classList.add('active');
+  el.setAttribute('aria-pressed', 'true');
+  statusMode = status; 
+  render();
+}
+
+function handleSearch() {
+  searchQuery = document.getElementById('search-input').value;
+  render();
+}
+
+function handleFeasibilityFilter() {
+  feasMin = parseInt(document.getElementById('feas-min').value, 10);
+  feasMax = parseInt(document.getElementById('feas-max').value, 10);
+  if (feasMin > feasMax) {
+    var temp = feasMin;
+    feasMin = feasMax;
+    feasMax = temp;
+    document.getElementById('feas-min').value = feasMin;
+    document.getElementById('feas-max').value = feasMax;
+  }
+  document.getElementById('feas-min-val').textContent = feasMin;
+  document.getElementById('feas-max-val').textContent = feasMax;
+  render();
 }
 
 function vote(id) {
   var idea = ideas.find(function(i) { return i.id === id; });
   if (!idea) return;
-  if (voted.has(id)) { idea.votes = Math.max(0, idea.votes - 1); voted.delete(id); }
-  else               { idea.votes++; voted.add(id); }
+  var isUpvote = !voted.has(id);
+  if (isUpvote) { 
+    idea.votes++; 
+    voted.add(id);
+    trackEvent('engagement', 'vote', 'idea_' + id);
+  } else { 
+    idea.votes = Math.max(0, idea.votes - 1); 
+    voted.delete(id);
+    trackEvent('engagement', 'unvote', 'idea_' + id);
+  }
   saveIdeas(ideas); saveVoted(voted); render();
 }
 
+function handleSearch() {
+  searchQuery = document.getElementById('search-input').value;
+  trackEvent('filtering', 'search', searchQuery || 'cleared');
+  render();
+}
+
+function handleFeasibilityFilter() {
+  feasMin = parseInt(document.getElementById('feas-min').value, 10);
+  feasMax = parseInt(document.getElementById('feas-max').value, 10);
+  if (feasMin > feasMax) {
+    var temp = feasMin;
+    feasMin = feasMax;
+    feasMax = temp;
+    document.getElementById('feas-min').value = feasMin;
+    document.getElementById('feas-max').value = feasMax;
+  }
+  document.getElementById('feas-min-val').textContent = feasMin;
+  document.getElementById('feas-max-val').textContent = feasMax;
+  trackEvent('filtering', 'feasibility_range', feasMin + '-' + feasMax);
+  render();
+}
+
+function toggleCommentSection(ideaId) {
+  var section = document.getElementById('comments-' + ideaId);
+  var btn = event.target.closest('.comment-toggle');
+  var isOpen = section.style.display !== 'none';
+  
+  if (isOpen) {
+    section.style.display = 'none';
+    btn.setAttribute('aria-expanded', 'false');
+  } else {
+    section.style.display = 'block';
+    btn.setAttribute('aria-expanded', 'true');
+    // Focus on comment input
+    setTimeout(function() {
+      document.getElementById('comment-input-' + ideaId).focus();
+    }, 100);
+  }
+}
+
+function announceToScreenReader(msg) {
+  var announcement = document.getElementById('sr-announcement');
+  if (!announcement) {
+    announcement = document.createElement('div');
+    announcement.id = 'sr-announcement';
+    announcement.style.position = 'absolute';
+    announcement.style.left = '-10000px';
+    announcement.style.width = '1px';
+    announcement.style.height = '1px';
+    announcement.style.overflow = 'hidden';
+    announcement.setAttribute('aria-live', 'polite');
+    announcement.setAttribute('aria-atomic', 'true');
+    document.body.appendChild(announcement);
+  }
+  announcement.textContent = msg;
+}
+
+function postComment(ideaId) {
+  var textarea = document.getElementById('comment-input-' + ideaId);
+  var comment = textarea.value.trim();
+  if (!comment) { showToast('Comment cannot be empty', '⚠'); return; }
+  if (comment.length > 500) { showToast('Comment too long (max 500 chars)', '⚠'); return; }
+  
+  var idea = ideas.find(function(i) { return i.id === ideaId; });
+  if (!idea) return;
+  
+  if (!idea.comments) idea.comments = [];
+  idea.comments.push({
+    text: comment,
+    time: 'just now',
+    author: 'You'
+  });
+  
+  saveIdeas(ideas);
+  textarea.value = '';
+  render();
+  showToast('Comment posted!', '✓');
+}
+
 function render() {
-  var list = ideas.slice();
+  var list = searchIdeas(ideas, searchQuery);
   if (catMode !== 'all') list = list.filter(function(i){ return i.category === catMode; });
+  if (statusMode !== 'all') list = list.filter(function(i){ return i.status === statusMode; });
+  list = list.filter(function(i){ return i.feasibility >= feasMin && i.feasibility <= feasMax; });
+  
   if      (sortMode === 'top')      list.sort(function(a,b){ return b.votes - a.votes; });
   else if (sortMode === 'new')      list.sort(function(a,b){ return b.id - a.id; });
-  else                              list.sort(function(a,b){ return b.feasibility - a.feasibility; });
+  else if (sortMode === 'feasible') list.sort(function(a,b){ return b.feasibility - a.feasibility; });
+  else if (sortMode === 'trending') {
+    list.sort(function(a,b){ return b.votes - a.votes; });
+  }
 
   var container = document.getElementById('ideas-list');
   var empty     = document.getElementById('empty-state');
-  document.getElementById('idea-count').textContent = '(' + ideas.length + ')';
+  document.getElementById('idea-count').textContent = '(' + list.length + ')';
 
   if (list.length === 0) { container.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
@@ -171,29 +375,48 @@ function render() {
   container.innerHTML = list.map(function(idea, idx) {
     var v  = voted.has(idea.id);
     var fc = feasColor(idea.feasibility);
-    return '<div class="idea-card" style="animation-delay:'+(idx*0.04)+'s">' +
+    var sc = statusColor(idea.status || 'submitted');
+    var commentCount = idea.comments ? idea.comments.length : 0;
+    return '<div class="idea-card" style="animation-delay:'+(idx*0.04)+'s" role="article" aria-label="Idea: '+escHtml(idea.title)+'">' +
       '<div class="vote-col">' +
-        '<button class="vote-btn'+(v?' voted':'')+' " onclick="vote('+idea.id+')">&#9650;</button>' +
-        '<div class="vote-count">'+idea.votes+'</div>' +
+        '<button class="vote-btn'+(v?' voted':'')+' " onclick="vote('+idea.id+')" aria-label="'+(v?'Remove':'Add')+' vote for this idea" title="'+(v?'Remove':'Add')+' vote">&#9650;</button>' +
+        '<div class="vote-count" aria-live="polite">'+idea.votes+'</div>' +
       '</div>' +
-      '<div>' +
+      '<div style="flex:1">' +
         '<div class="idea-meta">' +
-          '<span class="cat-badge '+idea.category+'">'+idea.category+'</span>' +
-          '<span class="idea-author">'+escHtml(idea.author)+'</span>' +
-          '<span class="idea-time">'+idea.time+'</span>' +
+          '<span class="cat-badge '+idea.category+'" aria-label="Category: '+idea.category+'">'+idea.category+'</span>' +
+          '<span class="status-badge" style="background-color:'+sc+';color:white;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;" aria-label="Status: '+statusLabel(idea.status || 'submitted')+'">'+statusLabel(idea.status || 'submitted')+'</span>' +
+          '<span class="idea-author" aria-label="Author: '+escHtml(idea.author)+'">'+escHtml(idea.author)+'</span>' +
+          '<span class="idea-time" aria-label="Submitted '+idea.time+'">'+idea.time+'</span>' +
         '</div>' +
         '<div class="idea-title">'+escHtml(idea.title)+'</div>' +
         '<div class="idea-text">'+escHtml(idea.text)+'</div>' +
         '<div class="idea-footer">' +
-          '<div class="feasibility">' +
+          '<div class="feasibility" aria-label="Feasibility score: '+idea.feasibility+'%">' +
             '<span>Feasibility</span>' +
-            '<div class="feasibility-bar"><div class="feasibility-fill" style="width:'+idea.feasibility+'%;background:'+fc+'"></div></div>' +
+            '<div class="feasibility-bar"><div class="feasibility-fill" style="width:'+idea.feasibility+'%;background:'+fc+'" role="progressbar" aria-valuenow="'+idea.feasibility+'" aria-valuemin="0" aria-valuemax="100"></div></div>' +
             '<span>'+idea.feasibility+'%</span>' +
           '</div>' +
+          '<button class="comment-toggle" onclick="toggleCommentSection('+idea.id+')" aria-expanded="false" aria-controls="comments-'+idea.id+'">💬 '+commentCount+'</button>' +
+        '</div>' +
+        '<div class="comments-section" id="comments-'+idea.id+'" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)" role="region" aria-label="Comments section">' +
+          '<div class="comments-list" style="margin-bottom:12px;max-height:200px;overflow-y:auto">' +
+            (idea.comments || []).map(function(c) {
+              return '<div class="comment" style="background:var(--surface2);padding:8px 12px;border-radius:8px;margin-bottom:8px;font-size:12px" role="comment">' +
+                '<div style="font-weight:600;color:var(--accent);margin-bottom:2px">'+escHtml(c.author)+' · '+c.time+'</div>' +
+                '<div style="color:var(--text-muted)">'+escHtml(c.text)+'</div>' +
+              '</div>';
+            }).join('') +
+          '</div>' +
+          '<textarea id="comment-input-'+idea.id+'" class="form-input" placeholder="Add a comment..." maxlength="500" style="font-size:12px;min-height:60px" aria-label="Add comment for this idea"></textarea>' +
+          '<button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="postComment('+idea.id+')" aria-label="Post comment for this idea">Post</button>' +
         '</div>' +
       '</div>' +
     '</div>';
   }).join('');
+  
+  // Announce to screen readers
+  announceToScreenReader('Showing ' + list.length + ' ideas');
 }
 
 // Show toast if redirected after submit

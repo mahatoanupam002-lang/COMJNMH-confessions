@@ -4,8 +4,43 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Submit Idea — MedReform COMJNMH</title>
+<meta name="description" content="Submit your idea for campus reform at COMJNMH. No login required. Fully anonymous submissions supported.">
+<meta name="keywords" content="COMJNMH, submit, idea, anonymous, reform">
+
+<!-- Open Graph Meta Tags -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://medreform.comjnmh.edu/submit">
+<meta property="og:title" content="Submit Idea — MedReform COMJNMH">
+<meta property="og:description" content="Share your ideas for campus reform. No login required. Anonymous submissions fully supported.">
+<meta property="og:image" content="/og-image.png">
+
+<!-- Twitter Card Meta Tags -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Submit Idea — MedReform COMJNMH">
+<meta name="twitter:description" content="Submit your ideas for campus reform at COMJNMH anonymously.">
+<meta name="twitter:image" content="/og-image.png">
+
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Epilogue:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX', {
+    'anonymize_ip': true,
+    'cookie_domain': 'auto'
+  });
+  
+  function trackEvent(category, action, label) {
+    gtag('event', action, {
+      'event_category': category,
+      'event_label': label
+    });
+  }
+</script>
 <style>
   .page-wrap {
     position: relative; z-index: 1;
@@ -77,6 +112,7 @@
     <a href="/" class="nav-link">Home</a>
     <a href="/ideas" class="nav-link">Ideas</a>
     <a href="/submit" class="nav-link active">Submit</a>
+    <a href="/admin" class="nav-link">Admin</a>
   </nav>
   <span class="badge live">Open Platform</span>
 </header>
@@ -215,7 +251,22 @@ function submitIdea() {
   if (!title)        { showErr('Title is required.'); return; }
   if (!text)         { showErr('Description is required.'); return; }
 
+  // Check for similar ideas
   var ideas = getIdeas();
+  var similar = findSimilarIdeas(ideas, title, text, null);
+  
+  if (similar.length > 0) {
+    var shouldContinue = confirm(
+      'There are ' + similar.length + ' similar idea(s) already submitted.\n\n' +
+      'Top similar: "' + similar[0].title + '"\n\n' +
+      'Do you want to continue anyway?'
+    );
+    if (!shouldContinue) {
+      trackEvent('submission', 'duplicate_warning_dismissed');
+      return;
+    }
+  }
+
   var maxId = ideas.reduce(function(m, i) { return Math.max(m, i.id); }, 0);
 
   var authorName = isAnon
@@ -231,11 +282,16 @@ function submitIdea() {
     author:      authorName,
     role:        document.getElementById('role').value,
     time:        'just now',
-    feasibility: parseInt(document.getElementById('feasibility').value, 10)
+    feasibility: parseInt(document.getElementById('feasibility').value, 10),
+    status:      'submitted',
+    comments:    []
   };
 
   ideas.push(idea);
   saveIdeas(ideas);
+  
+  // Track submission
+  trackEvent('submission', 'idea_submitted', selectedCat);
 
   window.location.href = '/ideas?submitted=1';
 }

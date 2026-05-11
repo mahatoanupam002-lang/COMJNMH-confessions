@@ -4,8 +4,45 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MedReform — COMJNMH Ideas Platform</title>
+<meta name="description" content="A platform for COMJNMH students, residents, and faculty to surface real problems and propose actionable solutions — anonymously if needed.">
+<meta name="keywords" content="COMJNMH, ideas, reform, medical college, feedback, suggestions">
+
+<!-- Open Graph Meta Tags -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://medreform.comjnmh.edu">
+<meta property="og:title" content="MedReform — COMJNMH Ideas Platform">
+<meta property="og:description" content="Fix what's broken. A platform for students, residents, and faculty to surface real problems and propose actionable solutions.">
+<meta property="og:image" content="/og-image.png">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter Card Meta Tags -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MedReform — COMJNMH Ideas Platform">
+<meta name="twitter:description" content="A platform for COMJNMH students, residents, and faculty to surface real problems and propose actionable solutions.">
+<meta name="twitter:image" content="/og-image.png">
+
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Epilogue:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX', {
+    'anonymize_ip': true,
+    'cookie_domain': 'auto'
+  });
+  
+  // Track page views
+  window.addEventListener('load', function() {
+    gtag('event', 'page_view', {
+      'page_path': window.location.pathname,
+      'page_title': document.title
+    });
+  });
+</script>
 <style>
   /* ── Home-only styles ─────────────────────────────────────────────────── */
   .hero {
@@ -139,6 +176,7 @@
     <a href="/" class="nav-link active">Home</a>
     <a href="/ideas" class="nav-link">Ideas</a>
     <a href="/submit" class="nav-link">Submit</a>
+    <a href="/admin" class="nav-link">Admin</a>
   </nav>
   <span class="badge live">Open Platform</span>
 </header>
@@ -201,6 +239,15 @@
   </div>
 </div>
 
+<!-- Trending ideas -->
+<div class="section">
+  <div class="section-head"><h2>🔥 Trending this week</h2></div>
+  <div class="ideas-preview" id="trending-list"></div>
+  <div class="see-all" style="margin-top:24px">
+    <a href="/ideas?sort=trending" class="btn btn-ghost">View all trending →</a>
+  </div>
+</div>
+
 <!-- Mobile bottom nav -->
 <nav class="mobile-nav">
   <a href="/" class="mob-tab active"><span class="mob-icon">⌂</span><span>Home</span></a>
@@ -232,6 +279,23 @@
       '</div>' +
       '<div class="preview-body">' +
         '<span class="cat-badge ' + idea.category + '">' + idea.category + '</span>' +
+        '<div class="preview-title">' + escHtml(idea.title) + '</div>' +
+        '<div class="preview-snip">' + escHtml(idea.text.slice(0,100)) + '…</div>' +
+      '</div>' +
+    '</a>';
+  }).join('');
+
+  // Trending 3 (most recent high-vote ideas)
+  var trending3 = ideas.slice().sort(function(a,b){ return b.id - a.id; }).sort(function(a,b){ return b.votes - a.votes; }).slice(0,3);
+  document.getElementById('trending-list').innerHTML = trending3.map(function(idea) {
+    return '<a href="/ideas" class="preview-card">' +
+      '<div class="preview-votes">' +
+        '<span class="arrow" style="color:var(--red);font-size:16px">🔥</span>' +
+        '<span class="count">' + idea.votes + '</span>' +
+      '</div>' +
+      '<div class="preview-body">' +
+        '<span class="cat-badge ' + idea.category + '">' + idea.category + '</span>' +
+        '<span style="font-size:10px;color:var(--amber);font-family:DM Mono,monospace;font-weight:600">' + statusLabel(idea.status || 'submitted') + '</span>' +
         '<div class="preview-title">' + escHtml(idea.title) + '</div>' +
         '<div class="preview-snip">' + escHtml(idea.text.slice(0,100)) + '…</div>' +
       '</div>' +
