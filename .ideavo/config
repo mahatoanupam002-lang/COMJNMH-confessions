@@ -7,12 +7,19 @@
   "runStep": [
     {
       "name": "Serve Static Files",
-      "command": "npx http-server . -p 3000 -c-1",
+      "command": "npx http-server . -p 3000 -c-1 --host 0.0.0.0",
       "port": "3000"
     }
   ],
   "deploySteps": [],
-  "cleanupFiles": [],
-  "packageManager": "none",
-  "envPaths": []
+  "cleanupFiles": [
+    "ideavo-server-*.log"
+  ],
+  "packageManager": "npm",
+  "envPaths": [
+    {
+      "name": "default",
+      "path": ".env"
+    }
+  ]
 }
