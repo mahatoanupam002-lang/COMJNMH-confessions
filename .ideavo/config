@@ -1,0 +1,18 @@
+{
+  "systemSetup": [],
+  "templateName": "custom",
+  "projectDependencies": [],
+  "codeChecks": [],
+  "buildSteps": [],
+  "runStep": [
+    {
+      "name": "Serve Static Files",
+      "command": "npx http-server . -p 3000 -c-1",
+      "port": "3000"
+    }
+  ],
+  "deploySteps": [],
+  "cleanupFiles": [],
+  "packageManager": "none",
+  "envPaths": []
+}
