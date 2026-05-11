@@ -3,167 +3,89 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MedReform — COMJNMH Ideas Platform</title>
-<meta name="description" content="A platform for COMJNMH students, residents, and faculty to surface real problems and propose actionable solutions — anonymously if needed.">
-<meta name="keywords" content="COMJNMH, ideas, reform, medical college, feedback, suggestions">
+<title>MedReform — Campus Ideas Platform for COMJNMH</title>
+<meta name="description" content="MedReform: A data-driven platform where COMJNMH students, residents, and faculty submit, vote on, and track campus reform initiatives. From safety to governance, your voice matters.">
 
-<!-- Open Graph Meta Tags -->
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://medreform.comjnmh.edu">
-<meta property="og:title" content="MedReform — COMJNMH Ideas Platform">
-<meta property="og:description" content="Fix what's broken. A platform for students, residents, and faculty to surface real problems and propose actionable solutions.">
+<meta property="og:url" content="https://medreform.comjnmh.edu/">
+<meta property="og:title" content="MedReform — Fix What's Broken at COMJNMH">
+<meta property="og:description" content="Submit reform proposals, vote on ideas, and shape the future of our medical college. Fully anonymous. Community-driven.">
 <meta property="og:image" content="/og-image.png">
-<meta property="og:locale" content="en_US">
 
-<!-- Twitter Card Meta Tags -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="MedReform — COMJNMH Ideas Platform">
-<meta name="twitter:description" content="A platform for COMJNMH students, residents, and faculty to surface real problems and propose actionable solutions.">
+<meta name="twitter:title" content="MedReform">
+<meta name="twitter:description" content="Campus reform platform for COMJNMH.">
 <meta name="twitter:image" content="/og-image.png">
 
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Epilogue:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
 
-<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX', {
-    'anonymize_ip': true,
-    'cookie_domain': 'auto'
-  });
-  
-  // Track page views
-  window.addEventListener('load', function() {
-    gtag('event', 'page_view', {
-      'page_path': window.location.pathname,
-      'page_title': document.title
-    });
-  });
+  gtag('config', 'G-XXXXXXXXXX', { 'anonymize_ip': true, 'cookie_domain': 'auto' });
 </script>
+
 <style>
-  /* ── Home-only styles ─────────────────────────────────────────────────── */
-  .hero {
-    position: relative; z-index: 1;
-    min-height: calc(100vh - var(--nav-h));
-    display: flex; flex-direction: column; justify-content: center;
-    padding: 80px 40px 60px;
-    max-width: 1100px; margin: 0 auto;
-  }
-
-  .hero-tag {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent);
-    letter-spacing: 0.16em; text-transform: uppercase;
-    padding: 6px 14px; border: 1px solid rgba(74,222,128,0.3);
-    border-radius: 20px; background: var(--accent-dim);
-    margin-bottom: 32px; width: fit-content;
-  }
-
-  .hero h1 {
-    font-family: 'Instrument Serif', serif;
-    font-size: clamp(52px, 8vw, 96px);
-    line-height: 1.0; letter-spacing: -2px;
-    color: var(--text); margin-bottom: 24px;
-  }
-  .hero h1 em { font-style: italic; color: var(--accent); }
-
-  .hero-sub {
-    font-size: 18px; color: var(--text-muted);
-    max-width: 540px; line-height: 1.7;
-    font-weight: 300; margin-bottom: 48px;
-  }
-
-  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 64px; }
-  .btn-lg { padding: 14px 32px; font-size: 15px; border-radius: 10px; }
-
-  .stats-row {
-    display: flex; gap: 48px; padding-top: 40px;
-    border-top: 1px solid var(--border); flex-wrap: wrap;
-  }
-  .stat { display: flex; flex-direction: column; gap: 4px; }
-  .stat-number { font-family: 'Instrument Serif', serif; font-size: 40px; color: var(--text); line-height: 1; }
-  .stat-label  { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; }
-
-  /* ── Problems section ─────────────────────────────────────────────────── */
-  .section {
-    position: relative; z-index: 1;
-    max-width: 1100px; margin: 0 auto; padding: 0 40px 80px;
-  }
-
-  .section-head {
-    display: flex; align-items: center; gap: 14px;
-    margin-bottom: 28px;
-  }
-  .section-head h2 {
-    font-family: 'DM Mono', monospace; font-size: 12px;
-    color: var(--text-muted); letter-spacing: 0.14em; text-transform: uppercase;
-  }
-  .section-head::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-  .problems-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;
-  }
-
-  .problem-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 20px;
-    transition: border-color 0.2s;
-  }
-  .problem-card:hover { border-color: var(--text-dim); }
-
-  .problem-dot {
-    width: 10px; height: 10px; border-radius: 50%;
-    margin-bottom: 14px; flex-shrink: 0;
-  }
-  .problem-dot.critical { background: var(--red); box-shadow: 0 0 10px rgba(248,113,113,0.5); }
-  .problem-dot.moderate { background: var(--amber); }
-  .problem-dot.tracked  { background: var(--accent); }
-
-  .problem-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
-  .problem-desc { font-size: 12px; color: var(--text-dim); font-family: 'DM Mono', monospace; line-height: 1.55; }
-
-  /* ── Top ideas preview ────────────────────────────────────────────────── */
-  .ideas-preview { display: flex; flex-direction: column; gap: 14px; }
-
-  .preview-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 20px 24px;
-    display: flex; align-items: flex-start; gap: 20px;
-    text-decoration: none; color: inherit;
-    transition: all 0.2s;
-  }
-  .preview-card:hover { border-color: var(--text-dim); transform: translateX(4px); }
-
-  .preview-votes {
-    display: flex; flex-direction: column; align-items: center; gap: 2px;
-    min-width: 40px;
-  }
-  .preview-votes .arrow { color: var(--accent); font-size: 14px; }
-  .preview-votes .count { font-family: 'Instrument Serif', serif; font-size: 22px; color: var(--text); }
-
-  .preview-body { flex: 1; min-width: 0; }
-  .preview-title { font-size: 15px; font-weight: 700; color: var(--text); margin: 8px 0 6px; line-height: 1.35; }
-  .preview-snip  { font-size: 13px; color: var(--text-muted); line-height: 1.5; font-weight: 300; }
-
-  .see-all {
-    display: flex; align-items: center; justify-content: center;
-    margin-top: 8px;
-  }
-
+  .hero { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; z-index: 1; padding: 40px 20px; }
+  .hero-content { max-width: 700px; text-align: center; display: flex; flex-direction: column; gap: 24px; }
+  .hero-tag { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+  .hero h1 { font-family: 'Instrument Serif', serif; font-size: 64px; font-weight: 700; letter-spacing: -1px; color: var(--text); line-height: 1.1; }
+  .hero-broken { font-style: italic; color: var(--accent); }
+  .hero-subtitle { font-size: 18px; color: var(--text-muted); line-height: 1.7; }
+  .hero-ctas { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+  .btn-primary { background: var(--accent); color: var(--bg); border: none; border-radius: 12px; padding: 14px 32px; font-family: 'Epilogue', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(74, 222, 128, 0.2); text-decoration: none; display: inline-block; }
+  .btn-primary:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(74, 222, 128, 0.3); }
+  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 14px 32px; font-family: 'Epilogue', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-block; }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+  
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-top: 48px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center; }
+  .stat-num { font-family: 'Instrument Serif', serif; font-size: 36px; font-weight: 700; color: var(--accent); }
+  .stat-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); text-transform: uppercase; margin-top: 8px; }
+  
+  .section { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; padding: 80px 20px; }
+  .section-head { margin-bottom: 48px; }
+  .section-head h2 { font-family: 'Instrument Serif', serif; font-size: 44px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+  .section-head p { font-size: 16px; color: var(--text-muted); max-width: 600px; line-height: 1.6; }
+  
+  .problems-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .problem-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+  .problem-indicator { width: 12px; height: 12px; border-radius: 50%; }
+  .problem-title { font-weight: 600; color: var(--text); }
+  .problem-desc { font-size: 13px; color: var(--text-muted); }
+  .problem-critical { --color: var(--red); }
+  .problem-moderate { --color: var(--amber); }
+  .problem-tracked { --color: var(--accent); }
+  .problem-indicator { background: var(--color); box-shadow: 0 0 12px var(--color); }
+  
+  .ideas-showcase { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+  .idea-preview { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px; transition: all 0.2s; }
+  .idea-preview:hover { border-color: var(--accent); box-shadow: 0 8px 24px rgba(74, 222, 128, 0.1); }
+  .idea-votes { display: flex; align-items: center; gap: 6px; font-family: 'Instrument Serif', serif; font-size: 18px; font-weight: 700; color: var(--accent); }
+  .idea-votes::before { content: '▲'; font-size: 14px; }
+  .idea-title { font-weight: 600; color: var(--text); line-height: 1.3; }
+  .idea-meta { display: flex; gap: 6px; font-size: 11px; color: var(--text-dim); }
+  .idea-badge { background: var(--accent-dim); color: var(--accent); padding: 2px 8px; border-radius: 4px; }
+  
+  .cta-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 48px; text-align: center; }
+  .cta-section h3 { font-family: 'Instrument Serif', serif; font-size: 32px; color: var(--text); margin-bottom: 12px; }
+  .cta-section p { font-size: 16px; color: var(--text-muted); margin-bottom: 24px; }
+  
   @media (max-width: 700px) {
-    .hero { padding: 48px 20px 40px; min-height: auto; }
-    .section { padding: 0 20px 60px; }
-    .stats-row { gap: 28px; }
-    .stat-number { font-size: 32px; }
+    .hero { min-height: auto; padding: 60px 20px; }
+    .hero h1 { font-size: 44px; }
+    .section { padding: 60px 20px; }
+    .section-head h2 { font-size: 32px; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .cta-section { padding: 32px 20px; }
   }
 </style>
 </head>
 <body>
 
-<!-- Desktop header -->
 <header class="site-header">
   <a href="/" class="logo">
     <div class="logo-mark">M+</div>
@@ -176,131 +98,160 @@
     <a href="/" class="nav-link active">Home</a>
     <a href="/ideas" class="nav-link">Ideas</a>
     <a href="/submit" class="nav-link">Submit</a>
-    <a href="/admin" class="nav-link">Admin</a>
   </nav>
-  <span class="badge live">Open Platform</span>
+  <span class="badge live">● Open Platform</span>
 </header>
 
-<!-- Hero -->
-<div class="hero">
-  <div class="hero-tag">🏥 Student &amp; Faculty Reform · COMJNMH Kalyani</div>
-  <h1>Fix what's<br><em>broken.</em></h1>
-  <p class="hero-sub">A platform for students, residents, and faculty to surface real problems and propose actionable solutions — anonymously if needed.</p>
-  <div class="hero-actions">
-    <a href="/ideas" class="btn btn-primary btn-lg">Browse Ideas →</a>
-    <a href="/submit" class="btn btn-ghost btn-lg">Submit Anonymously</a>
-  </div>
-  <div class="stats-row">
-    <div class="stat"><span class="stat-number" id="stat-ideas">7</span><span class="stat-label">Ideas</span></div>
-    <div class="stat"><span class="stat-number" id="stat-votes">178</span><span class="stat-label">Votes cast</span></div>
-    <div class="stat"><span class="stat-number">0</span><span class="stat-label">Implemented</span></div>
-    <div class="stat"><span class="stat-number">5</span><span class="stat-label">Known problems</span></div>
-  </div>
-</div>
+<!-- HERO SECTION -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-tag">🏥 Medical College Reform Platform</div>
+    <h1>Fix what's <span class="hero-broken">broken.</span></h1>
+    <p class="hero-subtitle">COMJNMH students, residents, and faculty collectively identify, propose, and vote on campus reforms. From safety protocols to academic improvements — your ideas shape our future.</p>
+    
+    <div class="hero-ctas">
+      <a href="/ideas" class="btn-primary">Browse Ideas →</a>
+      <a href="/submit" class="btn-ghost">Submit Anonymously</a>
+    </div>
 
-<!-- Known Problems -->
-<div class="section">
-  <div class="section-head"><h2>Known Problems</h2></div>
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-num" id="stat-ideas">7</div>
+        <div class="stat-label">Ideas</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="stat-votes">168</div>
+        <div class="stat-label">Votes Cast</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="stat-impl">1</div>
+        <div class="stat-label">Implemented</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">5</div>
+        <div class="stat-label">Known Problems</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEMS SECTION -->
+<section class="section">
+  <div class="section-head">
+    <h2>Known Campus Issues</h2>
+    <p>Tracking persistent problems that need institutional attention and community solutions.</p>
+  </div>
+
   <div class="problems-grid">
-    <div class="problem-card">
-      <div class="problem-dot critical"></div>
-      <div class="problem-name">Campus snake sightings</div>
-      <div class="problem-desc">Recurring &amp; unresolved. Multiple years, zero action taken.</div>
+    <div class="problem-card problem-critical">
+      <div class="problem-indicator"></div>
+      <div class="problem-title">🐍 Hostel Snake Sightings</div>
+      <div class="problem-desc">Wildlife safety hazard requiring immediate habitat removal.</div>
     </div>
-    <div class="problem-card">
-      <div class="problem-dot critical"></div>
-      <div class="problem-name">Hostel hygiene</div>
-      <div class="problem-desc">Chronic complaints. No facility management in place.</div>
+    <div class="problem-card problem-critical">
+      <div class="problem-indicator"></div>
+      <div class="problem-title">🚿 Hostel Hygiene Standards</div>
+      <div class="problem-desc">Maintenance backlog affecting resident health.</div>
     </div>
-    <div class="problem-card">
-      <div class="problem-dot moderate"></div>
-      <div class="problem-name">Library outdated</div>
-      <div class="problem-desc">No new acquisitions since 2021 reported.</div>
+    <div class="problem-card problem-moderate">
+      <div class="problem-indicator"></div>
+      <div class="problem-title">📚 Library Infrastructure</div>
+      <div class="problem-desc">Outdated resources, limited study space.</div>
     </div>
-    <div class="problem-card">
-      <div class="problem-dot moderate"></div>
-      <div class="problem-name">CBME compliance gap</div>
-      <div class="problem-desc">DOPS logged on paper, not in practice.</div>
+    <div class="problem-card problem-moderate">
+      <div class="problem-indicator"></div>
+      <div class="problem-title">📋 CBME Compliance Gap</div>
+      <div class="problem-desc">Academic curriculum alignment challenges.</div>
     </div>
-    <div class="problem-card">
-      <div class="problem-dot tracked"></div>
-      <div class="problem-name">Equipment procurement lag</div>
-      <div class="problem-desc">12–18 month average delay across clinical departments.</div>
+    <div class="problem-card problem-tracked">
+      <div class="problem-indicator"></div>
+      <div class="problem-title">🛠️ Equipment Procurement Delays</div>
+      <div class="problem-desc">Medical equipment procurement timelines.</div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- Top ideas preview -->
-<div class="section">
-  <div class="section-head"><h2>Top ideas right now</h2></div>
-  <div class="ideas-preview" id="preview-list"></div>
-  <div class="see-all" style="margin-top:24px">
-    <a href="/ideas" class="btn btn-ghost">See all ideas →</a>
+<!-- TOP IDEAS SECTION -->
+<section class="section">
+  <div class="section-head">
+    <h2>Top Ideas This Month</h2>
+    <p>Community-submitted proposals getting the most support and discussion.</p>
   </div>
-</div>
 
-<!-- Trending ideas -->
-<div class="section">
-  <div class="section-head"><h2>🔥 Trending this week</h2></div>
-  <div class="ideas-preview" id="trending-list"></div>
-  <div class="see-all" style="margin-top:24px">
-    <a href="/ideas?sort=trending" class="btn btn-ghost">View all trending →</a>
+  <div class="ideas-showcase" id="top-ideas"></div>
+</section>
+
+<!-- TRENDING SECTION -->
+<section class="section">
+  <div class="section-head">
+    <h2>Trending Now 🔥</h2>
+    <p>Ideas gaining momentum in recent discussions.</p>
   </div>
-</div>
 
-<!-- Mobile bottom nav -->
+  <div class="ideas-showcase" id="trending-ideas"></div>
+</section>
+
+<!-- CTA SECTION -->
+<section class="section">
+  <div class="cta-section">
+    <h3>Have a Better Idea?</h3>
+    <p>COMJNMH's success depends on hearing from you. Share your proposal today — fully anonymous, completely free to submit.</p>
+    <a href="/submit" class="btn-primary">Share Your Idea Now →</a>
+  </div>
+</section>
+
+<!-- MOBILE NAV -->
 <nav class="mobile-nav">
-  <a href="/" class="mob-tab active"><span class="mob-icon">⌂</span><span>Home</span></a>
+  <a href="/" class="mob-tab active" style="background: var(--accent-dim); color: var(--accent);"><span class="mob-icon">⌂</span><span>Home</span></a>
   <a href="/ideas" class="mob-tab"><span class="mob-icon">≡</span><span>Ideas</span></a>
-  <a href="/submit" class="mob-tab submit-tab"><span class="mob-icon">+</span><span>Submit</span></a>
+  <a href="/submit" class="mob-tab"><span class="mob-icon">✎</span><span>Submit</span></a>
 </nav>
 
-<!-- Toast -->
+<!-- TOAST -->
 <div class="toast" id="toast">
-  <span class="toast-icon" id="toast-icon">✓</span>
-  <span id="toast-msg"></span>
+  <span class="toast-icon">✓</span>
+  <span class="toast-text"></span>
 </div>
 
 <script src="/data.js"></script>
 <script>
+function renderHome() {
   var ideas = getIdeas();
-
+  
   // Update stats
   document.getElementById('stat-ideas').textContent = ideas.length;
   document.getElementById('stat-votes').textContent = totalVotes(ideas);
+  document.getElementById('stat-impl').textContent = ideas.filter(i => i.status === 'implemented').length;
+  
+  // Top 3 by votes
+  var topIdeas = [...ideas].sort((a, b) => b.votes - a.votes).slice(0, 3);
+  document.getElementById('top-ideas').innerHTML = topIdeas.map(idea => makePreviewCard(idea)).join('');
+  
+  // Trending (by votes/time)
+  var trendingIdeas = [...ideas]
+    .map(i => ({
+      idea: i,
+      score: i.votes / (1 + (Date.now() - i.submittedAt) / (7*24*60*60*1000))
+    }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map(x => x.idea);
+  document.getElementById('trending-ideas').innerHTML = trendingIdeas.map(idea => makePreviewCard(idea)).join('');
+}
 
-  // Top 3 preview
-  var top3 = ideas.slice().sort(function(a,b){ return b.votes - a.votes; }).slice(0,3);
-  document.getElementById('preview-list').innerHTML = top3.map(function(idea) {
-    return '<a href="/ideas" class="preview-card">' +
-      '<div class="preview-votes">' +
-        '<span class="arrow">▲</span>' +
-        '<span class="count">' + idea.votes + '</span>' +
-      '</div>' +
-      '<div class="preview-body">' +
-        '<span class="cat-badge ' + idea.category + '">' + idea.category + '</span>' +
-        '<div class="preview-title">' + escHtml(idea.title) + '</div>' +
-        '<div class="preview-snip">' + escHtml(idea.text.slice(0,100)) + '…</div>' +
-      '</div>' +
-    '</a>';
-  }).join('');
+function makePreviewCard(idea) {
+  return '<div class="idea-preview">' +
+    '<div class="idea-votes">' + idea.votes + '</div>' +
+    '<div class="idea-title">' + escHtml(idea.title.substring(0, 60)) + (idea.title.length > 60 ? '...' : '') + '</div>' +
+    '<div class="idea-meta">' +
+      '<span>' + escHtml(idea.author) + '</span>' +
+      '<span class="idea-badge">' + idea.category + '</span>' +
+      '<span class="idea-badge" style="background: ' + statusColorBg(idea.status) + '; color: ' + statusColor(idea.status) + ';">' + statusLabel(idea.status) + '</span>' +
+    '</div>' +
+  '</div>';
+}
 
-  // Trending 3 (most recent high-vote ideas)
-  var trending3 = ideas.slice().sort(function(a,b){ return b.id - a.id; }).sort(function(a,b){ return b.votes - a.votes; }).slice(0,3);
-  document.getElementById('trending-list').innerHTML = trending3.map(function(idea) {
-    return '<a href="/ideas" class="preview-card">' +
-      '<div class="preview-votes">' +
-        '<span class="arrow" style="color:var(--red);font-size:16px">🔥</span>' +
-        '<span class="count">' + idea.votes + '</span>' +
-      '</div>' +
-      '<div class="preview-body">' +
-        '<span class="cat-badge ' + idea.category + '">' + idea.category + '</span>' +
-        '<span style="font-size:10px;color:var(--amber);font-family:DM Mono,monospace;font-weight:600">' + statusLabel(idea.status || 'submitted') + '</span>' +
-        '<div class="preview-title">' + escHtml(idea.title) + '</div>' +
-        '<div class="preview-snip">' + escHtml(idea.text.slice(0,100)) + '…</div>' +
-      '</div>' +
-    '</a>';
-  }).join('');
+renderHome();
 </script>
 </body>
 </html>

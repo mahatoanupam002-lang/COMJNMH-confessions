@@ -3,95 +3,284 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Submit Idea — MedReform COMJNMH</title>
-<meta name="description" content="Submit your idea for campus reform at COMJNMH. No login required. Fully anonymous submissions supported.">
-<meta name="keywords" content="COMJNMH, submit, idea, anonymous, reform">
+<title>Submit Idea — MedReform</title>
+<meta name="description" content="Submit your idea for campus reform. No login required. Fully anonymous.">
 
-<!-- Open Graph Meta Tags -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://medreform.comjnmh.edu/submit">
-<meta property="og:title" content="Submit Idea — MedReform COMJNMH">
-<meta property="og:description" content="Share your ideas for campus reform. No login required. Anonymous submissions fully supported.">
+<meta property="og:title" content="Submit Idea — MedReform">
+<meta property="og:description" content="Share your ideas for campus reform anonymously.">
 <meta property="og:image" content="/og-image.png">
 
-<!-- Twitter Card Meta Tags -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Submit Idea — MedReform COMJNMH">
-<meta name="twitter:description" content="Submit your ideas for campus reform at COMJNMH anonymously.">
+<meta name="twitter:title" content="Submit Idea — MedReform">
+<meta name="twitter:description" content="Share your reform ideas.">
 <meta name="twitter:image" content="/og-image.png">
 
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Epilogue:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
 
-<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX', {
-    'anonymize_ip': true,
-    'cookie_domain': 'auto'
-  });
-  
+  gtag('config', 'G-XXXXXXXXXX', { 'anonymize_ip': true, 'cookie_domain': 'auto' });
   function trackEvent(category, action, label) {
-    gtag('event', action, {
-      'event_category': category,
-      'event_label': label
-    });
+    gtag('event', action, { 'event_category': category, 'event_label': label });
   }
 </script>
+
 <style>
-  .page-wrap {
+  .submit-wrap {
     position: relative; z-index: 1;
-    max-width: 640px; margin: 0 auto;
-    padding: 40px 40px 80px;
+    max-width: 700px; margin: 0 auto;
+    padding: 40px 20px 100px;
   }
 
-  .page-head { margin-bottom: 32px; }
-  .page-head h1 {
-    font-family: 'Instrument Serif', serif;
-    font-size: 36px; letter-spacing: -0.5px; color: var(--text);
-    margin-bottom: 8px;
+  .submit-header {
+    margin-bottom: 40px;
   }
-  .page-head p {
-    font-size: 14px; color: var(--text-muted); line-height: 1.6;
+
+  .submit-header h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 36px; color: var(--text); margin-bottom: 8px;
+  }
+
+  .submit-header p {
+    color: var(--text-muted); font-size: 14px; line-height: 1.6;
   }
 
   .form-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 32px;
-    display: flex; flex-direction: column; gap: 24px;
+    border-radius: 16px; padding: 32px;
+    display: flex; flex-direction: column; gap: 28px;
   }
 
-  .cat-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .form-group {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+
+  .form-label {
+    font-family: 'Epilogue', sans-serif;
+    font-size: 13px; font-weight: 600;
+    color: var(--text); text-transform: uppercase; letter-spacing: 0.3px;
+  }
+
+  .cat-chips {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+
+  .cat-chip {
+    padding: 8px 16px; border-radius: 8px;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--text-muted); cursor: pointer;
+    font-family: 'Epilogue', sans-serif; font-size: 13px;
+    transition: all 0.2s;
+  }
+
+  .cat-chip:hover { border-color: var(--text-dim); background: var(--surface2); }
+
+  .cat-chip.active {
+    background: var(--accent-dim); border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .form-input, .form-textarea, .form-select {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 16px;
+    color: var(--text); font-family: 'Epilogue', sans-serif;
+    font-size: 14px; transition: all 0.2s;
+  }
+
+  .form-input:focus, .form-textarea:focus, .form-select:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-dim);
+  }
+
+  .form-textarea {
+    resize: vertical; min-height: 120px; font-size: 14px;
+  }
 
   .char-count {
     font-family: 'DM Mono', monospace; font-size: 11px;
-    color: var(--text-dim); text-align: right; margin-top: 4px;
+    color: var(--text-dim); text-align: right;
+    margin-top: 4px;
   }
 
-  .range-row {
+  .char-count.warning { color: var(--amber); }
+  .char-count.danger { color: var(--red); }
+
+  .range-group {
+    display: flex; flex-direction: column; gap: 12px;
+  }
+
+  .range-input {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .range-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 0 0 3px var(--accent-dim);
+  }
+
+  .range-input::-moz-range-thumb {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .range-display {
     display: flex; align-items: center; gap: 12px;
   }
-  .range-row input { flex: 1; }
+
   .range-val {
-    font-family: 'DM Mono', monospace; font-size: 13px;
-    color: var(--accent); min-width: 36px; text-align: right;
+    font-family: 'Instrument Serif', serif;
+    font-size: 20px; color: var(--accent); font-weight: 700;
+    min-width: 50px; text-align: right;
   }
 
-  .anon-note {
+  .range-label {
     font-size: 12px; color: var(--text-dim);
-    font-family: 'DM Mono', monospace; line-height: 1.5;
+    flex: 1;
   }
 
-  .submit-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-  .submit-row .btn-primary { min-width: 160px; justify-content: center; padding: 13px 28px; font-size: 15px; border-radius: 10px; }
+  .anon-toggle {
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+  }
+
+  .toggle-switch {
+    width: 48px; height: 28px;
+    border-radius: 14px; background: var(--bg);
+    border: 1px solid var(--border);
+    position: relative; transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .toggle-switch.on {
+    background: var(--accent); border-color: var(--accent);
+  }
+
+  .toggle-thumb {
+    width: 24px; height: 24px;
+    border-radius: 12px; background: var(--surface);
+    position: absolute; top: 2px; left: 2px;
+    transition: left 0.2s;
+  }
+
+  .toggle-switch.on .toggle-thumb {
+    left: 22px;
+  }
+
+  .toggle-label {
+    font-family: 'Epilogue', sans-serif; font-size: 14px;
+    color: var(--text);
+  }
+
+  .name-input {
+    display: none;
+  }
+
+  .name-input.show { display: flex; }
+
+  .preview-section {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px;
+    display: none;
+  }
+
+  .preview-section.show { display: block; }
+
+  .preview-title {
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    color: var(--text-dim); text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .preview-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px; font-size: 13px;
+  }
+
+  .preview-card-title {
+    color: var(--text); font-weight: 600; margin-bottom: 4px;
+  }
+
+  .preview-card-meta {
+    display: flex; gap: 8px; font-size: 11px; color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+
+  .preview-card-text {
+    color: var(--text-muted); line-height: 1.4;
+  }
+
+  .form-error {
+    background: rgba(248, 113, 113, 0.1); color: var(--red);
+    border: 1px solid var(--red); border-radius: 8px;
+    padding: 12px 16px; font-size: 13px;
+    display: none;
+  }
+
+  .form-error.show { display: block; }
+
+  .submit-row {
+    display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: var(--accent); color: var(--bg);
+    border: none; border-radius: 10px;
+    padding: 12px 28px; font-family: 'Epilogue', sans-serif;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(74, 222, 128, 0.2);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    background: transparent; color: var(--text-muted);
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 24px; font-family: 'Epilogue', sans-serif;
+    font-size: 14px; cursor: pointer; transition: all 0.2s;
+  }
+
+  .btn-secondary:hover { background: var(--surface2); color: var(--text); }
+
+  .duplicate-warning {
+    background: rgba(251, 191, 36, 0.1); color: var(--amber);
+    border: 1px solid var(--amber); border-radius: 8px;
+    padding: 12px 16px; font-size: 13px;
+    display: none;
+  }
+
+  .duplicate-warning.show { display: block; }
 
   @media (max-width: 700px) {
-    .page-wrap { padding: 24px 16px 80px; }
+    .submit-wrap { padding: 24px 16px 100px; }
     .form-card { padding: 20px; gap: 20px; }
     .submit-row { flex-direction: column; }
     .submit-row .btn-primary { width: 100%; }
@@ -112,46 +301,50 @@
     <a href="/" class="nav-link">Home</a>
     <a href="/ideas" class="nav-link">Ideas</a>
     <a href="/submit" class="nav-link active">Submit</a>
-    <a href="/admin" class="nav-link">Admin</a>
   </nav>
-  <span class="badge live">Open Platform</span>
+  <span class="badge live">Share Your Idea</span>
 </header>
 
-<div class="page-wrap">
-  <div class="page-head">
-    <h1>Submit an Idea</h1>
-    <p>No login required. Anonymous submissions are fully supported. Your IP is not stored.</p>
+<div class="submit-wrap">
+  <div class="submit-header">
+    <h1>Share Your Idea</h1>
+    <p>Help shape the future of COMJNMH. Submit a proposal. Anonymous by default.</p>
   </div>
 
-  <div class="form-card">
-
-    <!-- Category -->
+  <form class="form-card" onsubmit="submitIdea(event)">
+    <!-- CATEGORY -->
     <div class="form-group">
-      <label class="form-label">Category</label>
+      <label class="form-label">📌 Category</label>
       <div class="cat-chips" id="cat-chips">
-        <button type="button" class="chip cat-governance" onclick="pickCat(this,'governance')">Governance</button>
-        <button type="button" class="chip cat-safety"     onclick="pickCat(this,'safety')">Safety</button>
-        <button type="button" class="chip cat-academic"   onclick="pickCat(this,'academic')">Academic</button>
-        <button type="button" class="chip cat-infrastructure" onclick="pickCat(this,'infrastructure')">Infrastructure</button>
-        <button type="button" class="chip cat-welfare"    onclick="pickCat(this,'welfare')">Welfare</button>
+        <button type="button" class="cat-chip" data-cat="governance" onclick="selectCategory(this, 'governance')">Governance</button>
+        <button type="button" class="cat-chip" data-cat="safety" onclick="selectCategory(this, 'safety')">Safety</button>
+        <button type="button" class="cat-chip" data-cat="academic" onclick="selectCategory(this, 'academic')">Academic</button>
+        <button type="button" class="cat-chip" data-cat="infrastructure" onclick="selectCategory(this, 'infrastructure')">Infrastructure</button>
+        <button type="button" class="cat-chip" data-cat="welfare" onclick="selectCategory(this, 'welfare')">Welfare</button>
       </div>
     </div>
 
-    <!-- Title -->
+    <!-- TITLE -->
     <div class="form-group">
-      <label class="form-label" for="title">Title <span style="color:var(--red)">*</span></label>
-      <input class="form-input" id="title" type="text" maxlength="120"
-        placeholder="A specific, actionable headline" oninput="updateChar('title','title-cc',120)">
-      <div class="char-count" id="title-cc">0 / 120</div>
+      <label class="form-label">✎ Proposal Title</label>
+      <input type="text" class="form-input" id="title-input" placeholder="Clear, concise title..." maxlength="150" onkeyup="updatePreview()">
+      <div class="char-count"><span id="title-count">0</span>/150</div>
     </div>
 
-    <!-- Role -->
+    <!-- DESCRIPTION -->
     <div class="form-group">
-      <label class="form-label" for="role">Your role</label>
-      <select class="form-select" id="role">
-        <option value="MBBS Student (Phase I)">MBBS Student — Phase I</option>
-        <option value="MBBS Student (Phase II)">MBBS Student — Phase II</option>
-        <option value="MBBS Student (Clinical)" selected>MBBS Student — Clinical</option>
+      <label class="form-label">📝 What's your idea?</label>
+      <textarea class="form-textarea" id="text-input" placeholder="Explain the problem, propose a solution, and outline the benefits..." maxlength="1000" onkeyup="updatePreview()"></textarea>
+      <div class="char-count"><span id="text-count">0</span>/1000</div>
+    </div>
+
+    <!-- ROLE -->
+    <div class="form-group">
+      <label class="form-label">🎓 Your Role</label>
+      <select class="form-select" id="role-select" onchange="updatePreview()">
+        <option value="MBBS Student (Phase I)">MBBS Student (Phase I)</option>
+        <option value="MBBS Student (Phase II)">MBBS Student (Phase II)</option>
+        <option value="MBBS Student (Clinical)" selected>MBBS Student (Clinical)</option>
         <option value="PG Resident">PG Resident</option>
         <option value="Junior Faculty">Junior Faculty</option>
         <option value="Senior Faculty">Senior Faculty</option>
@@ -160,147 +353,205 @@
       </select>
     </div>
 
-    <!-- Description -->
+    <!-- FEASIBILITY -->
     <div class="form-group">
-      <label class="form-label" for="text">Description <span style="color:var(--red)">*</span></label>
-      <textarea class="form-textarea" id="text" maxlength="800" rows="5"
-        placeholder="Describe the problem and your proposed solution. The more specific, the better."
-        oninput="updateChar('text','text-cc',800)"></textarea>
-      <div class="char-count" id="text-cc">0 / 800</div>
-    </div>
-
-    <!-- Feasibility -->
-    <div class="form-group">
-      <label class="form-label">How feasible do you think this is?</label>
-      <div class="range-row">
-        <input type="range" class="form-range" id="feasibility" min="5" max="100" step="5" value="60"
-          oninput="document.getElementById('feas-val').textContent=this.value+'%'">
-        <span class="range-val" id="feas-val">60%</span>
-      </div>
-    </div>
-
-    <!-- Anonymous toggle -->
-    <div class="form-group">
-      <label class="form-label">Identity</label>
-      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-        <label class="anon-toggle" onclick="toggleAnon()">
-          <div class="toggle-track on" id="anon-track"></div>
-          <span id="anon-label">Anonymous</span>
-        </label>
-        <div id="name-wrap" style="display:none;flex:1;min-width:160px">
-          <input class="form-input" id="author" type="text" maxlength="40" placeholder="Your name or alias">
+      <label class="form-label">⚡ Feasibility</label>
+      <div class="range-group">
+        <input type="range" class="range-input" id="feasibility-input" min="0" max="100" value="60" step="5" onchange="updatePreview()">
+        <div class="range-display">
+          <span class="range-label">How realistic is this?</span>
+          <span class="range-val" id="feasibility-val">60%</span>
         </div>
       </div>
-      <p class="anon-note" style="margin-top:8px">Toggle off to add your name. No account needed either way.</p>
     </div>
 
-    <!-- Submit row -->
+    <!-- ANONYMOUS TOGGLE -->
+    <div class="form-group">
+      <label class="anon-toggle" onclick="toggleAnon()">
+        <div class="toggle-switch on" id="anon-toggle">
+          <div class="toggle-thumb"></div>
+        </div>
+        <span class="toggle-label">Post Anonymously</span>
+      </label>
+      <p class="anon-note">✓ No IP or device information stored</p>
+      <div class="form-group name-input" id="name-input-group">
+        <label class="form-label">Your Name (Optional)</label>
+        <input type="text" class="form-input" id="name-input" placeholder="Display name" maxlength="100" onkeyup="updatePreview()">
+      </div>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="preview-section" id="preview-section">
+      <div class="preview-title">📋 Preview</div>
+      <div class="preview-card">
+        <div class="preview-card-title" id="preview-title">Your proposal title</div>
+        <div class="preview-card-meta">
+          <span id="preview-author">Anonymous</span>
+          <span>·</span>
+          <span id="preview-role">MBBS Student</span>
+          <span>·</span>
+          <span id="preview-category">Governance</span>
+        </div>
+        <div class="preview-card-text" id="preview-text">Your proposal description will appear here...</div>
+      </div>
+    </div>
+
+    <!-- DUPLICATE WARNING -->
+    <div class="duplicate-warning" id="duplicate-warning">
+      <strong>⚠️ Similar ideas found</strong>
+      <p style="margin-top: 6px; font-size: 12px;">Other community members have submitted related ideas. Please review them before posting to avoid redundancy.</p>
+    </div>
+
+    <!-- ERROR MESSAGE -->
+    <div class="form-error" id="form-error"></div>
+
+    <!-- SUBMIT -->
     <div class="submit-row">
-      <span id="err-msg" style="font-size:13px;color:var(--red);display:none"></span>
-      <button type="button" class="btn btn-primary" onclick="submitIdea()">Publish idea →</button>
+      <button type="submit" class="btn-primary">✓ Publish Idea</button>
+      <a href="/ideas" class="btn-secondary">View All Ideas</a>
     </div>
-
-  </div>
+  </form>
 </div>
 
 <!-- Mobile bottom nav -->
 <nav class="mobile-nav">
   <a href="/" class="mob-tab"><span class="mob-icon">⌂</span><span>Home</span></a>
   <a href="/ideas" class="mob-tab"><span class="mob-icon">≡</span><span>Ideas</span></a>
-  <a href="/submit" class="mob-tab submit-tab active"><span class="mob-icon">+</span><span>Submit</span></a>
+  <a href="/submit" class="mob-tab active" style="background: var(--accent-dim); color: var(--accent);"><span class="mob-icon">✎</span><span>Submit</span></a>
 </nav>
 
 <!-- Toast -->
 <div class="toast" id="toast">
-  <span class="toast-icon" id="toast-icon">✓</span>
-  <span id="toast-msg"></span>
+  <span class="toast-icon">✓</span>
+  <span class="toast-text"></span>
 </div>
 
 <script src="/data.js"></script>
 <script>
-var selectedCat = '';
+var selectedCategory = null;
 var isAnon = true;
 
-function pickCat(el, cat) {
-  document.querySelectorAll('#cat-chips .chip').forEach(function(c) { c.classList.remove('active'); });
+function selectCategory(el, cat) {
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
-  selectedCat = cat;
-  document.getElementById('err-msg').style.display = 'none';
+  selectedCategory = cat;
+  updatePreview();
 }
 
 function toggleAnon() {
   isAnon = !isAnon;
-  var track = document.getElementById('anon-track');
-  var label = document.getElementById('anon-label');
-  var wrap  = document.getElementById('name-wrap');
-  track.classList.toggle('on', isAnon);
-  label.textContent = isAnon ? 'Anonymous' : 'Post with name';
-  wrap.style.display = isAnon ? 'none' : 'block';
+  document.getElementById('anon-toggle').classList.toggle('on');
+  document.getElementById('name-input-group').classList.toggle('show');
+  updatePreview();
 }
 
-function updateChar(inputId, countId, max) {
-  var len = document.getElementById(inputId).value.length;
-  document.getElementById(countId).textContent = len + ' / ' + max;
+function updateFeasibilityDisplay() {
+  var val = document.getElementById('feasibility-input').value;
+  document.getElementById('feasibility-val').textContent = val + '%';
 }
 
-function submitIdea() {
-  var title = document.getElementById('title').value.trim();
-  var text  = document.getElementById('text').value.trim();
+document.getElementById('feasibility-input').addEventListener('input', updateFeasibilityDisplay);
 
-  if (!selectedCat) { showErr('Please pick a category.'); return; }
-  if (!title)        { showErr('Title is required.'); return; }
-  if (!text)         { showErr('Description is required.'); return; }
+function updatePreview() {
+  var title = document.getElementById('title-input').value;
+  var text = document.getElementById('text-input').value;
+  var role = document.getElementById('role-select').value;
+  var name = document.getElementById('name-input').value || '';
+  var category = selectedCategory || 'governance';
+  
+  document.getElementById('title-count').textContent = title.length;
+  document.getElementById('text-count').textContent = text.length;
+  
+  document.getElementById('preview-title').textContent = title || 'Your proposal title';
+  document.getElementById('preview-text').textContent = text || 'Your proposal description will appear here...';
+  document.getElementById('preview-author').textContent = isAnon ? 'Anonymous' : (name || 'Anonymous');
+  document.getElementById('preview-role').textContent = role.split('(')[0].trim();
+  document.getElementById('preview-category').textContent = category.charAt(0).toUpperCase() + category.slice(1);
+  
+  if (title || text) {
+    document.getElementById('preview-section').classList.add('show');
+  } else {
+    document.getElementById('preview-section').classList.remove('show');
+  }
+  
+  checkDuplicates(title, text);
+}
 
-  // Check for similar ideas
+function checkDuplicates(title, text) {
+  if (title.length < 10 || text.length < 20) {
+    document.getElementById('duplicate-warning').classList.remove('show');
+    return;
+  }
+  
   var ideas = getIdeas();
-  var similar = findSimilarIdeas(ideas, title, text, null);
+  var similar = findSimilarIdeas(ideas, title, text, -1);
   
   if (similar.length > 0) {
-    var shouldContinue = confirm(
-      'There are ' + similar.length + ' similar idea(s) already submitted.\n\n' +
-      'Top similar: "' + similar[0].title + '"\n\n' +
-      'Do you want to continue anyway?'
-    );
-    if (!shouldContinue) {
-      trackEvent('submission', 'duplicate_warning_dismissed');
+    document.getElementById('duplicate-warning').classList.add('show');
+  } else {
+    document.getElementById('duplicate-warning').classList.remove('show');
+  }
+}
+
+function submitIdea(e) {
+  e.preventDefault();
+  
+  var title = document.getElementById('title-input').value.trim();
+  var text = document.getElementById('text-input').value.trim();
+  var role = document.getElementById('role-select').value;
+  var name = document.getElementById('name-input').value.trim();
+  var feasibility = parseInt(document.getElementById('feasibility-input').value);
+  var error = document.getElementById('form-error');
+  
+  error.classList.remove('show');
+  
+  if (!selectedCategory) {
+    error.textContent = '✗ Please select a category';
+    error.classList.add('show');
+    return;
+  }
+  
+  if (!title || title.length < 5) {
+    error.textContent = '✗ Title must be at least 5 characters';
+    error.classList.add('show');
+    return;
+  }
+  
+  if (!text || text.length < 20) {
+    error.textContent = '✗ Description must be at least 20 characters';
+    error.classList.add('show');
+    return;
+  }
+  
+  var ideas = getIdeas();
+  var similar = findSimilarIdeas(ideas, title, text, -1);
+  
+  if (similar.length > 0) {
+    if (!confirm('Similar ideas already exist. Do you want to continue posting this idea anyway?')) {
       return;
     }
   }
-
-  var maxId = ideas.reduce(function(m, i) { return Math.max(m, i.id); }, 0);
-
-  var authorName = isAnon
-    ? 'Anonymous'
-    : (document.getElementById('author').value.trim() || 'Anonymous');
-
-  var idea = {
-    id:          maxId + 1,
-    votes:       0,
-    category:    selectedCat,
-    title:       title,
-    text:        text,
-    author:      authorName,
-    role:        document.getElementById('role').value,
-    time:        'just now',
-    feasibility: parseInt(document.getElementById('feasibility').value, 10),
-    status:      'submitted',
-    comments:    []
-  };
-
-  ideas.push(idea);
-  saveIdeas(ideas);
   
-  // Track submission
-  trackEvent('submission', 'idea_submitted', selectedCat);
-
-  window.location.href = '/ideas?submitted=1';
+  var newIdea = createIdea({
+    category: selectedCategory,
+    title: title,
+    text: text,
+    role: role,
+    author: isAnon ? 'Anonymous' : (name || 'Anonymous'),
+    anonymous: isAnon,
+    feasibility: feasibility
+  });
+  
+  trackEvent('submit', 'idea_created', selectedCategory);
+  showToast('✓ Idea submitted! Thank you for contributing.', '✓');
+  
+  setTimeout(() => {
+    window.location.href = '/ideas?submitted=1';
+  }, 1500);
 }
 
-function showErr(msg) {
-  var el = document.getElementById('err-msg');
-  el.textContent = msg;
-  el.style.display = 'block';
-}
+// Initialize preview
+updatePreview();
 </script>
 </body>
 </html>

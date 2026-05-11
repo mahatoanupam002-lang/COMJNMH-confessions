@@ -3,97 +3,89 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ideas — MedReform COMJNMH</title>
-<meta name="description" content="Browse and vote on ideas for campus reforms at COMJNMH. Join the conversation and help shape the future of our institution.">
-<meta name="keywords" content="COMJNMH, ideas, browse, vote, campus reform">
-
-<!-- Open Graph Meta Tags -->
+<title>Ideas — MedReform</title>
+<meta name="description" content="Browse and vote on reform ideas from the COMJNMH community.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://medreform.comjnmh.edu/ideas">
-<meta property="og:title" content="Ideas — MedReform COMJNMH">
-<meta property="og:description" content="Browse and vote on ideas for campus reforms. Support solutions that matter to you.">
+<meta property="og:title" content="Ideas — MedReform">
+<meta property="og:description" content="Explore campus reform proposals from students, residents, and faculty.">
 <meta property="og:image" content="/og-image.png">
-
-<!-- Twitter Card Meta Tags -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Ideas — MedReform COMJNMH">
-<meta name="twitter:description" content="Browse and vote on ideas for campus reforms at COMJNMH.">
-<meta name="twitter:image" content="/og-image.png">
 
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Epilogue:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
 
-<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX', {
-    'anonymize_ip': true,
-    'cookie_domain': 'auto'
-  });
-  
+  gtag('config', 'G-XXXXXXXXXX', { 'anonymize_ip': true, 'cookie_domain': 'auto' });
   function trackEvent(category, action, label) {
-    gtag('event', action, {
-      'event_category': category,
-      'event_label': label
-    });
+    gtag('event', action, { 'event_category': category, 'event_label': label });
   }
 </script>
+
 <style>
-  .page-wrap {
-    position: relative; z-index: 1;
-    max-width: 800px; margin: 0 auto;
-    padding: 40px 40px 80px;
-  }
-
-  .page-head {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 32px; flex-wrap: wrap; gap: 16px;
-  }
-  .page-head h1 {
-    font-family: 'Instrument Serif', serif;
-    font-size: 36px; letter-spacing: -0.5px; color: var(--text);
-  }
-  .page-head h1 span {
-    font-family: 'DM Mono', monospace;
-    font-size: 14px; color: var(--text-dim); margin-left: 10px;
-    font-weight: 400; letter-spacing: 0;
-  }
-
-  .filters-bar {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px; padding: 16px 20px;
-    margin-bottom: 24px;
-    display: flex; gap: 20px; flex-wrap: wrap;
-    align-items: center;
-  }
-
-  .filter-group { display: flex; align-items: center; gap: 8px; }
-
+  .ideas-wrap { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 40px 20px 100px; }
+  .ideas-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; gap: 16px; flex-wrap: wrap; }
+  .ideas-header h1 { font-family: 'Instrument Serif', serif; font-size: 32px; color: var(--text); }
+  .fab { background: var(--accent); color: var(--bg); border: none; border-radius: 50%; width: 56px; height: 56px; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: 0 4px 12px rgba(74, 222, 128, 0.2); }
+  .fab:hover { transform: scale(1.1); box-shadow: 0 8px 20px rgba(74, 222, 128, 0.3); }
+  @media (max-width: 700px) { .fab { display: none; } }
+  .search-box { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; color: var(--text); font-family: 'Epilogue', sans-serif; font-size: 14px; margin-bottom: 20px; transition: all 0.2s; }
+  .search-box:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
+  .filters-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; align-items: center; }
+  .filter-group { display: flex; gap: 6px; align-items: center; }
+  .filter-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); text-transform: uppercase; }
+  .filter-btn { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; font-family: 'Epilogue', sans-serif; font-size: 12px; transition: all 0.2s; }
+  .filter-btn:hover { background: var(--surface2); color: var(--text); }
+  .filter-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+  .range-slider-group { display: flex; gap: 8px; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; }
+  .range-slider { flex: 1; height: 4px; border-radius: 2px; background: var(--border); outline: none; -webkit-appearance: none; appearance: none; }
+  .range-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  .range-slider::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--accent); cursor: pointer; border: none; }
+  .range-val { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); min-width: 30px; text-align: right; }
   .ideas-list { display: flex; flex-direction: column; gap: 16px; }
-
-  /* Floating submit button (desktop) */
-  .fab {
-    position: fixed; bottom: 32px; right: 32px;
-    display: flex; align-items: center; gap: 8px;
-    padding: 13px 24px; border-radius: 50px;
-    background: var(--accent); color: var(--bg);
-    font-family: 'Epilogue', sans-serif;
-    font-size: 14px; font-weight: 700;
-    text-decoration: none; letter-spacing: 0.02em;
-    box-shadow: 0 4px 24px rgba(74,222,128,0.3);
-    transition: all 0.2s; z-index: 40;
-  }
-  .fab:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(74,222,128,0.4); }
-
-  @media (max-width: 700px) {
-    .page-wrap { padding: 24px 16px 80px; }
-    .filters-bar { gap: 12px; }
-    .fab { display: none; } /* mobile uses bottom tab */
-  }
+  .idea-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: grid; grid-template-columns: 52px 1fr; gap: 16px; transition: all 0.2s; }
+  .idea-card:hover { border-color: var(--accent); box-shadow: 0 8px 24px rgba(74, 222, 128, 0.08); }
+  .vote-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .vote-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); width: 40px; height: 40px; border-radius: 8px; cursor: pointer; font-size: 18px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+  .vote-btn:hover { border-color: var(--text-dim); background: var(--surface2); }
+  .vote-btn.voted { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+  .vote-count { font-family: 'Instrument Serif', serif; font-size: 16px; font-weight: 700; color: var(--text); }
+  .idea-content { display: flex; flex-direction: column; gap: 12px; }
+  .idea-header { display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
+  .idea-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .cat-badge { padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 600; background: var(--accent-dim); color: var(--accent); }
+  .status-badge { padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 600; }
+  .status-badge.submitted { background: rgba(251, 191, 36, 0.12); color: var(--amber); }
+  .status-badge.reviewed { background: rgba(96, 165, 250, 0.12); color: var(--blue); }
+  .status-badge.implemented { background: rgba(74, 222, 128, 0.12); color: var(--accent); }
+  .status-badge.rejected { background: rgba(248, 113, 113, 0.12); color: var(--red); }
+  .idea-title { font-size: 16px; font-weight: 600; color: var(--text); flex: 1; }
+  .idea-meta { display: flex; gap: 12px; font-size: 12px; color: var(--text-dim); flex-wrap: wrap; }
+  .idea-text { color: var(--text-muted); font-size: 14px; line-height: 1.5; }
+  .idea-footer { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .idea-feasibility { display: flex; gap: 6px; align-items: center; }
+  .feasibility-bar { height: 4px; flex: 1; min-width: 60px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .feasibility-fill { height: 100%; background: var(--accent); border-radius: 2px; }
+  .feasibility-pct { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); min-width: 28px; text-align: right; }
+  .comment-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s; }
+  .comment-btn:hover { background: var(--surface2); color: var(--text); }
+  .comments-section { grid-column: 2; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .comments-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; max-height: 300px; overflow-y: auto; }
+  .comment-item { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; font-size: 12px; }
+  .comment-author { color: var(--text); font-weight: 600; }
+  .comment-time { color: var(--text-dim); font-size: 11px; margin-left: 4px; }
+  .comment-text { color: var(--text-muted); margin-top: 4px; }
+  .comment-input-group { display: flex; gap: 6px; }
+  .comment-textarea { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; color: var(--text); font-family: 'Epilogue', sans-serif; font-size: 12px; resize: none; min-height: 32px; }
+  .comment-textarea:focus { outline: none; border-color: var(--accent); }
+  .comment-post-btn { background: var(--accent); color: var(--bg); border: none; border-radius: 6px; padding: 6px 12px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+  .comment-post-btn:hover { background: var(--accent2); }
+  .empty-state { text-align: center; color: var(--text-muted); padding: 60px 20px; }
+  .empty-state h3 { color: var(--text); margin-bottom: 8px; }
+  @media (max-width: 700px) { .ideas-wrap { padding: 24px 16px 100px; } .idea-card { grid-template-columns: 1fr; } .idea-header { flex-direction: column; } .filters-bar { gap: 8px; } }
 </style>
 </head>
 <body>
@@ -110,322 +102,233 @@
     <a href="/" class="nav-link">Home</a>
     <a href="/ideas" class="nav-link active">Ideas</a>
     <a href="/submit" class="nav-link">Submit</a>
-    <a href="/admin" class="nav-link">Admin</a>
   </nav>
-  <span class="badge live">Open Platform</span>
+  <span class="badge live">Ideas</span>
 </header>
 
-<div class="page-wrap">
-  <div class="page-head">
-    <h1>Ideas <span id="idea-count"></span></h1>
-    <a href="/submit" class="btn btn-primary">+ Submit Idea</a>
+<div class="ideas-wrap">
+  <div class="ideas-header">
+    <h1 id="ideas-count">Ideas (0)</h1>
+    <a href="/submit" class="fab" title="Submit idea">✎</a>
   </div>
 
-  <!-- Search -->
-  <div class="search-box" style="margin-bottom:20px">
-    <input type="text" id="search-input" class="form-input" placeholder="🔍 Search ideas by title, description, or author..." 
-      aria-label="Search ideas"
-      aria-describedby="search-help"
-      oninput="handleSearch()">
-    <small id="search-help" style="display:none">Search across all ideas using keywords from title, description, or author name</small>
-  </div>
+  <input type="text" class="search-box" id="search-input" placeholder="Search ideas by title, description, or author..." onkeyup="filterIdeas()">
 
-  <!-- Filters -->
-  <div class="filters-bar" role="group" aria-label="Sorting options">
+  <div class="filters-bar">
     <div class="filter-group">
-      <span class="filter-label" id="sort-label">Sort</span>
-      <button class="filter-btn active" onclick="setSort(this,'top')" aria-pressed="true" aria-labelledby="sort-label">Top</button>
-      <button class="filter-btn" onclick="setSort(this,'new')" aria-pressed="false" aria-labelledby="sort-label">New</button>
-      <button class="filter-btn" onclick="setSort(this,'feasible')" aria-pressed="false" aria-labelledby="sort-label">Feasible</button>
-      <button class="filter-btn" onclick="setSort(this,'trending')" aria-pressed="false" aria-labelledby="sort-label">Trending</button>
+      <span class="filter-label">Sort</span>
+      <button class="filter-btn active" data-sort="top" onclick="setSort(this, 'top')">Top</button>
+      <button class="filter-btn" data-sort="new" onclick="setSort(this, 'new')">New</button>
+      <button class="filter-btn" data-sort="trending" onclick="setSort(this, 'trending')">Trending</button>
+      <button class="filter-btn" data-sort="feasible" onclick="setSort(this, 'feasible')">Feasible</button>
     </div>
-    <div class="filter-group" role="group" aria-label="Category filters">
-      <span class="filter-label" id="cat-label">Category</span>
-      <button class="filter-btn active" onclick="setCat(this,'all')" aria-pressed="true" aria-labelledby="cat-label">All</button>
-      <button class="filter-btn" onclick="setCat(this,'governance')" aria-pressed="false" aria-labelledby="cat-label">Gov</button>
-      <button class="filter-btn" onclick="setCat(this,'safety')" aria-pressed="false" aria-labelledby="cat-label">Safety</button>
-      <button class="filter-btn" onclick="setCat(this,'academic')" aria-pressed="false" aria-labelledby="cat-label">Academic</button>
-      <button class="filter-btn" onclick="setCat(this,'infrastructure')" aria-pressed="false" aria-labelledby="cat-label">Infra</button>
-      <button class="filter-btn" onclick="setCat(this,'welfare')" aria-pressed="false" aria-labelledby="cat-label">Welfare</button>
+    <div class="filter-group">
+      <span class="filter-label">Category</span>
+      <button class="filter-btn active" data-cat="all" onclick="setCat(this, 'all')">All</button>
+      <button class="filter-btn" data-cat="governance" onclick="setCat(this, 'governance')">Gov</button>
+      <button class="filter-btn" data-cat="safety" onclick="setCat(this, 'safety')">Safety</button>
+      <button class="filter-btn" data-cat="academic" onclick="setCat(this, 'academic')">Academic</button>
+      <button class="filter-btn" data-cat="infrastructure" onclick="setCat(this, 'infrastructure')">Infra</button>
+      <button class="filter-btn" data-cat="welfare" onclick="setCat(this, 'welfare')">Welfare</button>
     </div>
-    <div class="filter-group" role="group" aria-label="Status filters">
-      <span class="filter-label" id="status-label">Status</span>
-      <button class="filter-btn active" onclick="setStatus(this,'all')" aria-pressed="true" aria-labelledby="status-label">All</button>
-      <button class="filter-btn" onclick="setStatus(this,'submitted')" aria-pressed="false" aria-labelledby="status-label">Submitted</button>
-      <button class="filter-btn" onclick="setStatus(this,'reviewed')" aria-pressed="false" aria-labelledby="status-label">Reviewed</button>
-      <button class="filter-btn" onclick="setStatus(this,'implemented')" aria-pressed="false" aria-labelledby="status-label">Implemented</button>
-      <button class="filter-btn" onclick="setStatus(this,'rejected')" aria-pressed="false" aria-labelledby="status-label">Rejected</button>
+    <div class="filter-group">
+      <span class="filter-label">Status</span>
+      <button class="filter-btn active" data-status="all" onclick="setStatus(this, 'all')">All</button>
+      <button class="filter-btn" data-status="submitted" onclick="setStatus(this, 'submitted')">Submitted</button>
+      <button class="filter-btn" data-status="reviewed" onclick="setStatus(this, 'reviewed')">Reviewed</button>
+      <button class="filter-btn" data-status="implemented" onclick="setStatus(this, 'implemented')">Done</button>
+      <button class="filter-btn" data-status="rejected" onclick="setStatus(this, 'rejected')">Rejected</button>
     </div>
   </div>
 
-  <!-- Feasibility Range Filter -->
-  <div class="filters-bar" style="gap: 16px;" role="group" aria-label="Feasibility range filter">
-    <div class="filter-group" style="flex: 1; flex-direction: row; align-items: center; gap: 12px;">
-      <span class="filter-label" style="white-space: nowrap;">Feasibility Range</span>
-      <label for="feas-min" style="display:none">Minimum feasibility percentage</label>
-      <input type="range" id="feas-min" class="form-range" min="0" max="100" value="0" style="flex:1" 
-        aria-label="Minimum feasibility percentage"
-        oninput="handleFeasibilityFilter()">
-      <span style="font-size:12px;color:var(--text-dim);min-width:60px;text-align:center" aria-live="polite" aria-atomic="true">
-        <span id="feas-min-val">0</span>% - <span id="feas-max-val">100</span>%
-      </span>
-      <label for="feas-max" style="display:none">Maximum feasibility percentage</label>
-      <input type="range" id="feas-max" class="form-range" min="0" max="100" value="100" style="flex:1" 
-        aria-label="Maximum feasibility percentage"
-        oninput="handleFeasibilityFilter()">
-    </div>
+  <div class="range-slider-group">
+    <span class="filter-label">Feasibility</span>
+    <input type="range" class="range-slider" id="feas-min" min="0" max="100" value="0" oninput="filterIdeas()">
+    <span class="range-val" id="feas-min-val">0%</span>
+    <span style="color: var(--text-dim); font-size: 11px;">—</span>
+    <input type="range" class="range-slider" id="feas-max" min="0" max="100" value="100" oninput="filterIdeas()">
+    <span class="range-val" id="feas-max-val">100%</span>
   </div>
 
   <div class="ideas-list" id="ideas-list"></div>
-
-  <div class="empty-state" id="empty-state" style="display:none">
-    <h3>No ideas in this category</h3>
-    <p>Be the first — <a href="/submit" style="color:var(--accent)">submit one</a>.</p>
+  <div class="empty-state" id="empty-state" style="display: none;">
+    <h3>No ideas match your filters</h3>
+    <p>Try adjusting your search or filters.</p>
   </div>
 </div>
 
-<!-- Floating submit (desktop) -->
-<a href="/submit" class="fab">+ Submit Idea</a>
-
-<!-- Mobile bottom nav -->
 <nav class="mobile-nav">
   <a href="/" class="mob-tab"><span class="mob-icon">⌂</span><span>Home</span></a>
-  <a href="/ideas" class="mob-tab active"><span class="mob-icon">≡</span><span>Ideas</span></a>
-  <a href="/submit" class="mob-tab submit-tab"><span class="mob-icon">+</span><span>Submit</span></a>
+  <a href="/ideas" class="mob-tab active" style="background: var(--accent-dim); color: var(--accent);"><span class="mob-icon">≡</span><span>Ideas</span></a>
+  <a href="/submit" class="mob-tab" style="background: var(--accent-dim); color: var(--accent);"><span class="mob-icon">✎</span><span>Submit</span></a>
 </nav>
 
-<!-- Toast -->
 <div class="toast" id="toast">
-  <span class="toast-icon" id="toast-icon">✓</span>
-  <span id="toast-msg"></span>
+  <span class="toast-icon">✓</span>
+  <span class="toast-text"></span>
 </div>
+
+<div id="sr-live-region" aria-live="polite" aria-atomic="true" style="position: absolute; left: -9999px;"></div>
 
 <script src="/data.js"></script>
 <script>
-var ideas   = getIdeas();
-var voted   = getVoted();
-var sortMode = 'top';
-var catMode  = 'all';
-var statusMode = 'all';
-var searchQuery = '';
-var feasMin = 0;
-var feasMax = 100;
+var ideas = [];
+var voted = new Set();
+var filters = { sort: 'top', category: 'all', status: 'all', search: '', feasMin: 0, feasMax: 100 };
+var expandedComments = new Set();
 
-function setSort(el, mode) {
-  document.querySelectorAll('.filter-btn').forEach(function(b, i) { if(i < 4) { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); } });
-  el.classList.add('active'); 
-  el.setAttribute('aria-pressed', 'true');
-  sortMode = mode; 
+function loadData() {
+  ideas = getIdeas();
+  voted = getVoted();
+  render();
+}
+
+function setSort(el, sort) {
+  document.querySelectorAll('[data-sort]').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  filters.sort = sort;
   render();
 }
 
 function setCat(el, cat) {
-  var btns = document.querySelectorAll('.filter-btn');
-  btns.forEach(function(b, i) { if(i >= 4 && i < 10) { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); } });
+  document.querySelectorAll('[data-cat]').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
-  el.setAttribute('aria-pressed', 'true');
-  catMode = cat; 
+  filters.category = cat;
   render();
 }
 
 function setStatus(el, status) {
-  var btns = document.querySelectorAll('.filter-btn');
-  btns.forEach(function(b, i) { if(i >= 10) { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); } });
+  document.querySelectorAll('[data-status]').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
-  el.setAttribute('aria-pressed', 'true');
-  statusMode = status; 
+  filters.status = status;
   render();
 }
 
-function handleSearch() {
-  searchQuery = document.getElementById('search-input').value;
-  render();
-}
-
-function handleFeasibilityFilter() {
-  feasMin = parseInt(document.getElementById('feas-min').value, 10);
-  feasMax = parseInt(document.getElementById('feas-max').value, 10);
-  if (feasMin > feasMax) {
-    var temp = feasMin;
-    feasMin = feasMax;
-    feasMax = temp;
-    document.getElementById('feas-min').value = feasMin;
-    document.getElementById('feas-max').value = feasMax;
+function filterIdeas() {
+  filters.search = document.getElementById('search-input').value;
+  filters.feasMin = parseInt(document.getElementById('feas-min').value);
+  filters.feasMax = parseInt(document.getElementById('feas-max').value);
+  document.getElementById('feas-min-val').textContent = filters.feasMin + '%';
+  document.getElementById('feas-max-val').textContent = filters.feasMax + '%';
+  if (filters.feasMin > filters.feasMax) {
+    var temp = filters.feasMin;
+    filters.feasMin = filters.feasMax;
+    filters.feasMax = temp;
+    document.getElementById('feas-min').value = filters.feasMin;
+    document.getElementById('feas-max').value = filters.feasMax;
   }
-  document.getElementById('feas-min-val').textContent = feasMin;
-  document.getElementById('feas-max-val').textContent = feasMax;
   render();
 }
 
-function vote(id) {
-  var idea = ideas.find(function(i) { return i.id === id; });
+function getFiltered() {
+  var filtered = ideas;
+  if (filters.search) filtered = searchIdeas(filtered, filters.search);
+  if (filters.category !== 'all') filtered = filtered.filter(i => i.category === filters.category);
+  if (filters.status !== 'all') filtered = filtered.filter(i => i.status === filters.status);
+  filtered = filtered.filter(i => i.feasibility >= filters.feasMin && i.feasibility <= filters.feasMax);
+  return filtered;
+}
+
+function getSorted(filtered) {
+  var sorted = [...filtered];
+  if (filters.sort === 'top') {
+    sorted.sort((a, b) => b.votes - a.votes);
+  } else if (filters.sort === 'new') {
+    sorted.sort((a, b) => b.submittedAt - a.submittedAt);
+  } else if (filters.sort === 'feasible') {
+    sorted.sort((a, b) => b.feasibility - a.feasibility);
+  } else if (filters.sort === 'trending') {
+    sorted.sort((a, b) => (b.votes / (1 + (Date.now() - b.submittedAt) / (7*24*60*60*1000))) - (a.votes / (1 + (Date.now() - a.submittedAt) / (7*24*60*60*1000))));
+  }
+  return sorted;
+}
+
+function vote(ideaId) {
+  var idea = ideas.find(i => i.id === ideaId);
   if (!idea) return;
-  var isUpvote = !voted.has(id);
-  if (isUpvote) { 
-    idea.votes++; 
-    voted.add(id);
-    trackEvent('engagement', 'vote', 'idea_' + id);
-  } else { 
-    idea.votes = Math.max(0, idea.votes - 1); 
-    voted.delete(id);
-    trackEvent('engagement', 'unvote', 'idea_' + id);
-  }
-  saveIdeas(ideas); saveVoted(voted); render();
-}
-
-function handleSearch() {
-  searchQuery = document.getElementById('search-input').value;
-  trackEvent('filtering', 'search', searchQuery || 'cleared');
-  render();
-}
-
-function handleFeasibilityFilter() {
-  feasMin = parseInt(document.getElementById('feas-min').value, 10);
-  feasMax = parseInt(document.getElementById('feas-max').value, 10);
-  if (feasMin > feasMax) {
-    var temp = feasMin;
-    feasMin = feasMax;
-    feasMax = temp;
-    document.getElementById('feas-min').value = feasMin;
-    document.getElementById('feas-max').value = feasMax;
-  }
-  document.getElementById('feas-min-val').textContent = feasMin;
-  document.getElementById('feas-max-val').textContent = feasMax;
-  trackEvent('filtering', 'feasibility_range', feasMin + '-' + feasMax);
-  render();
-}
-
-function toggleCommentSection(ideaId) {
-  var section = document.getElementById('comments-' + ideaId);
-  var btn = event.target.closest('.comment-toggle');
-  var isOpen = section.style.display !== 'none';
-  
-  if (isOpen) {
-    section.style.display = 'none';
-    btn.setAttribute('aria-expanded', 'false');
+  if (voted.has(ideaId)) {
+    idea.votes--;
+    voted.delete(ideaId);
   } else {
-    section.style.display = 'block';
-    btn.setAttribute('aria-expanded', 'true');
-    // Focus on comment input
-    setTimeout(function() {
-      document.getElementById('comment-input-' + ideaId).focus();
-    }, 100);
+    idea.votes++;
+    voted.add(ideaId);
   }
+  saveIdeas(ideas);
+  saveVoted(voted);
+  trackEvent('ideas', 'vote', ideaId);
+  render();
 }
 
-function announceToScreenReader(msg) {
-  var announcement = document.getElementById('sr-announcement');
-  if (!announcement) {
-    announcement = document.createElement('div');
-    announcement.id = 'sr-announcement';
-    announcement.style.position = 'absolute';
-    announcement.style.left = '-10000px';
-    announcement.style.width = '1px';
-    announcement.style.height = '1px';
-    announcement.style.overflow = 'hidden';
-    announcement.setAttribute('aria-live', 'polite');
-    announcement.setAttribute('aria-atomic', 'true');
-    document.body.appendChild(announcement);
+function toggleComments(ideaId) {
+  if (expandedComments.has(ideaId)) {
+    expandedComments.delete(ideaId);
+  } else {
+    expandedComments.add(ideaId);
   }
-  announcement.textContent = msg;
+  render();
 }
 
 function postComment(ideaId) {
-  var textarea = document.getElementById('comment-input-' + ideaId);
-  var comment = textarea.value.trim();
-  if (!comment) { showToast('Comment cannot be empty', '⚠'); return; }
-  if (comment.length > 500) { showToast('Comment too long (max 500 chars)', '⚠'); return; }
-  
-  var idea = ideas.find(function(i) { return i.id === ideaId; });
-  if (!idea) return;
-  
-  if (!idea.comments) idea.comments = [];
-  idea.comments.push({
-    text: comment,
-    time: 'just now',
-    author: 'You'
-  });
-  
+  var textarea = document.getElementById('comment-textarea-' + ideaId);
+  var text = textarea.value.trim();
+  if (!text || text.length < 2) {
+    showToast('✗ Comment too short', '✗');
+    return;
+  }
+  if (text.length > 500) {
+    showToast('✗ Comment too long (max 500 chars)', '✗');
+    return;
+  }
+  addComment(ideas, ideaId, text, 'You');
   saveIdeas(ideas);
   textarea.value = '';
+  trackEvent('ideas', 'comment_posted', ideaId);
   render();
-  showToast('Comment posted!', '✓');
+  showToast('✓ Comment posted', '✓');
 }
 
 function render() {
-  var list = searchIdeas(ideas, searchQuery);
-  if (catMode !== 'all') list = list.filter(function(i){ return i.category === catMode; });
-  if (statusMode !== 'all') list = list.filter(function(i){ return i.status === statusMode; });
-  list = list.filter(function(i){ return i.feasibility >= feasMin && i.feasibility <= feasMax; });
-  
-  if      (sortMode === 'top')      list.sort(function(a,b){ return b.votes - a.votes; });
-  else if (sortMode === 'new')      list.sort(function(a,b){ return b.id - a.id; });
-  else if (sortMode === 'feasible') list.sort(function(a,b){ return b.feasibility - a.feasibility; });
-  else if (sortMode === 'trending') {
-    list.sort(function(a,b){ return b.votes - a.votes; });
-  }
-
+  var filtered = getFiltered();
+  var sorted = getSorted(filtered);
   var container = document.getElementById('ideas-list');
-  var empty     = document.getElementById('empty-state');
-  document.getElementById('idea-count').textContent = '(' + list.length + ')';
-
-  if (list.length === 0) { container.innerHTML = ''; empty.style.display = 'block'; return; }
-  empty.style.display = 'none';
-
-  container.innerHTML = list.map(function(idea, idx) {
-    var v  = voted.has(idea.id);
-    var fc = feasColor(idea.feasibility);
-    var sc = statusColor(idea.status || 'submitted');
-    var commentCount = idea.comments ? idea.comments.length : 0;
-    return '<div class="idea-card" style="animation-delay:'+(idx*0.04)+'s" role="article" aria-label="Idea: '+escHtml(idea.title)+'">' +
-      '<div class="vote-col">' +
-        '<button class="vote-btn'+(v?' voted':'')+' " onclick="vote('+idea.id+')" aria-label="'+(v?'Remove':'Add')+' vote for this idea" title="'+(v?'Remove':'Add')+' vote">&#9650;</button>' +
-        '<div class="vote-count" aria-live="polite">'+idea.votes+'</div>' +
-      '</div>' +
-      '<div style="flex:1">' +
-        '<div class="idea-meta">' +
-          '<span class="cat-badge '+idea.category+'" aria-label="Category: '+idea.category+'">'+idea.category+'</span>' +
-          '<span class="status-badge" style="background-color:'+sc+';color:white;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;" aria-label="Status: '+statusLabel(idea.status || 'submitted')+'">'+statusLabel(idea.status || 'submitted')+'</span>' +
-          '<span class="idea-author" aria-label="Author: '+escHtml(idea.author)+'">'+escHtml(idea.author)+'</span>' +
-          '<span class="idea-time" aria-label="Submitted '+idea.time+'">'+idea.time+'</span>' +
-        '</div>' +
-        '<div class="idea-title">'+escHtml(idea.title)+'</div>' +
-        '<div class="idea-text">'+escHtml(idea.text)+'</div>' +
-        '<div class="idea-footer">' +
-          '<div class="feasibility" aria-label="Feasibility score: '+idea.feasibility+'%">' +
-            '<span>Feasibility</span>' +
-            '<div class="feasibility-bar"><div class="feasibility-fill" style="width:'+idea.feasibility+'%;background:'+fc+'" role="progressbar" aria-valuenow="'+idea.feasibility+'" aria-valuemin="0" aria-valuemax="100"></div></div>' +
-            '<span>'+idea.feasibility+'%</span>' +
-          '</div>' +
-          '<button class="comment-toggle" onclick="toggleCommentSection('+idea.id+')" aria-expanded="false" aria-controls="comments-'+idea.id+'">💬 '+commentCount+'</button>' +
-        '</div>' +
-        '<div class="comments-section" id="comments-'+idea.id+'" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)" role="region" aria-label="Comments section">' +
-          '<div class="comments-list" style="margin-bottom:12px;max-height:200px;overflow-y:auto">' +
-            (idea.comments || []).map(function(c) {
-              return '<div class="comment" style="background:var(--surface2);padding:8px 12px;border-radius:8px;margin-bottom:8px;font-size:12px" role="comment">' +
-                '<div style="font-weight:600;color:var(--accent);margin-bottom:2px">'+escHtml(c.author)+' · '+c.time+'</div>' +
-                '<div style="color:var(--text-muted)">'+escHtml(c.text)+'</div>' +
-              '</div>';
-            }).join('') +
-          '</div>' +
-          '<textarea id="comment-input-'+idea.id+'" class="form-input" placeholder="Add a comment..." maxlength="500" style="font-size:12px;min-height:60px" aria-label="Add comment for this idea"></textarea>' +
-          '<button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="postComment('+idea.id+')" aria-label="Post comment for this idea">Post</button>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
-  }).join('');
+  var empty = document.getElementById('empty-state');
   
-  // Announce to screen readers
-  announceToScreenReader('Showing ' + list.length + ' ideas');
+  document.getElementById('ideas-count').textContent = 'Ideas (' + ideas.length + ')';
+  
+  if (sorted.length === 0) {
+    container.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  
+  empty.style.display = 'none';
+  container.innerHTML = sorted.map(function(idea) {
+    var isVoted = voted.has(idea.id);
+    var showComments = expandedComments.has(idea.id);
+    var commentsHtml = '';
+    
+    if (showComments) {
+      commentsHtml = '<div class="comments-section"><div class="comments-list">';
+      if (idea.comments && idea.comments.length > 0) {
+        commentsHtml += idea.comments.map(function(c) {
+          return '<div class="comment-item"><span class="comment-author">' + escHtml(c.author) + '</span><span class="comment-time">' + formatTime(c.submittedAt) + '</span><div class="comment-text">' + escHtml(c.text) + '</div></div>';
+        }).join('');
+      } else {
+        commentsHtml += '<p style="color: var(--text-dim); font-size: 12px;">No comments yet.</p>';
+      }
+      commentsHtml += '</div><div class="comment-input-group"><textarea class="comment-textarea" id="comment-textarea-' + idea.id + '" placeholder="Add comment..." maxlength="500"></textarea><button class="comment-post-btn" onclick="postComment(' + idea.id + ')">Post</button></div></div>';
+    }
+    
+    return '<div class="idea-card"><div class="vote-col"><button class="vote-btn ' + (isVoted ? 'voted' : '') + '" onclick="vote(' + idea.id + ')" title="Vote">▲</button><div class="vote-count">' + idea.votes + '</div></div><div class="idea-content"><div class="idea-header"><div class="idea-badges"><span class="cat-badge">' + idea.category.toUpperCase() + '</span><span class="status-badge ' + idea.status + '">' + statusLabel(idea.status) + '</span></div><div class="idea-title">' + escHtml(idea.title) + '</div></div><div class="idea-meta"><span>' + escHtml(idea.author) + '</span><span>·</span><span>' + formatTime(idea.submittedAt) + '</span><span>·</span><span>' + escHtml(idea.role) + '</span></div><div class="idea-text">' + escHtml(idea.text) + '</div><div class="idea-footer"><div class="idea-feasibility"><div class="feasibility-bar"><div class="feasibility-fill" style="width:' + idea.feasibility + '%"></div></div><span class="feasibility-pct">' + idea.feasibility + '%</span></div><button class="comment-btn" onclick="toggleComments(' + idea.id + ')">💬 ' + (idea.comments ? idea.comments.length : 0) + '</button></div>' + commentsHtml + '</div></div>';
+  }).join('');
 }
 
-// Show toast if redirected after submit
-if (window.location.search.includes('submitted=1')) {
-  showToast('Idea submitted. Thank you!');
-  history.replaceState({}, '', '/ideas');
+var params = new URLSearchParams(window.location.search);
+if (params.get('submitted') === '1') {
+  showToast('✓ Idea submitted! Thank you for contributing.', '✓');
 }
 
-render();
+loadData();
 </script>
 </body>
 </html>
