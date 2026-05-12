@@ -402,7 +402,7 @@
 var adminIdeas = [];
 var currentStatusEditId = null;
 var currentFlagId = null;
-var adminFilter = { status: 'all', search: '' };
+var adminFilters = { status: 'all', search: '' };
 
 function initAdmin() {
   if (!isAdminLoggedIn()) {
@@ -458,15 +458,15 @@ function updateAdminStats() {
 function getFilteredIdeas() {
   var filtered = adminIdeas;
   
-  if (adminFilter.search) {
-    filtered = searchIdeas(filtered, adminFilter.search);
+  if (adminFilters.search) {
+    filtered = searchIdeas(filtered, adminFilters.search);
   }
   
-  if (adminFilter.status !== 'all') {
-    if (adminFilter.status === 'flagged') {
+  if (adminFilters.status !== 'all') {
+    if (adminFilters.status === 'flagged') {
       filtered = filtered.filter(i => i.flagged || i.flagCount > 0);
     } else {
-      filtered = filtered.filter(i => i.status === adminFilter.status);
+      filtered = filtered.filter(i => i.status === adminFilters.status);
     }
   }
   
@@ -509,14 +509,14 @@ function renderAdminList() {
 }
 
 function adminFilter() {
-  adminFilter.search = document.getElementById('admin-search').value;
+  adminFilters.search = document.getElementById('admin-search').value;
   renderAdminList();
 }
 
 function setStatusFilter(status, el) {
   document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
-  adminFilter.status = status;
+  adminFilters.status = status;
   renderAdminList();
 }
 
@@ -583,7 +583,9 @@ function openFlagModal(ideaId) {
 }
 
 function confirmFlag() {
-  var reason = document.querySelector('input[name="flag-reason"]:checked').value;
+  var checkedReason = document.querySelector('input[name="flag-reason"]:checked');
+  if (!checkedReason) return;
+  var reason = checkedReason.value;
   if (!reason) return;
   
   var idea = adminIdeas.find(i => i.id === currentFlagId);

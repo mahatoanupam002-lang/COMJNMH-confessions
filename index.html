@@ -224,6 +224,8 @@ function handleNavAuth(e) {
   const user = MedReformAuth.getCurrentUser();
   if (user) {
     handleLogout(e);
+  } else {
+    window.location.href = '/auth';
   }
 }
 
