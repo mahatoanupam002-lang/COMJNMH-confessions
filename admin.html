@@ -5,246 +5,395 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Panel — MedReform</title>
 <meta name="robots" content="noindex, nofollow">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Admin Panel">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Epilogue:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
 <style>
+  /* ── Login ─────────────────────────────────────── */
   .login-screen {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(135deg, rgba(10,15,13,0.95) 0%, rgba(10,15,13,0.98) 100%);
+    position: fixed; inset: 0;
+    background: rgba(10,15,13,0.97);
     display: flex; align-items: center; justify-content: center;
-    z-index: 1000; flex-direction: column; gap: 24px;
+    z-index: 1000;
   }
-
   .login-card {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 20px; padding: 48px; max-width: 400px; width: 90%;
-    display: flex; flex-direction: column; gap: 24px;
+    border-radius: 20px; padding: 48px; max-width: 420px; width: 90%;
+    display: flex; flex-direction: column; gap: 20px;
   }
-
+  .login-logo {
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; margin-bottom: 4px;
+  }
+  .login-logo .logo-mark { width: 40px; height: 40px; font-size: 18px; }
   .login-card h1 {
     font-family: 'Instrument Serif', serif;
-    font-size: 28px; color: var(--text); text-align: center;
+    font-size: 26px; color: var(--text); text-align: center; margin: 0;
   }
-
-  .login-card p {
-    color: var(--text-muted); text-align: center; font-size: 14px;
-  }
-
+  .login-card p { color: var(--text-muted); text-align: center; font-size: 13px; margin: 0; }
   .login-input {
     background: var(--bg); border: 1px solid var(--border);
     border-radius: 12px; padding: 14px 16px;
     color: var(--text); font-family: 'Epilogue', sans-serif;
-    font-size: 14px; transition: all 0.2s;
+    font-size: 14px; transition: all 0.2s; width: 100%; box-sizing: border-box;
   }
-
-  .login-input:focus {
-    outline: none; border-color: var(--accent);
-    box-shadow: 0 0 0 2px var(--accent-dim);
-  }
-
+  .login-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
+  .login-input:disabled { opacity: 0.5; cursor: not-allowed; }
   .login-btn {
     background: var(--accent); color: var(--bg);
     border: none; border-radius: 12px; padding: 14px 24px;
     font-family: 'Epilogue', sans-serif; font-weight: 600; font-size: 14px;
-    cursor: pointer; transition: all 0.2s;
+    cursor: pointer; transition: all 0.2s; width: 100%;
   }
-
-  .login-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(74, 222, 128, 0.2); }
-  .login-btn:active { transform: translateY(0); }
-
+  .login-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(74,222,128,0.2); }
+  .login-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
   .login-error {
-    background: rgba(248, 113, 113, 0.1); color: var(--red);
-    border: 1px solid var(--red); border-radius: 8px;
-    padding: 12px 16px; font-size: 13px; text-align: center;
-    display: none;
+    background: rgba(248,113,113,0.1); color: var(--red);
+    border: 1px solid rgba(248,113,113,0.4); border-radius: 8px;
+    padding: 12px 16px; font-size: 13px; text-align: center; display: none;
   }
 
+  /* ── Admin shell ─────────────────────────────────── */
   .admin-screen { display: none; }
   .admin-screen.active { display: block; }
 
-  .admin-top-bar {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 32px; gap: 16px; flex-wrap: wrap;
+  .admin-shell {
+    max-width: 1100px; margin: 0 auto;
+    padding: 24px 20px 100px;
   }
 
-  .admin-top-bar h1 {
+  /* ── Admin header ─────────────────────────────────── */
+  .admin-header {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 28px; flex-wrap: wrap;
+  }
+  .admin-header h1 {
     font-family: 'Instrument Serif', serif;
-    font-size: 32px; color: var(--text); flex: 1; min-width: 200px;
+    font-size: 28px; color: var(--text); flex: 1; min-width: 180px; margin: 0;
+  }
+  .session-badge {
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    color: var(--text-dim); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 5px 10px;
+  }
+  .session-badge.expiring { color: var(--amber); border-color: rgba(251,191,36,0.4); }
+  .header-btns { display: flex; gap: 8px; align-items: center; }
+  .btn-export {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text-muted); border-radius: 8px; padding: 8px 16px;
+    font-family: 'Epilogue', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-export:hover { background: var(--surface2); color: var(--text); }
+  .btn-logout {
+    background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.3);
+    color: var(--red); border-radius: 8px; padding: 8px 16px;
+    font-family: 'Epilogue', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-logout:hover { background: rgba(248,113,113,0.15); }
+
+  /* ── Tabs ─────────────────────────────────────────── */
+  .admin-tabs {
+    display: flex; gap: 4px; margin-bottom: 28px;
+    border-bottom: 1px solid var(--border); padding-bottom: 0;
+  }
+  .admin-tab {
+    background: transparent; border: none; border-bottom: 2px solid transparent;
+    padding: 10px 18px; font-family: 'Epilogue', sans-serif; font-size: 13px; font-weight: 500;
+    color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+    margin-bottom: -1px; border-radius: 4px 4px 0 0;
+  }
+  .admin-tab:hover { color: var(--text); background: var(--surface); }
+  .admin-tab.active { color: var(--accent); border-bottom-color: var(--accent); background: transparent; }
+  .tab-badge {
+    display: inline-block; background: var(--red); color: #fff;
+    font-size: 10px; font-weight: 700; border-radius: 10px;
+    padding: 1px 6px; margin-left: 6px; vertical-align: middle;
   }
 
-  .admin-logout-btn {
-    padding: 10px 20px; border-radius: 8px; border: 1px solid var(--border);
-    background: transparent; color: var(--text-muted); font-family: 'Epilogue', sans-serif;
-    font-size: 13px; cursor: pointer; transition: all 0.2s;
-  }
+  /* ── Tab content ──────────────────────────────────── */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
 
-  .admin-logout-btn:hover { background: var(--surface2); color: var(--text); }
-
-  .admin-stats {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  /* ── Stats grid ───────────────────────────────────── */
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 12px; margin-bottom: 32px;
   }
-
   .stat-card {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 20px; text-align: center;
+    border-radius: 12px; padding: 20px 16px; text-align: center;
   }
-
+  .stat-card.alert { border-color: rgba(248,113,113,0.4); background: rgba(248,113,113,0.04); }
   .stat-val {
-    font-family: 'Instrument Serif', serif; font-size: 32px;
-    color: var(--accent); font-weight: 700;
+    font-family: 'Instrument Serif', serif; font-size: 36px;
+    color: var(--accent); font-weight: 700; line-height: 1;
   }
-
+  .stat-card.alert .stat-val { color: var(--red); }
   .stat-label {
     font-family: 'DM Mono', monospace; font-size: 11px;
     color: var(--text-dim); text-transform: uppercase; margin-top: 8px;
   }
+  .stat-sub { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
 
-  .admin-toolbar {
-    display: flex; gap: 12px; margin-bottom: 24px; align-items: center;
-    flex-wrap: wrap;
+  /* ── Dashboard recent activity ────────────────────── */
+  .dash-cols {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
   }
+  @media (max-width: 700px) { .dash-cols { grid-template-columns: 1fr; } }
+  .dash-panel {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+  .dash-panel-head {
+    padding: 14px 16px; border-bottom: 1px solid var(--border);
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .dash-panel-body { padding: 0; }
+  .dash-row {
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; gap: 12px; font-size: 13px;
+  }
+  .dash-row:last-child { border-bottom: none; }
+  .dash-row-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .dash-row-main { flex: 1; min-width: 0; }
+  .dash-row-title { color: var(--text); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dash-row-meta { color: var(--text-dim); font-size: 11px; margin-top: 2px; }
+  .dash-row-val { color: var(--accent); font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 600; flex-shrink: 0; }
 
-  .admin-toolbar input {
+  /* ── Ideas toolbar ────────────────────────────────── */
+  .ideas-toolbar {
+    display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center;
+  }
+  .ideas-toolbar input {
     background: var(--bg); border: 1px solid var(--border);
-    border-radius: 8px; padding: 10px 16px; color: var(--text);
+    border-radius: 8px; padding: 9px 14px; color: var(--text);
     font-family: 'Epilogue', sans-serif; font-size: 13px;
-    flex: 1; min-width: 200px;
+    flex: 1; min-width: 180px;
   }
-
-  .admin-toolbar input:focus {
-    outline: none; border-color: var(--accent);
-  }
-
-  .filter-tags {
-    display: flex; gap: 8px; flex-wrap: wrap;
-  }
-
-  .filter-tag {
+  .ideas-toolbar input:focus { outline: none; border-color: var(--accent); }
+  .filter-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
     padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border);
     background: var(--surface); color: var(--text-muted); font-size: 12px;
-    cursor: pointer; transition: all 0.2s;
+    cursor: pointer; transition: all 0.15s; font-family: 'Epilogue', sans-serif;
   }
-
-  .filter-tag.active {
-    background: var(--accent-dim); color: var(--accent); border-color: var(--accent);
+  .chip:hover { background: var(--surface2); color: var(--text); }
+  .chip.active { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
+  .sort-select {
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text-muted); border-radius: 8px; padding: 8px 12px;
+    font-family: 'Epilogue', sans-serif; font-size: 12px; cursor: pointer;
   }
+  .sort-select:focus { outline: none; border-color: var(--accent); }
 
-  .admin-list { display: flex; flex-direction: column; gap: 12px; }
-
+  /* ── Idea rows ────────────────────────────────────── */
+  .idea-list { display: flex; flex-direction: column; gap: 10px; }
   .idea-row {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 16px; display: grid;
-    grid-template-columns: 40px 1fr auto; gap: 12px;
-    align-items: start;
+    border-radius: 12px; overflow: hidden; transition: border-color 0.15s;
   }
-
-  .idea-id { font-family: 'DM Mono', monospace; color: var(--text-dim); }
-
-  .idea-info { display: flex; flex-direction: column; gap: 6px; }
-
-  .idea-title {
-    color: var(--text); font-weight: 600; font-size: 14px;
+  .idea-row.flagged-row { border-color: rgba(248,113,113,0.5); }
+  .idea-row-main {
+    display: grid; grid-template-columns: 60px 1fr auto;
+    gap: 0; align-items: stretch;
   }
-
-  .idea-meta {
-    display: flex; gap: 12px; font-size: 12px; color: var(--text-dim);
+  .idea-vote-col {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 4px; padding: 16px 0; background: var(--bg); border-right: 1px solid var(--border);
+    min-width: 60px;
   }
-
-  .idea-vote-badge {
-    background: var(--accent-dim); color: var(--accent);
-    padding: 4px 10px; border-radius: 6px; font-weight: 600;
+  .idea-vote-num {
+    font-family: 'Instrument Serif', serif; font-size: 20px; color: var(--accent); font-weight: 700;
   }
-
-  .idea-flag-badge {
-    background: rgba(248, 113, 113, 0.12); color: var(--red);
-    padding: 4px 10px; border-radius: 6px; font-weight: 600;
+  .idea-vote-lbl { font-size: 10px; color: var(--text-dim); text-transform: uppercase; font-family: 'DM Mono', monospace; }
+  .idea-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .idea-title-row { display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
+  .idea-title { font-weight: 600; color: var(--text); font-size: 14px; flex: 1; min-width: 0; }
+  .idea-badges { display: flex; gap: 6px; flex-wrap: wrap; flex-shrink: 0; }
+  .badge-cat {
+    padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;
+    background: rgba(74,222,128,0.08); color: var(--accent); text-transform: uppercase; letter-spacing: 0.3px;
   }
-
-  .idea-status-badge {
-    padding: 4px 10px; border-radius: 6px; font-weight: 600;
-    font-size: 12px;
+  .badge-status {
+    padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;
   }
-
-  .idea-status-badge.submitted { background: rgba(251, 191, 36, 0.12); color: var(--amber); }
-  .idea-status-badge.reviewed { background: rgba(96, 165, 250, 0.12); color: var(--blue); }
-  .idea-status-badge.implemented { background: rgba(74, 222, 128, 0.12); color: var(--accent); }
-  .idea-status-badge.rejected { background: rgba(248, 113, 113, 0.12); color: var(--red); }
-
-  .idea-actions {
-    display: flex; gap: 6px; flex-wrap: wrap;
+  .badge-status.submitted  { background: rgba(251,191,36,0.12);  color: var(--amber); }
+  .badge-status.reviewed   { background: rgba(96,165,250,0.12);  color: var(--blue); }
+  .badge-status.implemented{ background: rgba(74,222,128,0.12);  color: var(--accent); }
+  .badge-status.rejected   { background: rgba(248,113,113,0.12); color: var(--red); }
+  .badge-flag { background: rgba(248,113,113,0.12); color: var(--red); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+  .idea-meta-row { display: flex; gap: 10px; font-size: 12px; color: var(--text-dim); flex-wrap: wrap; }
+  .idea-excerpt { color: var(--text-muted); font-size: 12px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .idea-actions-col {
+    padding: 14px 12px; display: flex; flex-direction: column; gap: 6px;
+    align-items: flex-end; justify-content: flex-start; border-left: 1px solid var(--border);
+    min-width: 120px; flex-shrink: 0;
   }
-
-  .idea-action-btn {
-    padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border);
+  .status-select {
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text-muted); border-radius: 6px; padding: 5px 8px;
+    font-family: 'Epilogue', sans-serif; font-size: 11px; cursor: pointer; width: 100%;
+  }
+  .status-select:focus { outline: none; border-color: var(--accent); }
+  .action-btns { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+  .btn-action {
+    padding: 5px 10px; border-radius: 5px; border: 1px solid var(--border);
     background: transparent; color: var(--text-muted); font-size: 11px;
-    cursor: pointer; font-family: 'Epilogue', sans-serif; transition: all 0.2s;
+    cursor: pointer; font-family: 'Epilogue', sans-serif; transition: all 0.15s; white-space: nowrap;
   }
+  .btn-action:hover { background: var(--surface2); color: var(--text); }
+  .btn-action.danger { color: var(--red); border-color: rgba(248,113,113,0.3); }
+  .btn-action.danger:hover { background: rgba(248,113,113,0.08); }
+  .btn-action.success { color: var(--accent); border-color: rgba(74,222,128,0.3); }
+  .btn-action.success:hover { background: var(--accent-dim); }
 
-  .idea-action-btn:hover { background: var(--surface2); color: var(--text); }
+  /* ── Empty state ──────────────────────────────────── */
+  .empty-state { text-align: center; padding: 48px 20px; color: var(--text-muted); }
+  .empty-state h3 { color: var(--text); margin-bottom: 8px; }
 
-  .idea-action-btn.flag { color: var(--red); border-color: rgba(248, 113, 113, 0.3); }
-  .idea-action-btn.flag:hover { border-color: var(--red); background: rgba(248, 113, 113, 0.05); }
-
-  .modal {
-    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.8); z-index: 200;
-    align-items: center; justify-content: center;
-  }
-
-  .modal.open { display: flex; }
-
-  .modal-content {
+  /* ── Activity log ─────────────────────────────────── */
+  .log-toolbar { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+  .log-list { display: flex; flex-direction: column; gap: 6px; }
+  .log-entry {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 16px; padding: 32px; max-width: 500px; width: 90%;
-    max-height: 80vh; overflow-y: auto;
+    border-radius: 8px; padding: 10px 14px;
+    display: flex; align-items: flex-start; gap: 12px; font-size: 13px;
   }
-
-  .modal-header {
-    font-family: 'Instrument Serif', serif; font-size: 22px;
-    color: var(--text); margin-bottom: 16px;
+  .log-action {
+    font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 600;
+    padding: 2px 8px; border-radius: 4px; flex-shrink: 0; margin-top: 1px;
   }
+  .log-action.status-change { background: rgba(96,165,250,0.12); color: var(--blue); }
+  .log-action.edit          { background: rgba(74,222,128,0.12);  color: var(--accent); }
+  .log-action.delete        { background: rgba(248,113,113,0.12); color: var(--red); }
+  .log-action.flag          { background: rgba(248,113,113,0.12); color: var(--red); }
+  .log-action.unflag        { background: rgba(74,222,128,0.12);  color: var(--accent); }
+  .log-action.comment       { background: rgba(251,191,36,0.12);  color: var(--amber); }
+  .log-action.export        { background: rgba(122,148,133,0.12); color: var(--text-dim); }
+  .log-detail { flex: 1; color: var(--text-muted); }
+  .log-time { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); flex-shrink: 0; }
 
-  .modal-body { color: var(--text-muted); margin-bottom: 24px; line-height: 1.6; }
-
+  /* ── Modals ───────────────────────────────────────── */
+  .modal {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8); z-index: 500;
+    align-items: center; justify-content: center; padding: 16px;
+  }
+  .modal.open { display: flex; }
+  .modal-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; width: 100%; max-width: 560px;
+    max-height: 90vh; overflow-y: auto;
+    display: flex; flex-direction: column;
+  }
+  .modal-head {
+    padding: 20px 24px 0; display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-head h2 {
+    font-family: 'Instrument Serif', serif; font-size: 22px; color: var(--text); margin: 0;
+  }
+  .modal-close {
+    background: transparent; border: none; color: var(--text-dim); font-size: 20px;
+    cursor: pointer; line-height: 1; padding: 4px; transition: color 0.15s;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { padding: 16px 24px 24px; display: flex; flex-direction: column; gap: 16px; }
   .modal-footer {
-    display: flex; gap: 12px; justify-content: flex-end;
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    display: flex; gap: 10px; justify-content: flex-end; flex-shrink: 0;
   }
-
-  .btn-small {
-    padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border);
-    background: transparent; color: var(--text); cursor: pointer;
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-label {
+    font-family: 'Epilogue', sans-serif; font-size: 12px; font-weight: 600;
+    color: var(--text); text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .form-input, .form-textarea, .form-select {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px; color: var(--text);
     font-family: 'Epilogue', sans-serif; font-size: 13px; transition: all 0.2s;
   }
-
-  .btn-small:hover { background: var(--surface2); }
-
-  .btn-small-primary {
-    background: var(--accent); color: var(--bg); border-color: var(--accent);
+  .form-input:focus, .form-textarea:focus, .form-select:focus {
+    outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim);
   }
-
-  .btn-small-primary:hover { background: var(--accent2); }
-
-  .comment-section {
-    margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);
+  .form-textarea { resize: vertical; min-height: 100px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .btn-primary-sm {
+    background: var(--accent); color: var(--bg); border: none; border-radius: 8px;
+    padding: 10px 20px; font-family: 'Epilogue', sans-serif; font-weight: 600; font-size: 13px;
+    cursor: pointer; transition: all 0.2s;
   }
-
-  .comment-item {
+  .btn-primary-sm:hover { background: var(--accent2); }
+  .btn-ghost-sm {
+    background: transparent; border: 1px solid var(--border); color: var(--text);
+    border-radius: 8px; padding: 10px 20px; font-family: 'Epilogue', sans-serif;
+    font-size: 13px; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-ghost-sm:hover { background: var(--surface2); }
+  .btn-danger-sm {
+    background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.4); color: var(--red);
+    border-radius: 8px; padding: 10px 20px; font-family: 'Epilogue', sans-serif;
+    font-size: 13px; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-danger-sm:hover { background: rgba(248,113,113,0.2); }
+  .comment-item-admin {
     background: var(--bg); border: 1px solid var(--border);
-    border-radius: 8px; padding: 10px; margin-bottom: 8px; font-size: 12px;
+    border-radius: 8px; padding: 10px 12px; font-size: 12px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .comment-item-admin .c-head { display: flex; justify-content: space-between; align-items: center; }
+  .comment-item-admin .c-author { color: var(--text); font-weight: 600; }
+  .comment-item-admin .c-time { color: var(--text-dim); font-size: 11px; }
+  .comment-item-admin .c-text { color: var(--text-muted); line-height: 1.4; }
+  .flag-reason-list { display: flex; flex-direction: column; gap: 8px; }
+  .flag-reason-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--bg); cursor: pointer; transition: all 0.15s;
+  }
+  .flag-reason-item:hover { border-color: var(--red); background: rgba(248,113,113,0.04); }
+  .flag-reason-item input[type=radio] { accent-color: var(--red); }
+  .flag-reason-item label { color: var(--text-muted); font-size: 13px; cursor: pointer; flex: 1; }
+
+  /* ── Change password section ──────────────────────── */
+  .pw-section {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; margin-top: 24px;
+  }
+  .pw-section h3 {
+    font-family: 'Instrument Serif', serif; font-size: 18px; color: var(--text); margin: 0 0 8px;
+  }
+  .pw-section p { color: var(--text-muted); font-size: 13px; margin: 0 0 12px; line-height: 1.5; }
+  .pw-gen-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .pw-gen-input {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 9px 12px; color: var(--text); font-family: 'Epilogue', sans-serif; font-size: 13px;
+    flex: 1; min-width: 160px;
+  }
+  .pw-gen-input:focus { outline: none; border-color: var(--accent); }
+  .pw-hash-display {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; font-family: 'DM Mono', monospace; font-size: 11px;
+    color: var(--accent); word-break: break-all; margin-top: 10px; display: none;
   }
 
-  .comment-author { color: var(--text); font-weight: 600; }
-  .comment-time { color: var(--text-dim); font-size: 11px; }
-  .comment-text { color: var(--text-muted); margin-top: 4px; }
-
+  /* ── Responsive ───────────────────────────────────── */
   @media (max-width: 700px) {
-    .admin-wrap { padding: 20px; }
-    .idea-row { grid-template-columns: 1fr; }
-    .admin-toolbar { flex-direction: column; }
-    .login-card { padding: 32px 24px; }
+    .admin-shell { padding: 16px 12px 100px; }
+    .admin-tabs { gap: 0; overflow-x: auto; }
+    .admin-tab { padding: 10px 12px; font-size: 12px; white-space: nowrap; }
+    .idea-row-main { grid-template-columns: 50px 1fr; }
+    .idea-actions-col { display: none; }
+    .idea-body { padding: 12px; }
+    .mobile-actions { display: flex !important; }
+    .dash-cols { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .header-btns .btn-export { display: none; }
+  }
+  .mobile-actions {
+    display: none; padding: 10px 12px; gap: 6px; flex-wrap: wrap;
+    border-top: 1px solid var(--border); background: var(--bg);
   }
 </style>
 </head>
@@ -266,132 +415,300 @@
   <span class="badge live">Admin</span>
 </header>
 
-<!-- LOGIN SCREEN -->
+<!-- ═══════════════ LOGIN ═══════════════ -->
 <div class="login-screen" id="login-screen">
   <div class="login-card">
-    <h1>Admin Access</h1>
-    <p>Enter your credentials to access the moderation dashboard.</p>
-    <input type="password" id="admin-password" class="login-input" placeholder="Admin Password" autocomplete="current-password">
-    <button class="login-btn" onclick="attemptLogin()">Sign In</button>
-    <div class="login-error" id="login-error">Invalid password. Try again.</div>
+    <div class="login-logo">
+      <div class="logo-mark">M+</div>
+      <div>
+        <div class="logo-text">MedReform</div>
+        <div class="logo-sub">Admin Access</div>
+      </div>
+    </div>
+    <h1>Sign In</h1>
+    <p>Access the moderation and management dashboard.</p>
+    <input type="password" id="admin-password" class="login-input"
+           placeholder="Admin password" autocomplete="current-password">
+    <button class="login-btn" id="login-btn" onclick="attemptLogin()">Sign In</button>
+    <div class="login-error" id="login-error"></div>
   </div>
 </div>
 
-<!-- ADMIN DASHBOARD -->
+<!-- ═══════════════ ADMIN SCREEN ═══════════════ -->
 <div class="admin-screen" id="admin-screen">
-  <div class="admin-wrap">
-    <div class="admin-top-bar">
+  <div class="admin-shell">
+
+    <!-- Header -->
+    <div class="admin-header">
       <h1>Dashboard</h1>
-      <div style="display: flex; gap: 8px;">
-        <button class="btn btn-primary" onclick="exportAllData()">⬇ Export</button>
-        <button class="admin-logout-btn" onclick="adminLogout()">Logout</button>
+      <span class="session-badge" id="session-badge">Session active</span>
+      <div class="header-btns">
+        <button class="btn-export" onclick="exportAllData()">⬇ Export JSON</button>
+        <button class="btn-logout" onclick="adminLogout()">Logout</button>
       </div>
     </div>
 
-    <!-- STATS -->
-    <div class="admin-stats">
-      <div class="stat-card">
-        <div class="stat-val" id="stat-total">0</div>
-        <div class="stat-label">Ideas</div>
+    <!-- Tab nav -->
+    <nav class="admin-tabs">
+      <button class="admin-tab active" onclick="switchTab('dashboard', this)">Overview</button>
+      <button class="admin-tab" onclick="switchTab('ideas', this)">All Ideas</button>
+      <button class="admin-tab" id="tab-flagged-btn" onclick="switchTab('flagged', this)">Flagged</button>
+      <button class="admin-tab" onclick="switchTab('log', this)">Activity Log</button>
+      <button class="admin-tab" onclick="switchTab('settings', this)">Settings</button>
+    </nav>
+
+    <!-- ── TAB: Overview ── -->
+    <div id="tab-dashboard" class="tab-content active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-val" id="stat-total">0</div>
+          <div class="stat-label">Total Ideas</div>
+          <div class="stat-sub" id="stat-pending-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="stat-votes">0</div>
+          <div class="stat-label">Total Votes</div>
+          <div class="stat-sub" id="stat-avg-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="stat-implemented">0</div>
+          <div class="stat-label">Implemented</div>
+          <div class="stat-sub" id="stat-impl-rate"></div>
+        </div>
+        <div class="stat-card" id="stat-flagged-card">
+          <div class="stat-val" id="stat-flagged">0</div>
+          <div class="stat-label">Flagged</div>
+          <div class="stat-sub">needs review</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="stat-comments">0</div>
+          <div class="stat-label">Comments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="stat-reviewed">0</div>
+          <div class="stat-label">Under Review</div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-val" id="stat-flagged">0</div>
-        <div class="stat-label">Flagged</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val" id="stat-implemented">0</div>
-        <div class="stat-label">Implemented</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val" id="stat-votes">0</div>
-        <div class="stat-label">Total Votes</div>
+
+      <div class="dash-cols">
+        <div class="dash-panel">
+          <div class="dash-panel-head">
+            <span>Top Ideas by Votes</span>
+            <a href="#" onclick="switchTabByName('ideas'); return false;" style="font-size:11px; color:var(--accent);">View all →</a>
+          </div>
+          <div class="dash-panel-body" id="dash-top-ideas"></div>
+        </div>
+        <div class="dash-panel">
+          <div class="dash-panel-head">
+            <span>Recent Activity</span>
+            <a href="#" onclick="switchTabByName('log'); return false;" style="font-size:11px; color:var(--accent);">Full log →</a>
+          </div>
+          <div class="dash-panel-body" id="dash-recent-log"></div>
+        </div>
       </div>
     </div>
 
-    <!-- TOOLBAR -->
-    <div class="admin-toolbar">
-      <input type="text" id="admin-search" placeholder="Search ideas..." onkeyup="applySearchFilter()">
-      <div class="filter-tags">
-        <div class="filter-tag active" data-status="all" onclick="setStatusFilter('all', this)">All</div>
-        <div class="filter-tag" data-status="submitted" onclick="setStatusFilter('submitted', this)">Submitted</div>
-        <div class="filter-tag" data-status="reviewed" onclick="setStatusFilter('reviewed', this)">Reviewed</div>
-        <div class="filter-tag" data-status="implemented" onclick="setStatusFilter('implemented', this)">Implemented</div>
-        <div class="filter-tag" data-status="rejected" onclick="setStatusFilter('rejected', this)">Rejected</div>
-        <div class="filter-tag" data-status="flagged" onclick="setStatusFilter('flagged', this)">🚩 Flagged</div>
+    <!-- ── TAB: All Ideas ── -->
+    <div id="tab-ideas" class="tab-content">
+      <div class="ideas-toolbar">
+        <input type="text" id="ideas-search" placeholder="Search ideas…" oninput="renderIdeas()">
+        <select class="sort-select" id="ideas-sort" onchange="renderIdeas()">
+          <option value="votes">Sort: Most Votes</option>
+          <option value="new">Sort: Newest</option>
+          <option value="flags">Sort: Most Flagged</option>
+          <option value="comments">Sort: Most Comments</option>
+        </select>
+      </div>
+      <div class="filter-chips" id="cat-filters" style="margin-bottom:12px;">
+        <button class="chip active" data-cat="all" onclick="setChip(this,'cat')">All</button>
+        <button class="chip" data-cat="governance" onclick="setChip(this,'cat')">Governance</button>
+        <button class="chip" data-cat="safety" onclick="setChip(this,'cat')">Safety</button>
+        <button class="chip" data-cat="academic" onclick="setChip(this,'cat')">Academic</button>
+        <button class="chip" data-cat="infrastructure" onclick="setChip(this,'cat')">Infrastructure</button>
+        <button class="chip" data-cat="welfare" onclick="setChip(this,'cat')">Welfare</button>
+      </div>
+      <div class="filter-chips" id="status-filters" style="margin-bottom:20px;">
+        <button class="chip active" data-status="all" onclick="setChip(this,'status')">All Status</button>
+        <button class="chip" data-status="submitted" onclick="setChip(this,'status')">Submitted</button>
+        <button class="chip" data-status="reviewed" onclick="setChip(this,'status')">Reviewed</button>
+        <button class="chip" data-status="implemented" onclick="setChip(this,'status')">Implemented</button>
+        <button class="chip" data-status="rejected" onclick="setChip(this,'status')">Rejected</button>
+      </div>
+      <div class="idea-list" id="ideas-list"></div>
+      <div class="empty-state" id="ideas-empty" style="display:none;">
+        <h3>No ideas match</h3>
+        <p>Adjust your search or filters.</p>
       </div>
     </div>
 
-    <!-- IDEAS LIST -->
-    <div class="admin-list" id="admin-list"></div>
-
-    <div class="empty-state" id="empty-admin" style="display: none; margin-top: 40px;">
-      <h3>No ideas matching filters</h3>
-      <p>Adjust your search or filters to see results.</p>
+    <!-- ── TAB: Flagged ── -->
+    <div id="tab-flagged" class="tab-content">
+      <p style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">
+        Ideas automatically hidden from public view after 3 flags. Review and clear or delete.
+      </p>
+      <div class="idea-list" id="flagged-list"></div>
+      <div class="empty-state" id="flagged-empty" style="display:none;">
+        <h3>No flagged ideas</h3>
+        <p>Nothing needs review right now.</p>
+      </div>
     </div>
-  </div>
-</div>
 
-<!-- MODALS -->
+    <!-- ── TAB: Activity Log ── -->
+    <div id="tab-log" class="tab-content">
+      <div class="log-toolbar">
+        <button class="btn-ghost-sm" onclick="confirmClearLog()">Clear Log</button>
+      </div>
+      <div class="log-list" id="log-list"></div>
+      <div class="empty-state" id="log-empty" style="display:none;">
+        <h3>No activity yet</h3>
+        <p>Admin actions will appear here.</p>
+      </div>
+    </div>
 
-<!-- Status Update Modal -->
-<div class="modal" id="status-modal">
-  <div class="modal-content">
-    <div class="modal-header">Update Status</div>
-    <div class="modal-body" id="status-modal-body"></div>
+    <!-- ── TAB: Settings ── -->
+    <div id="tab-settings" class="tab-content">
+      <div class="pw-section">
+        <h3>Change Admin Password</h3>
+        <p>
+          The admin password is stored as a SHA-256 hash in <code>data.js</code>.
+          Enter a new password below to generate its hash, then replace the
+          <code>ADMIN_PASSWORD_HASH</code> constant in <code>data.js</code> with the result.
+        </p>
+        <div class="pw-gen-row">
+          <input type="password" class="pw-gen-input" id="pw-new-input" placeholder="New password">
+          <button class="btn-primary-sm" onclick="generateHash()">Generate Hash</button>
+        </div>
+        <div class="pw-hash-display" id="pw-hash-result"></div>
+      </div>
+
+      <div class="pw-section" style="margin-top:16px;">
+        <h3>Data Management</h3>
+        <p>Export all ideas and comments as a JSON backup file.</p>
+        <button class="btn-primary-sm" onclick="exportAllData()">⬇ Export JSON Backup</button>
+      </div>
+
+      <div class="pw-section" style="margin-top:16px; border-color: rgba(248,113,113,0.3);">
+        <h3 style="color:var(--red);">Danger Zone</h3>
+        <p>Reset all ideas back to the original seed data. This permanently deletes all submitted ideas, votes, and comments.</p>
+        <button class="btn-danger-sm" onclick="confirmReset()">Reset All Data</button>
+      </div>
+    </div>
+
+  </div><!-- /admin-shell -->
+</div><!-- /admin-screen -->
+
+<!-- ═══════════════ MODALS ═══════════════ -->
+
+<!-- Edit Idea -->
+<div class="modal" id="edit-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>Edit Idea</h2>
+      <button class="modal-close" onclick="closeModal('edit-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select id="edit-category" class="form-select">
+            <option value="governance">Governance</option>
+            <option value="safety">Safety</option>
+            <option value="academic">Academic</option>
+            <option value="infrastructure">Infrastructure</option>
+            <option value="welfare">Welfare</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select id="edit-status" class="form-select">
+            <option value="submitted">Submitted</option>
+            <option value="reviewed">Under Review</option>
+            <option value="implemented">Implemented</option>
+            <option value="rejected">Not Viable</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input type="text" id="edit-title" class="form-input" maxlength="150">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea id="edit-text" class="form-textarea" maxlength="1000"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Author</label>
+          <input type="text" id="edit-author" class="form-input" maxlength="100">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Feasibility (0–100)</label>
+          <input type="number" id="edit-feasibility" class="form-input" min="0" max="100">
+        </div>
+      </div>
+    </div>
     <div class="modal-footer">
-      <button class="btn-small" onclick="closeModal('status-modal')">Cancel</button>
-      <button class="btn-small btn-small-primary" onclick="saveStatusUpdate()">Save</button>
+      <button class="btn-ghost-sm" onclick="closeModal('edit-modal')">Cancel</button>
+      <button class="btn-primary-sm" onclick="saveEdit()">Save Changes</button>
     </div>
   </div>
 </div>
 
-<!-- Comments Modal -->
+<!-- Comments -->
 <div class="modal" id="comments-modal">
-  <div class="modal-content">
-    <div class="modal-header">Comments</div>
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>Comments</h2>
+      <button class="modal-close" onclick="closeModal('comments-modal')">✕</button>
+    </div>
     <div class="modal-body" id="comments-modal-body"></div>
     <div class="modal-footer">
-      <button class="btn-small btn-small-primary" onclick="closeModal('comments-modal')">Close</button>
+      <button class="btn-primary-sm" onclick="closeModal('comments-modal')">Close</button>
     </div>
   </div>
 </div>
 
-<!-- Flag Modal -->
+<!-- Flag reason -->
 <div class="modal" id="flag-modal">
-  <div class="modal-content">
-    <div class="modal-header">Flag Content</div>
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>Flag Idea</h2>
+      <button class="modal-close" onclick="closeModal('flag-modal')">✕</button>
+    </div>
     <div class="modal-body">
-      <p style="margin-bottom: 12px;">Select reason for flagging:</p>
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-muted); font-size: 13px;">
-          <input type="radio" name="flag-reason" value="spam"> Spam/Duplicate
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-muted); font-size: 13px;">
-          <input type="radio" name="flag-reason" value="offensive"> Offensive Content
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-muted); font-size: 13px;">
-          <input type="radio" name="flag-reason" value="misinformation"> Misinformation
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-muted); font-size: 13px;">
-          <input type="radio" name="flag-reason" value="other"> Other
-        </label>
+      <div class="flag-reason-list">
+        <div class="flag-reason-item">
+          <input type="radio" name="flag-reason" id="fr-spam" value="spam">
+          <label for="fr-spam">Spam / Duplicate</label>
+        </div>
+        <div class="flag-reason-item">
+          <input type="radio" name="flag-reason" id="fr-offensive" value="offensive">
+          <label for="fr-offensive">Offensive Content</label>
+        </div>
+        <div class="flag-reason-item">
+          <input type="radio" name="flag-reason" id="fr-misinfo" value="misinformation">
+          <label for="fr-misinfo">Misinformation</label>
+        </div>
+        <div class="flag-reason-item">
+          <input type="radio" name="flag-reason" id="fr-other" value="other">
+          <label for="fr-other">Other</label>
+        </div>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-small" onclick="closeModal('flag-modal')">Cancel</button>
-      <button class="btn-small btn-small-primary" onclick="confirmFlag()">Flag</button>
+      <button class="btn-ghost-sm" onclick="closeModal('flag-modal')">Cancel</button>
+      <button class="btn-danger-sm" onclick="confirmFlag()">Flag Idea</button>
     </div>
   </div>
 </div>
 
-<!-- Mobile bottom nav -->
+<!-- Mobile nav -->
 <nav class="mobile-nav">
   <a href="/" class="mob-tab"><span class="mob-icon">⌂</span><span>Home</span></a>
   <a href="/ideas" class="mob-tab"><span class="mob-icon">≡</span><span>Ideas</span></a>
-  <a href="/admin" class="mob-tab active" style="background: var(--accent-dim); color: var(--accent);"><span class="mob-icon">⚙</span><span>Admin</span></a>
+  <a href="/admin" class="mob-tab active" style="background:var(--accent-dim);color:var(--accent);"><span class="mob-icon">⚙</span><span>Admin</span></a>
 </nav>
 
-<!-- Toast -->
 <div class="toast" id="toast">
   <span class="toast-icon">✓</span>
   <span class="toast-text"></span>
@@ -399,11 +716,15 @@
 
 <script src="/data.js"></script>
 <script>
-var adminIdeas = [];
-var currentStatusEditId = null;
-var currentFlagId = null;
-var activeFilters = { status: 'all', search: '' };
+// ─── State ────────────────────────────────────────────────────────────────────
+var adminIdeas      = [];
+var editingIdeaId   = null;
+var flaggingIdeaId  = null;
+var activeTab       = 'dashboard';
+var ideaFilters     = { cat: 'all', status: 'all' };
+var sessionTimer    = null;
 
+// ─── Boot ─────────────────────────────────────────────────────────────────────
 function initAdmin() {
   if (!isAdminLoggedIn()) {
     showLoginScreen();
@@ -421,41 +742,39 @@ function showLoginScreen() {
 function showAdminScreen() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('admin-screen').classList.add('active');
-  loadAdminData();
+  loadAll();
+  startSessionTimer();
 }
 
+// ─── Login ────────────────────────────────────────────────────────────────────
 function refreshLockoutUI() {
-  var errEl = document.getElementById('login-error');
-  var btn = document.querySelector('.login-btn');
+  var errEl   = document.getElementById('login-error');
+  var btn     = document.getElementById('login-btn');
   var pwInput = document.getElementById('admin-password');
 
   if (isLockedOut()) {
-    var remaining = Math.ceil(lockoutRemainingMs() / 60000);
-    errEl.textContent = 'Too many failed attempts. Try again in ' + remaining + ' minute(s).';
+    var mins = Math.ceil(lockoutRemainingMs() / 60000);
+    errEl.textContent = 'Too many failed attempts. Try again in ' + mins + ' minute(s).';
     errEl.style.display = 'block';
-    btn.disabled = true;
+    btn.disabled   = true;
     pwInput.disabled = true;
     setTimeout(refreshLockoutUI, 10000);
   } else {
-    btn.disabled = false;
+    btn.disabled     = false;
     pwInput.disabled = false;
-    if (errEl.textContent.includes('Too many')) {
-      errEl.style.display = 'none';
-    }
+    if (errEl.textContent.includes('Too many')) errEl.style.display = 'none';
   }
 }
 
 async function attemptLogin() {
   if (isLockedOut()) { refreshLockoutUI(); return; }
-  var password = document.getElementById('admin-password').value;
-  if (!password) return;
+  var pw  = document.getElementById('admin-password').value;
+  if (!pw) return;
 
-  var btn = document.querySelector('.login-btn');
-  btn.disabled = true;
-  btn.textContent = 'Checking…';
+  var btn = document.getElementById('login-btn');
+  btn.disabled = true; btn.textContent = 'Checking…';
 
-  var ok = await setAdminSession(password);
-
+  var ok = await setAdminSession(pw);
   btn.textContent = 'Sign In';
 
   if (ok) {
@@ -468,8 +787,8 @@ async function attemptLogin() {
       refreshLockoutUI();
     } else {
       var l = getLockout();
-      var remaining = LOCKOUT_MAX_ATTEMPTS - (l.attempts || 0);
-      errEl.textContent = 'Invalid password. ' + remaining + ' attempt(s) remaining before lockout.';
+      var left = LOCKOUT_MAX_ATTEMPTS - (l.attempts || 0);
+      errEl.textContent = 'Incorrect password. ' + left + ' attempt(s) left before lockout.';
       errEl.style.display = 'block';
       btn.disabled = false;
     }
@@ -478,155 +797,343 @@ async function attemptLogin() {
 }
 
 function adminLogout() {
-  if (confirm('Log out of admin panel?')) {
-    clearAdminSession();
-    document.getElementById('admin-screen').classList.remove('active');
-    document.getElementById('admin-password').value = '';
-    showLoginScreen();
+  if (!confirm('Log out of the admin panel?')) return;
+  clearAdminSession();
+  if (sessionTimer) clearInterval(sessionTimer);
+  document.getElementById('admin-screen').classList.remove('active');
+  document.getElementById('admin-password').value = '';
+  showLoginScreen();
+}
+
+// ─── Session timer ────────────────────────────────────────────────────────────
+function startSessionTimer() {
+  updateSessionBadge();
+  sessionTimer = setInterval(updateSessionBadge, 60000);
+}
+
+function updateSessionBadge() {
+  var session = getAdminSession();
+  if (!session) return;
+  var ms   = session.expiresAt - Date.now();
+  var mins = Math.ceil(ms / 60000);
+  var badge = document.getElementById('session-badge');
+  if (mins <= 30) {
+    badge.textContent = 'Session expires in ' + mins + 'm';
+    badge.className = 'session-badge expiring';
+  } else {
+    var hrs = Math.floor(mins / 60);
+    badge.textContent = 'Session expires in ' + hrs + 'h ' + (mins % 60) + 'm';
+    badge.className = 'session-badge';
   }
 }
 
-function loadAdminData() {
+// ─── Data load ────────────────────────────────────────────────────────────────
+function loadAll() {
   adminIdeas = getIdeas();
-  updateAdminStats();
-  renderAdminList();
+  updateStats();
+  renderDashboard();
+  renderIdeas();
+  renderFlagged();
+  renderLog();
+  updateFlaggedBadge();
 }
 
-function updateAdminStats() {
-  document.getElementById('stat-total').textContent       = adminIdeas.length;
-  document.getElementById('stat-flagged').textContent     = adminIdeas.filter(i => i.flagged || i.flagCount > 0).length;
-  document.getElementById('stat-implemented').textContent = adminIdeas.filter(i => i.status === 'implemented').length;
-  document.getElementById('stat-votes').textContent       = totalVotes(adminIdeas);
+// ─── Tab switching ────────────────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  activeTab = name;
 }
 
-function getFilteredIdeas() {
-  var filtered = adminIdeas;
-  if (activeFilters.search) filtered = searchIdeas(filtered, activeFilters.search);
-  if (activeFilters.status !== 'all') {
-    if (activeFilters.status === 'flagged') {
-      filtered = filtered.filter(i => i.flagged || i.flagCount > 0);
-    } else {
-      filtered = filtered.filter(i => i.status === activeFilters.status);
+function switchTabByName(name) {
+  var btn = Array.from(document.querySelectorAll('.admin-tab'))
+    .find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + name + "'"));
+  switchTab(name, btn);
+}
+
+// ─── Stats ────────────────────────────────────────────────────────────────────
+function updateStats() {
+  var total       = adminIdeas.length;
+  var votes       = totalVotes(adminIdeas);
+  var implemented = adminIdeas.filter(i => i.status === 'implemented').length;
+  var reviewed    = adminIdeas.filter(i => i.status === 'reviewed').length;
+  var flagged     = adminIdeas.filter(i => i.flagged || i.flagCount > 0).length;
+  var pending     = adminIdeas.filter(i => i.status === 'submitted').length;
+  var comments    = adminIdeas.reduce((s, i) => s + (i.comments ? i.comments.length : 0), 0);
+  var implRate    = total > 0 ? Math.round(implemented / total * 100) : 0;
+
+  document.getElementById('stat-total').textContent       = total;
+  document.getElementById('stat-votes').textContent       = votes;
+  document.getElementById('stat-implemented').textContent = implemented;
+  document.getElementById('stat-flagged').textContent     = flagged;
+  document.getElementById('stat-comments').textContent    = comments;
+  document.getElementById('stat-reviewed').textContent    = reviewed;
+
+  document.getElementById('stat-pending-sub').textContent  = pending + ' pending review';
+  document.getElementById('stat-avg-sub').textContent      = total > 0 ? (votes / total).toFixed(1) + ' avg per idea' : '';
+  document.getElementById('stat-impl-rate').textContent    = implRate + '% implementation rate';
+
+  var fc = document.getElementById('stat-flagged-card');
+  if (flagged > 0) { fc.classList.add('alert'); } else { fc.classList.remove('alert'); }
+}
+
+function updateFlaggedBadge() {
+  var n = adminIdeas.filter(i => i.flagged || i.flagCount > 0).length;
+  var btn = document.getElementById('tab-flagged-btn');
+  var existing = btn.querySelector('.tab-badge');
+  if (n > 0) {
+    if (!existing) {
+      var span = document.createElement('span');
+      span.className = 'tab-badge';
+      btn.appendChild(span);
+      existing = span;
     }
+    existing.textContent = n;
+  } else if (existing) {
+    existing.remove();
   }
-  return filtered;
 }
 
-function renderAdminList() {
-  var filtered  = getFilteredIdeas();
-  var container = document.getElementById('admin-list');
-  var empty     = document.getElementById('empty-admin');
-
-  if (filtered.length === 0) {
-    container.innerHTML = '';
-    empty.style.display = 'block';
-    return;
+// ─── Dashboard ────────────────────────────────────────────────────────────────
+function renderDashboard() {
+  // Top 5 by votes
+  var top = [...adminIdeas].sort((a, b) => b.votes - a.votes).slice(0, 5);
+  var topEl = document.getElementById('dash-top-ideas');
+  if (top.length === 0) {
+    topEl.innerHTML = '<div class="dash-row"><span style="color:var(--text-dim);font-size:13px;">No ideas yet.</span></div>';
+  } else {
+    topEl.innerHTML = top.map(function(i) {
+      return '<div class="dash-row">' +
+        '<span class="dash-row-icon">▲</span>' +
+        '<div class="dash-row-main">' +
+          '<div class="dash-row-title">' + escHtml(i.title.substring(0, 55)) + (i.title.length > 55 ? '…' : '') + '</div>' +
+          '<div class="dash-row-meta">' + escHtml(i.author) + ' · ' + i.category + ' · ' + statusLabel(i.status) + '</div>' +
+        '</div>' +
+        '<div class="dash-row-val">' + i.votes + '</div>' +
+      '</div>';
+    }).join('');
   }
 
-  empty.style.display = 'none';
-  container.innerHTML = filtered.map(function(idea) {
-    var isFlagged = idea.flagged || idea.flagCount > 0;
-    return '<div class="idea-row" style="' + (isFlagged ? 'border-color: var(--red); border-width: 2px;' : '') + '">' +
-      '<div class="idea-id">#' + idea.id + '</div>' +
-      '<div class="idea-info">' +
-        '<div class="idea-title">' + escHtml(idea.title) + '</div>' +
-        '<div class="idea-meta">' +
-          '<span>' + escHtml(idea.author) + ' · ' + formatTime(idea.submittedAt) + '</span>' +
-          '<span class="idea-vote-badge">' + idea.votes + ' votes</span>' +
-          (isFlagged ? '<span class="idea-flag-badge">🚩 ' + (idea.flagCount || 1) + ' flags</span>' : '') +
-          '<span class="idea-status-badge ' + idea.status + '">' + statusLabel(idea.status) + '</span>' +
+  // Recent audit log (last 5)
+  var log = getAuditLog().slice(0, 5);
+  var logEl = document.getElementById('dash-recent-log');
+  if (log.length === 0) {
+    logEl.innerHTML = '<div class="dash-row"><span style="color:var(--text-dim);font-size:13px;">No activity yet.</span></div>';
+  } else {
+    logEl.innerHTML = log.map(function(e) {
+      return '<div class="dash-row">' +
+        '<div class="dash-row-main">' +
+          '<div class="dash-row-title">' + escHtml(e.action) + ': ' + escHtml(e.detail.substring(0, 40)) + '</div>' +
+          '<div class="dash-row-meta">' + formatTime(e.timestamp) + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+}
+
+// ─── Ideas list ───────────────────────────────────────────────────────────────
+function setChip(el, type) {
+  var parentId = type === 'cat' ? 'cat-filters' : 'status-filters';
+  document.querySelectorAll('#' + parentId + ' .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  if (type === 'cat')    ideaFilters.cat    = el.dataset.cat;
+  if (type === 'status') ideaFilters.status = el.dataset.status;
+  renderIdeas();
+}
+
+function getFilteredSorted() {
+  var q      = (document.getElementById('ideas-search') ? document.getElementById('ideas-search').value : '').toLowerCase();
+  var sort   = document.getElementById('ideas-sort') ? document.getElementById('ideas-sort').value : 'votes';
+  var result = [...adminIdeas];
+
+  if (q) result = result.filter(i =>
+    i.title.toLowerCase().includes(q) ||
+    i.text.toLowerCase().includes(q) ||
+    i.author.toLowerCase().includes(q)
+  );
+  if (ideaFilters.cat    !== 'all') result = result.filter(i => i.category === ideaFilters.cat);
+  if (ideaFilters.status !== 'all') result = result.filter(i => i.status   === ideaFilters.status);
+
+  if (sort === 'votes')    result.sort((a, b) => b.votes - a.votes);
+  if (sort === 'new')      result.sort((a, b) => b.submittedAt - a.submittedAt);
+  if (sort === 'flags')    result.sort((a, b) => (b.flagCount||0) - (a.flagCount||0));
+  if (sort === 'comments') result.sort((a, b) => (b.comments||[]).length - (a.comments||[]).length);
+
+  return result;
+}
+
+function renderIdeas() {
+  var list    = getFilteredSorted();
+  var el      = document.getElementById('ideas-list');
+  var emptyEl = document.getElementById('ideas-empty');
+  if (list.length === 0) {
+    el.innerHTML = ''; emptyEl.style.display = 'block'; return;
+  }
+  emptyEl.style.display = 'none';
+  el.innerHTML = list.map(ideaRowHtml).join('');
+}
+
+function renderFlagged() {
+  var list    = adminIdeas.filter(i => i.flagged || i.flagCount > 0).sort((a,b) => (b.flagCount||0)-(a.flagCount||0));
+  var el      = document.getElementById('flagged-list');
+  var emptyEl = document.getElementById('flagged-empty');
+  if (list.length === 0) {
+    el.innerHTML = ''; emptyEl.style.display = 'block'; return;
+  }
+  emptyEl.style.display = 'none';
+  el.innerHTML = list.map(ideaRowHtml).join('');
+}
+
+function ideaRowHtml(idea) {
+  var isFlagged = idea.flagged || idea.flagCount > 0;
+  var commentCount = (idea.comments || []).length;
+  return '<div class="idea-row ' + (isFlagged ? 'flagged-row' : '') + '" id="row-' + idea.id + '">' +
+    '<div class="idea-row-main">' +
+      '<div class="idea-vote-col">' +
+        '<div class="idea-vote-num">' + idea.votes + '</div>' +
+        '<div class="idea-vote-lbl">votes</div>' +
+      '</div>' +
+      '<div class="idea-body">' +
+        '<div class="idea-title-row">' +
+          '<div class="idea-title">' + escHtml(idea.title) + '</div>' +
+          '<div class="idea-badges">' +
+            '<span class="badge-cat">' + escHtml(idea.category) + '</span>' +
+            '<span class="badge-status ' + idea.status + '">' + statusLabel(idea.status) + '</span>' +
+            (isFlagged ? '<span class="badge-flag">🚩 ' + (idea.flagCount||1) + '</span>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="idea-meta-row">' +
+          '<span>' + escHtml(idea.author) + '</span>' +
+          '<span>·</span>' +
+          '<span>' + escHtml(idea.role) + '</span>' +
+          '<span>·</span>' +
+          '<span>' + formatTime(idea.submittedAt) + '</span>' +
+          '<span>·</span>' +
+          '<span>💬 ' + commentCount + '</span>' +
+          '<span>·</span>' +
+          '<span>⚡ ' + idea.feasibility + '%</span>' +
+        '</div>' +
+        '<div class="idea-excerpt">' + escHtml(idea.text) + '</div>' +
+      '</div>' +
+      '<div class="idea-actions-col">' +
+        '<select class="status-select" onchange="quickStatus(' + idea.id + ', this.value)">' +
+          ['submitted','reviewed','implemented','rejected'].map(function(s) {
+            return '<option value="' + s + '"' + (idea.status === s ? ' selected' : '') + '>' + statusLabel(s) + '</option>';
+          }).join('') +
+        '</select>' +
+        '<div class="action-btns">' +
+          '<button class="btn-action" onclick="openEdit(' + idea.id + ')">Edit</button>' +
+          '<button class="btn-action" onclick="openComments(' + idea.id + ')">Comments</button>' +
+        '</div>' +
+        '<div class="action-btns">' +
+          (isFlagged
+            ? '<button class="btn-action success" onclick="doClearFlag(' + idea.id + ')">Clear Flag</button>'
+            : '<button class="btn-action" onclick="openFlag(' + idea.id + ')">🚩 Flag</button>') +
+          '<button class="btn-action danger" onclick="doDelete(' + idea.id + ')">Delete</button>' +
         '</div>' +
       '</div>' +
-      '<div class="idea-actions">' +
-        '<button class="idea-action-btn" onclick="openStatusModal(' + idea.id + ')">Status</button>' +
-        '<button class="idea-action-btn" onclick="openCommentsModal(' + idea.id + ')">Comments (' + idea.comments.length + ')</button>' +
-        (isFlagged
-          ? '<button class="idea-action-btn" onclick="clearFlagConfirm(' + idea.id + ')">Clear Flag</button>'
-          : '<button class="idea-action-btn flag" onclick="openFlagModal(' + idea.id + ')">🚩</button>') +
-        '<button class="idea-action-btn" onclick="deleteIdeaConfirm(' + idea.id + ')">Delete</button>' +
-      '</div>' +
-    '</div>';
-  }).join('');
+    '</div>' +
+    '<div class="mobile-actions">' +
+      '<button class="btn-action" onclick="openEdit(' + idea.id + ')">Edit</button>' +
+      '<button class="btn-action" onclick="openComments(' + idea.id + ')">Comments</button>' +
+      (isFlagged
+        ? '<button class="btn-action success" onclick="doClearFlag(' + idea.id + ')">Clear Flag</button>'
+        : '<button class="btn-action" onclick="openFlag(' + idea.id + ')">🚩 Flag</button>') +
+      '<button class="btn-action danger" onclick="doDelete(' + idea.id + ')">Delete</button>' +
+    '</div>' +
+  '</div>';
 }
 
-function applySearchFilter() {
-  activeFilters.search = document.getElementById('admin-search').value;
-  renderAdminList();
-}
-
-function setStatusFilter(status, el) {
-  document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  activeFilters.status = status;
-  renderAdminList();
-}
-
-function openStatusModal(ideaId) {
-  currentStatusEditId = ideaId;
+// ─── Quick status change ──────────────────────────────────────────────────────
+function quickStatus(ideaId, newStatus) {
   var idea = adminIdeas.find(i => i.id === ideaId);
   if (!idea) return;
-
-  var html = '<strong>' + escHtml(idea.title) + '</strong>' +
-    '<p style="margin: 12px 0 0; color: var(--text-muted); font-size: 13px;">Current: <strong>' + statusLabel(idea.status) + '</strong></p>' +
-    '<div style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;">';
-
-  ['submitted', 'reviewed', 'implemented', 'rejected'].forEach(function(s) {
-    html += '<label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-muted); font-size: 13px;">' +
-      '<input type="radio" name="new-status" value="' + s + '" ' + (idea.status === s ? 'checked' : '') + '> ' +
-      statusLabel(s) + '</label>';
-  });
-
-  html += '</div>';
-  document.getElementById('status-modal-body').innerHTML = html;
-  document.getElementById('status-modal').classList.add('open');
-}
-
-function saveStatusUpdate() {
-  var checked = document.querySelector('input[name="new-status"]:checked');
-  if (!checked) return;
-  var newStatus = checked.value;
-  var idea = adminIdeas.find(i => i.id === currentStatusEditId);
-  if (!idea) return;
+  var old = idea.status;
   idea.status = newStatus;
   saveIdeas(adminIdeas);
-  closeModal('status-modal');
-  loadAdminData();
-  showToast('Status updated to ' + statusLabel(newStatus), '✓');
+  addAuditEntry('status-change', '#' + ideaId + ' ' + statusLabel(old) + ' → ' + statusLabel(newStatus));
+  loadAll();
+  showToast('Status → ' + statusLabel(newStatus), '✓');
 }
 
-function openCommentsModal(ideaId) {
+// ─── Edit modal ───────────────────────────────────────────────────────────────
+function openEdit(ideaId) {
+  var idea = adminIdeas.find(i => i.id === ideaId);
+  if (!idea) return;
+  editingIdeaId = ideaId;
+
+  document.getElementById('edit-title').value       = idea.title;
+  document.getElementById('edit-text').value        = idea.text;
+  document.getElementById('edit-author').value      = idea.author;
+  document.getElementById('edit-category').value    = idea.category;
+  document.getElementById('edit-status').value      = idea.status;
+  document.getElementById('edit-feasibility').value = idea.feasibility;
+
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function saveEdit() {
+  var idea = adminIdeas.find(i => i.id === editingIdeaId);
+  if (!idea) return;
+
+  updateIdea(adminIdeas, editingIdeaId, {
+    title:       document.getElementById('edit-title').value,
+    text:        document.getElementById('edit-text').value,
+    author:      document.getElementById('edit-author').value,
+    category:    document.getElementById('edit-category').value,
+    status:      document.getElementById('edit-status').value,
+    feasibility: document.getElementById('edit-feasibility').value
+  });
+
+  saveIdeas(adminIdeas);
+  addAuditEntry('edit', '#' + editingIdeaId + ' — ' + idea.title.substring(0, 40));
+  closeModal('edit-modal');
+  loadAll();
+  showToast('Idea updated', '✓');
+}
+
+// ─── Comments modal ───────────────────────────────────────────────────────────
+function openComments(ideaId) {
   var idea = adminIdeas.find(i => i.id === ideaId);
   if (!idea) return;
 
-  var html = '<strong>' + escHtml(idea.title) + '</strong><div class="comment-section">';
-  if (idea.comments.length === 0) {
-    html += '<p style="color: var(--text-dim); font-size: 13px;">No comments yet.</p>';
+  var html = '<p style="color:var(--text-muted);font-size:13px;margin-bottom:12px;">' +
+    '<strong>' + escHtml(idea.title) + '</strong></p>';
+
+  if (!idea.comments || idea.comments.length === 0) {
+    html += '<p style="color:var(--text-dim);font-size:13px;">No comments on this idea.</p>';
   } else {
-    idea.comments.forEach(function(c, idx) {
-      html += '<div class="comment-item">' +
-        '<span class="comment-author">' + escHtml(c.author) + '</span>' +
-        ' <span class="comment-time">' + formatTime(c.submittedAt) + '</span>' +
-        '<div class="comment-text">' + escHtml(c.text) + '</div>' +
-        '<button class="idea-action-btn" style="margin-top:6px;font-size:11px;" onclick="deleteCommentAdmin(' + ideaId + ',' + idx + ')">Delete</button>' +
+    html += idea.comments.map(function(c, idx) {
+      return '<div class="comment-item-admin">' +
+        '<div class="c-head">' +
+          '<span class="c-author">' + escHtml(c.author) + '</span>' +
+          '<span class="c-time">' + formatTime(c.submittedAt) + '</span>' +
+        '</div>' +
+        '<div class="c-text">' + escHtml(c.text) + '</div>' +
+        '<button class="btn-action danger" style="align-self:flex-start;" onclick="doDeleteComment(' + ideaId + ',' + idx + ')">Delete</button>' +
       '</div>';
-    });
+    }).join('');
   }
-  html += '</div>';
+
   document.getElementById('comments-modal-body').innerHTML = html;
   document.getElementById('comments-modal').classList.add('open');
 }
 
-function deleteCommentAdmin(ideaId, idx) {
-  if (!confirm('Delete this comment?')) return;
+function doDeleteComment(ideaId, idx) {
+  if (!confirm('Delete this comment permanently?')) return;
   deleteComment(adminIdeas, ideaId, idx);
   saveIdeas(adminIdeas);
-  openCommentsModal(ideaId);
-  loadAdminData();
+  addAuditEntry('comment', 'Deleted comment #' + idx + ' on idea #' + ideaId);
+  openComments(ideaId);
+  loadAll();
   showToast('Comment deleted', '✓');
 }
 
-function openFlagModal(ideaId) {
-  currentFlagId = ideaId;
+// ─── Flag modal ───────────────────────────────────────────────────────────────
+function openFlag(ideaId) {
+  flaggingIdeaId = ideaId;
   document.querySelectorAll('input[name="flag-reason"]').forEach(r => r.checked = false);
   document.getElementById('flag-modal').classList.add('open');
 }
@@ -634,44 +1141,111 @@ function openFlagModal(ideaId) {
 function confirmFlag() {
   var checked = document.querySelector('input[name="flag-reason"]:checked');
   if (!checked) { showToast('Select a reason first', '✗'); return; }
-  var idea = adminIdeas.find(i => i.id === currentFlagId);
-  if (idea) {
-    flagIdea(adminIdeas, currentFlagId, checked.value);
-    saveIdeas(adminIdeas);
-    closeModal('flag-modal');
-    loadAdminData();
-    showToast('Idea flagged for review', '🚩');
-  }
+  var idea = adminIdeas.find(i => i.id === flaggingIdeaId);
+  if (!idea) return;
+  flagIdea(adminIdeas, flaggingIdeaId, checked.value);
+  saveIdeas(adminIdeas);
+  addAuditEntry('flag', '#' + flaggingIdeaId + ' — ' + checked.value);
+  closeModal('flag-modal');
+  loadAll();
+  showToast('Idea flagged', '🚩');
 }
 
-function clearFlagConfirm(ideaId) {
-  if (!confirm('Clear all flags on this idea?')) return;
+function doClearFlag(ideaId) {
+  if (!confirm('Clear all flags on this idea? It will become visible to the public again.')) return;
   unflagIdea(adminIdeas, ideaId);
   saveIdeas(adminIdeas);
-  loadAdminData();
+  addAuditEntry('unflag', 'Cleared flags on #' + ideaId);
+  loadAll();
   showToast('Flags cleared', '✓');
 }
 
-function deleteIdeaConfirm(ideaId) {
-  if (confirm('Delete this idea permanently? This cannot be undone.')) {
-    deleteIdea(adminIdeas, ideaId);
-    saveIdeas(adminIdeas);
-    loadAdminData();
-    showToast('Idea deleted', '✓');
-  }
+// ─── Delete ───────────────────────────────────────────────────────────────────
+function doDelete(ideaId) {
+  var idea = adminIdeas.find(i => i.id === ideaId);
+  if (!idea) return;
+  if (!confirm('Permanently delete "' + idea.title.substring(0, 60) + '"?\nThis cannot be undone.')) return;
+  var title = idea.title;
+  deleteIdea(adminIdeas, ideaId);
+  saveIdeas(adminIdeas);
+  addAuditEntry('delete', '#' + ideaId + ' — ' + title.substring(0, 60));
+  loadAll();
+  showToast('Idea deleted', '✓');
 }
 
+// ─── Activity log ─────────────────────────────────────────────────────────────
+function renderLog() {
+  var log     = getAuditLog();
+  var el      = document.getElementById('log-list');
+  var emptyEl = document.getElementById('log-empty');
+
+  if (log.length === 0) {
+    el.innerHTML = ''; emptyEl.style.display = 'block'; return;
+  }
+  emptyEl.style.display = 'none';
+  el.innerHTML = log.map(function(e) {
+    return '<div class="log-entry">' +
+      '<span class="log-action ' + e.action + '">' + e.action + '</span>' +
+      '<div class="log-detail">' + escHtml(e.detail) + '</div>' +
+      '<div class="log-time">' + formatTime(e.timestamp) + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function confirmClearLog() {
+  if (!confirm('Clear the entire activity log?')) return;
+  clearAuditLog();
+  renderLog();
+  showToast('Log cleared', '✓');
+}
+
+// ─── Export ───────────────────────────────────────────────────────────────────
 function exportAllData() {
   exportData(adminIdeas);
-  showToast('Data exported successfully', '⬇');
+  addAuditEntry('export', adminIdeas.length + ' ideas exported');
+  renderLog();
+  showToast('Exported successfully', '⬇');
 }
 
+// ─── Settings ─────────────────────────────────────────────────────────────────
+async function generateHash() {
+  var pw = document.getElementById('pw-new-input').value;
+  if (!pw) { showToast('Enter a password first', '✗'); return; }
+  var hash = await sha256hex(pw);
+  var el = document.getElementById('pw-hash-result');
+  el.textContent = hash;
+  el.style.display = 'block';
+  showToast('Hash generated — copy it into data.js', '✓');
+}
+
+function confirmReset() {
+  if (!confirm('Reset ALL data to the original seed ideas?\n\nThis will permanently delete every submitted idea, vote, and comment.')) return;
+  localStorage.removeItem('medreform_ideas_v2');
+  localStorage.removeItem('medreform_voted_v2');
+  localStorage.removeItem('medreform_flags_v2');
+  localStorage.removeItem('medreform_ratelim_v2');
+  addAuditEntry('delete', 'Full data reset performed');
+  loadAll();
+  showToast('Data reset to seed ideas', '✓');
+}
+
+// ─── Modal helpers ────────────────────────────────────────────────────────────
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
 }
 
 document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open'));
+  }
   if (e.key === 'Enter' && !isAdminLoggedIn()) attemptLogin();
+});
+
+// Close modal on backdrop click
+document.querySelectorAll('.modal').forEach(function(m) {
+  m.addEventListener('click', function(e) {
+    if (e.target === m) m.classList.remove('open');
+  });
 });
 
 initAdmin();
