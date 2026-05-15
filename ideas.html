@@ -221,7 +221,7 @@ function filterIdeas() {
 }
 
 function getFiltered() {
-  var filtered = ideas;
+  var filtered = ideas.filter(i => !i.flagged);
   if (filters.search) filtered = searchIdeas(filtered, filters.search);
   if (filters.category !== 'all') filtered = filtered.filter(i => i.category === filters.category);
   if (filters.status !== 'all') filtered = filtered.filter(i => i.status === filters.status);
@@ -279,7 +279,12 @@ function postComment(ideaId) {
     showToast('✗ Comment too long (max 500 chars)', '✗');
     return;
   }
+  if (!canPostComment()) {
+    showToast('✗ Too many comments recently. Please wait.', '✗');
+    return;
+  }
   addComment(ideas, ideaId, text, 'You');
+  recordCommentPost();
   saveIdeas(ideas);
   textarea.value = '';
   trackEvent('ideas', 'comment_posted', ideaId);

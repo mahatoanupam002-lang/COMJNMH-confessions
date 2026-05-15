@@ -532,6 +532,12 @@ function submitIdea(e) {
     }
   }
   
+  if (!canSubmitIdea()) {
+    error.textContent = '✗ You have submitted too many ideas recently. Please wait before submitting again.';
+    error.classList.add('show');
+    return;
+  }
+
   var newIdea = createIdea({
     category: selectedCategory,
     title: title,
@@ -541,7 +547,8 @@ function submitIdea(e) {
     anonymous: isAnon,
     feasibility: feasibility
   });
-  
+
+  recordIdeaSubmission();
   trackEvent('submit', 'idea_created', selectedCategory);
   showToast('✓ Idea submitted! Thank you for contributing.', '✓');
   
