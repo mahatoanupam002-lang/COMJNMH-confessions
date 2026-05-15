@@ -6,6 +6,9 @@ const ADMIN_KEY    = 'medreform_admin_v2';
 const FLAGS_KEY    = 'medreform_flags_v2';
 const LOCKOUT_KEY  = 'medreform_lockout_v2';
 const RATELIM_KEY  = 'medreform_ratelim_v2';
+const AUDIT_KEY    = 'medreform_audit_v2';
+
+const AUDIT_MAX_ENTRIES = 200;
 
 // SHA-256 of 'MedReform2025' — change this hash to change the admin password.
 // To generate a new hash: open browser console and run:
@@ -375,6 +378,25 @@ function deleteComment(ideas, ideaId, commentIndex) {
   return false;
 }
 
+// ─── Audit log ────────────────────────────────────────────────────────────────
+
+function getAuditLog() {
+  try { return JSON.parse(localStorage.getItem(AUDIT_KEY) || '[]'); } catch (e) { return []; }
+}
+
+function addAuditEntry(action, detail) {
+  try {
+    const log = getAuditLog();
+    log.unshift({ action, detail: String(detail).substring(0, 200), timestamp: Date.now() });
+    if (log.length > AUDIT_MAX_ENTRIES) log.splice(AUDIT_MAX_ENTRIES);
+    localStorage.setItem(AUDIT_KEY, JSON.stringify(log));
+  } catch (e) {}
+}
+
+function clearAuditLog() {
+  localStorage.removeItem(AUDIT_KEY);
+}
+
 // ─── Idea operations ──────────────────────────────────────────────────────────
 
 function createIdea(data) {
@@ -398,6 +420,23 @@ function createIdea(data) {
   ideas.push(newIdea);
   saveIdeas(ideas);
   return newIdea;
+}
+
+function updateIdea(ideas, ideaId, fields) {
+  const idea = ideas.find(i => i.id === ideaId);
+  if (!idea) return false;
+  const allowed = ['title', 'text', 'category', 'feasibility', 'status', 'author', 'role'];
+  const validStatuses = ['submitted', 'reviewed', 'implemented', 'rejected'];
+  const validCategories = ['governance', 'safety', 'academic', 'infrastructure', 'welfare'];
+  allowed.forEach(key => {
+    if (!(key in fields)) return;
+    if (key === 'status'      && !validStatuses.includes(fields[key]))   return;
+    if (key === 'category'    && !validCategories.includes(fields[key]))  return;
+    if (key === 'feasibility') { idea[key] = Math.min(100, Math.max(0, parseInt(fields[key]) || 0)); return; }
+    if (['title','text','author','role'].includes(key)) { idea[key] = sanitizeText(fields[key], key === 'text' ? 1000 : 150); return; }
+    idea[key] = fields[key];
+  });
+  return true;
 }
 
 function updateIdeaStatus(ideas, ideaId, newStatus) {
