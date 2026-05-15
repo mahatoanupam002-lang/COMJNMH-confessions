@@ -310,7 +310,7 @@
 
     <!-- TOOLBAR -->
     <div class="admin-toolbar">
-      <input type="text" id="admin-search" placeholder="Search ideas..." onkeyup="adminFilter()">
+      <input type="text" id="admin-search" placeholder="Search ideas..." onkeyup="applySearchFilter()">
       <div class="filter-tags">
         <div class="filter-tag active" data-status="all" onclick="setStatusFilter('all', this)">All</div>
         <div class="filter-tag" data-status="submitted" onclick="setStatusFilter('submitted', this)">Submitted</div>
@@ -402,28 +402,77 @@
 var adminIdeas = [];
 var currentStatusEditId = null;
 var currentFlagId = null;
-var adminFilter = { status: 'all', search: '' };
+var activeFilters = { status: 'all', search: '' };
 
 function initAdmin() {
   if (!isAdminLoggedIn()) {
-    document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('admin-screen').classList.remove('active');
+    showLoginScreen();
   } else {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('admin-screen').classList.add('active');
-    loadAdminData();
+    showAdminScreen();
   }
 }
 
-function attemptLogin() {
+function showLoginScreen() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('admin-screen').classList.remove('active');
+  refreshLockoutUI();
+}
+
+function showAdminScreen() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('admin-screen').classList.add('active');
+  loadAdminData();
+}
+
+function refreshLockoutUI() {
+  var errEl = document.getElementById('login-error');
+  var btn = document.querySelector('.login-btn');
+  var pwInput = document.getElementById('admin-password');
+
+  if (isLockedOut()) {
+    var remaining = Math.ceil(lockoutRemainingMs() / 60000);
+    errEl.textContent = 'Too many failed attempts. Try again in ' + remaining + ' minute(s).';
+    errEl.style.display = 'block';
+    btn.disabled = true;
+    pwInput.disabled = true;
+    setTimeout(refreshLockoutUI, 10000);
+  } else {
+    btn.disabled = false;
+    pwInput.disabled = false;
+    if (errEl.textContent.includes('Too many')) {
+      errEl.style.display = 'none';
+    }
+  }
+}
+
+async function attemptLogin() {
+  if (isLockedOut()) { refreshLockoutUI(); return; }
   var password = document.getElementById('admin-password').value;
   if (!password) return;
-  if (setAdminSession(password)) {
+
+  var btn = document.querySelector('.login-btn');
+  btn.disabled = true;
+  btn.textContent = 'Checking…';
+
+  var ok = await setAdminSession(password);
+
+  btn.textContent = 'Sign In';
+
+  if (ok) {
     document.getElementById('login-error').style.display = 'none';
     document.getElementById('admin-password').value = '';
-    initAdmin();
+    showAdminScreen();
   } else {
-    document.getElementById('login-error').style.display = 'block';
+    var errEl = document.getElementById('login-error');
+    if (isLockedOut()) {
+      refreshLockoutUI();
+    } else {
+      var l = getLockout();
+      var remaining = LOCKOUT_MAX_ATTEMPTS - (l.attempts || 0);
+      errEl.textContent = 'Invalid password. ' + remaining + ' attempt(s) remaining before lockout.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+    }
     document.getElementById('admin-password').select();
   }
 }
@@ -432,8 +481,8 @@ function adminLogout() {
   if (confirm('Log out of admin panel?')) {
     clearAdminSession();
     document.getElementById('admin-screen').classList.remove('active');
-    document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('admin-password').value = '';
+    showLoginScreen();
   }
 }
 
@@ -444,46 +493,36 @@ function loadAdminData() {
 }
 
 function updateAdminStats() {
-  var total = adminIdeas.length;
-  var flagged = adminIdeas.filter(i => i.flagged || i.flagCount > 0).length;
-  var implemented = adminIdeas.filter(i => i.status === 'implemented').length;
-  var votes = totalVotes(adminIdeas);
-  
-  document.getElementById('stat-total').textContent = total;
-  document.getElementById('stat-flagged').textContent = flagged;
-  document.getElementById('stat-implemented').textContent = implemented;
-  document.getElementById('stat-votes').textContent = votes;
+  document.getElementById('stat-total').textContent       = adminIdeas.length;
+  document.getElementById('stat-flagged').textContent     = adminIdeas.filter(i => i.flagged || i.flagCount > 0).length;
+  document.getElementById('stat-implemented').textContent = adminIdeas.filter(i => i.status === 'implemented').length;
+  document.getElementById('stat-votes').textContent       = totalVotes(adminIdeas);
 }
 
 function getFilteredIdeas() {
   var filtered = adminIdeas;
-  
-  if (adminFilter.search) {
-    filtered = searchIdeas(filtered, adminFilter.search);
-  }
-  
-  if (adminFilter.status !== 'all') {
-    if (adminFilter.status === 'flagged') {
+  if (activeFilters.search) filtered = searchIdeas(filtered, activeFilters.search);
+  if (activeFilters.status !== 'all') {
+    if (activeFilters.status === 'flagged') {
       filtered = filtered.filter(i => i.flagged || i.flagCount > 0);
     } else {
-      filtered = filtered.filter(i => i.status === adminFilter.status);
+      filtered = filtered.filter(i => i.status === activeFilters.status);
     }
   }
-  
   return filtered;
 }
 
 function renderAdminList() {
-  var filtered = getFilteredIdeas();
+  var filtered  = getFilteredIdeas();
   var container = document.getElementById('admin-list');
-  var empty = document.getElementById('empty-admin');
-  
+  var empty     = document.getElementById('empty-admin');
+
   if (filtered.length === 0) {
     container.innerHTML = '';
     empty.style.display = 'block';
     return;
   }
-  
+
   empty.style.display = 'none';
   container.innerHTML = filtered.map(function(idea) {
     var isFlagged = idea.flagged || idea.flagCount > 0;
@@ -501,22 +540,24 @@ function renderAdminList() {
       '<div class="idea-actions">' +
         '<button class="idea-action-btn" onclick="openStatusModal(' + idea.id + ')">Status</button>' +
         '<button class="idea-action-btn" onclick="openCommentsModal(' + idea.id + ')">Comments (' + idea.comments.length + ')</button>' +
-        '<button class="idea-action-btn flag" onclick="openFlagModal(' + idea.id + ')">🚩</button>' +
+        (isFlagged
+          ? '<button class="idea-action-btn" onclick="clearFlagConfirm(' + idea.id + ')">Clear Flag</button>'
+          : '<button class="idea-action-btn flag" onclick="openFlagModal(' + idea.id + ')">🚩</button>') +
         '<button class="idea-action-btn" onclick="deleteIdeaConfirm(' + idea.id + ')">Delete</button>' +
       '</div>' +
     '</div>';
   }).join('');
 }
 
-function adminFilter() {
-  adminFilter.search = document.getElementById('admin-search').value;
+function applySearchFilter() {
+  activeFilters.search = document.getElementById('admin-search').value;
   renderAdminList();
 }
 
 function setStatusFilter(status, el) {
   document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
-  adminFilter.status = status;
+  activeFilters.status = status;
   renderAdminList();
 }
 
@@ -524,28 +565,28 @@ function openStatusModal(ideaId) {
   currentStatusEditId = ideaId;
   var idea = adminIdeas.find(i => i.id === ideaId);
   if (!idea) return;
-  
+
   var html = '<strong>' + escHtml(idea.title) + '</strong>' +
     '<p style="margin: 12px 0 0; color: var(--text-muted); font-size: 13px;">Current: <strong>' + statusLabel(idea.status) + '</strong></p>' +
     '<div style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;">';
-  
+
   ['submitted', 'reviewed', 'implemented', 'rejected'].forEach(function(s) {
     html += '<label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-muted); font-size: 13px;">' +
       '<input type="radio" name="new-status" value="' + s + '" ' + (idea.status === s ? 'checked' : '') + '> ' +
-      statusLabel(s) +
-    '</label>';
+      statusLabel(s) + '</label>';
   });
-  
+
   html += '</div>';
   document.getElementById('status-modal-body').innerHTML = html;
   document.getElementById('status-modal').classList.add('open');
 }
 
 function saveStatusUpdate() {
-  var newStatus = document.querySelector('input[name="new-status"]:checked').value;
+  var checked = document.querySelector('input[name="new-status"]:checked');
+  if (!checked) return;
+  var newStatus = checked.value;
   var idea = adminIdeas.find(i => i.id === currentStatusEditId);
   if (!idea) return;
-  
   idea.status = newStatus;
   saveIdeas(adminIdeas);
   closeModal('status-modal');
@@ -556,10 +597,8 @@ function saveStatusUpdate() {
 function openCommentsModal(ideaId) {
   var idea = adminIdeas.find(i => i.id === ideaId);
   if (!idea) return;
-  
-  var html = '<strong>' + escHtml(idea.title) + '</strong>' +
-    '<div class="comment-section">';
-  
+
+  var html = '<strong>' + escHtml(idea.title) + '</strong><div class="comment-section">';
   if (idea.comments.length === 0) {
     html += '<p style="color: var(--text-dim); font-size: 13px;">No comments yet.</p>';
   } else {
@@ -568,32 +607,49 @@ function openCommentsModal(ideaId) {
         '<span class="comment-author">' + escHtml(c.author) + '</span>' +
         ' <span class="comment-time">' + formatTime(c.submittedAt) + '</span>' +
         '<div class="comment-text">' + escHtml(c.text) + '</div>' +
+        '<button class="idea-action-btn" style="margin-top:6px;font-size:11px;" onclick="deleteCommentAdmin(' + ideaId + ',' + idx + ')">Delete</button>' +
       '</div>';
     });
   }
-  
   html += '</div>';
   document.getElementById('comments-modal-body').innerHTML = html;
   document.getElementById('comments-modal').classList.add('open');
 }
 
+function deleteCommentAdmin(ideaId, idx) {
+  if (!confirm('Delete this comment?')) return;
+  deleteComment(adminIdeas, ideaId, idx);
+  saveIdeas(adminIdeas);
+  openCommentsModal(ideaId);
+  loadAdminData();
+  showToast('Comment deleted', '✓');
+}
+
 function openFlagModal(ideaId) {
   currentFlagId = ideaId;
+  document.querySelectorAll('input[name="flag-reason"]').forEach(r => r.checked = false);
   document.getElementById('flag-modal').classList.add('open');
 }
 
 function confirmFlag() {
-  var reason = document.querySelector('input[name="flag-reason"]:checked').value;
-  if (!reason) return;
-  
+  var checked = document.querySelector('input[name="flag-reason"]:checked');
+  if (!checked) { showToast('Select a reason first', '✗'); return; }
   var idea = adminIdeas.find(i => i.id === currentFlagId);
   if (idea) {
-    flagIdea(adminIdeas, currentFlagId, reason);
+    flagIdea(adminIdeas, currentFlagId, checked.value);
     saveIdeas(adminIdeas);
     closeModal('flag-modal');
     loadAdminData();
     showToast('Idea flagged for review', '🚩');
   }
+}
+
+function clearFlagConfirm(ideaId) {
+  if (!confirm('Clear all flags on this idea?')) return;
+  unflagIdea(adminIdeas, ideaId);
+  saveIdeas(adminIdeas);
+  loadAdminData();
+  showToast('Flags cleared', '✓');
 }
 
 function deleteIdeaConfirm(ideaId) {
@@ -615,9 +671,7 @@ function closeModal(id) {
 }
 
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Enter' && document.getElementById('admin-password').value && !isAdminLoggedIn()) {
-    attemptLogin();
-  }
+  if (e.key === 'Enter' && !isAdminLoggedIn()) attemptLogin();
 });
 
 initAdmin();

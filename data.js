@@ -1,13 +1,26 @@
-// MedReform Data Layer — Enhanced with Real Timestamps, Admin Auth, Flagging
+// MedReform Data Layer
 
-const STORE_KEY = 'medreform_ideas_v2';
-const VOTED_KEY = 'medreform_voted_v2';
-const ADMIN_KEY = 'medreform_admin_v2';
-const FLAGS_KEY = 'medreform_flags_v2';
+const STORE_KEY    = 'medreform_ideas_v2';
+const VOTED_KEY    = 'medreform_voted_v2';
+const ADMIN_KEY    = 'medreform_admin_v2';
+const FLAGS_KEY    = 'medreform_flags_v2';
+const LOCKOUT_KEY  = 'medreform_lockout_v2';
+const RATELIM_KEY  = 'medreform_ratelim_v2';
 
-const DEFAULT_ADMIN_PASSWORD = 'MedReform2025';
+// SHA-256 of 'MedReform2025' — change this hash to change the admin password.
+// To generate a new hash: open browser console and run:
+//   crypto.subtle.digest('SHA-256', new TextEncoder().encode('YourNewPassword'))
+//     .then(b => console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
+const ADMIN_PASSWORD_HASH = '30d95f288556c66967d1a018a81b85e3a93c382737c392714c8407226b8048c2';
 
-// Migration: convert old format to new format
+const LOCKOUT_MAX_ATTEMPTS = 5;
+const LOCKOUT_DURATION_MS  = 15 * 60 * 1000; // 15 minutes
+
+const RATE_LIMIT_SUBMISSIONS_PER_HOUR = 3;
+const RATE_LIMIT_COMMENTS_PER_HOUR    = 10;
+
+// ─── Migration ───────────────────────────────────────────────────────────────
+
 function migrateIdeas(oldIdeas) {
   const now = Date.now();
   return oldIdeas.map((idea, idx) => ({
@@ -32,7 +45,50 @@ const SEED_IDEAS = [
   { id:7, votes:8,  category:'governance',     title:'Student representation on college academic committee', text:'No state college in WB has formal student reps on the academic committee. One elected student from each batch, non-voting observer status, to surface ground realities the administration systematically fails to hear.', author:'Anonymous', role:'MBBS Student (Clinical)', submittedAt: Date.now() - 21*24*60*60*1000, feasibility:38, status:'submitted', comments:[], flagCount:0, flagged:false },
 ];
 
-// ADMIN AUTH
+// ─── Crypto helpers ───────────────────────────────────────────────────────────
+
+async function sha256hex(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+
+// ─── Brute-force lockout ──────────────────────────────────────────────────────
+
+function getLockout() {
+  try {
+    return JSON.parse(localStorage.getItem(LOCKOUT_KEY) || '{"attempts":0,"lockedUntil":0}');
+  } catch (e) { return { attempts: 0, lockedUntil: 0 }; }
+}
+
+function saveLockout(data) {
+  try { localStorage.setItem(LOCKOUT_KEY, JSON.stringify(data)); } catch (e) {}
+}
+
+function isLockedOut() {
+  const l = getLockout();
+  return l.lockedUntil > Date.now();
+}
+
+function lockoutRemainingMs() {
+  return Math.max(0, getLockout().lockedUntil - Date.now());
+}
+
+function recordFailedAttempt() {
+  const l = getLockout();
+  l.attempts = (l.attempts || 0) + 1;
+  if (l.attempts >= LOCKOUT_MAX_ATTEMPTS) {
+    l.lockedUntil = Date.now() + LOCKOUT_DURATION_MS;
+    l.attempts = 0;
+  }
+  saveLockout(l);
+}
+
+function clearLockout() {
+  saveLockout({ attempts: 0, lockedUntil: 0 });
+}
+
+// ─── Admin auth ───────────────────────────────────────────────────────────────
+
 function getAdminSession() {
   try {
     const raw = localStorage.getItem(ADMIN_KEY);
@@ -46,8 +102,14 @@ function getAdminSession() {
   } catch (e) { return null; }
 }
 
-function setAdminSession(password) {
-  if (password !== DEFAULT_ADMIN_PASSWORD) return false;
+async function setAdminSession(password) {
+  if (isLockedOut()) return false;
+  const hash = await sha256hex(password);
+  if (hash !== ADMIN_PASSWORD_HASH) {
+    recordFailedAttempt();
+    return false;
+  }
+  clearLockout();
   try {
     const session = { authenticated: true, loginTime: Date.now(), expiresAt: Date.now() + 8*60*60*1000 };
     localStorage.setItem(ADMIN_KEY, JSON.stringify(session));
@@ -63,12 +125,58 @@ function isAdminLoggedIn() {
   return getAdminSession() !== null;
 }
 
-// DATA RETRIEVAL
+// ─── Rate limiting ────────────────────────────────────────────────────────────
+
+function getRateLimits() {
+  try {
+    return JSON.parse(localStorage.getItem(RATELIM_KEY) || '{"submissions":[],"comments":[]}');
+  } catch (e) { return { submissions: [], comments: [] }; }
+}
+
+function saveRateLimits(data) {
+  try { localStorage.setItem(RATELIM_KEY, JSON.stringify(data)); } catch (e) {}
+}
+
+function pruneOlderThanHour(timestamps) {
+  const cutoff = Date.now() - 60 * 60 * 1000;
+  return timestamps.filter(t => t > cutoff);
+}
+
+function canSubmitIdea() {
+  const rl = getRateLimits();
+  rl.submissions = pruneOlderThanHour(rl.submissions);
+  saveRateLimits(rl);
+  return rl.submissions.length < RATE_LIMIT_SUBMISSIONS_PER_HOUR;
+}
+
+function recordIdeaSubmission() {
+  const rl = getRateLimits();
+  rl.submissions = pruneOlderThanHour(rl.submissions);
+  rl.submissions.push(Date.now());
+  saveRateLimits(rl);
+}
+
+function canPostComment() {
+  const rl = getRateLimits();
+  rl.comments = pruneOlderThanHour(rl.comments);
+  saveRateLimits(rl);
+  return rl.comments.length < RATE_LIMIT_COMMENTS_PER_HOUR;
+}
+
+function recordCommentPost() {
+  const rl = getRateLimits();
+  rl.comments = pruneOlderThanHour(rl.comments);
+  rl.comments.push(Date.now());
+  saveRateLimits(rl);
+}
+
+// ─── Data retrieval ───────────────────────────────────────────────────────────
+
 function getIdeas() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
-    if (raw) { 
-      const p = JSON.parse(raw); 
+    if (raw) {
+      const p = JSON.parse(raw);
       if (Array.isArray(p) && p.length) return p;
     }
   } catch (e) { console.error('Failed to load ideas:', e); }
@@ -80,7 +188,7 @@ function saveIdeas(ideas) {
     localStorage.setItem(STORE_KEY, JSON.stringify(ideas));
   } catch (e) {
     console.error('Failed to save ideas:', e);
-    showToast('⚠️ Storage full. Changes may not save.', '⚠️');
+    showToast('Storage full. Changes may not save.', '⚠️');
   }
 }
 
@@ -97,7 +205,8 @@ function saveVoted(set) {
   } catch (e) { console.error('Failed to save votes:', e); }
 }
 
-// FLAGS / SPAM DETECTION
+// ─── Flags / spam detection ───────────────────────────────────────────────────
+
 function getFlags() {
   try {
     const raw = localStorage.getItem(FLAGS_KEY);
@@ -112,10 +221,11 @@ function saveFlags(flags) {
 }
 
 function flagIdea(ideas, ideaId, reason) {
+  const safeReason = String(reason).substring(0, 50);
   const flags = getFlags();
   const key = `idea_${ideaId}`;
   if (!flags[key]) flags[key] = [];
-  flags[key].push({ reason, timestamp: Date.now() });
+  flags[key].push({ reason: safeReason, timestamp: Date.now() });
   saveFlags(flags);
   const idea = ideas.find(i => i.id === ideaId);
   if (idea) {
@@ -132,54 +242,68 @@ function unflagIdea(ideas, ideaId) {
   if (idea) { idea.flagCount = 0; idea.flagged = false; }
 }
 
-// HTML ESCAPING
+// ─── Sanitization & escaping ──────────────────────────────────────────────────
+
+// Escapes HTML for safe insertion into the DOM. Always call at render time.
 function escHtml(s) {
   return String(s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
-    .replace(/'/g,'&#039;');
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
+// Trims and length-limits user input before storage. Does NOT HTML-encode
+// so that raw text is stored and escHtml is applied only at render time.
 function sanitizeText(s, maxLen) {
-  let text = String(s).trim().substring(0, maxLen);
-  return escHtml(text);
+  return String(s).trim().substring(0, maxLen);
 }
 
-// FORMATTING & DISPLAY
+// ─── Formatting & display ─────────────────────────────────────────────────────
+
 function formatTime(timestamp) {
   if (typeof timestamp !== 'number') return 'unknown';
-  const now = Date.now();
-  const diff = now - timestamp;
+  const diff = Date.now() - timestamp;
   const seconds = Math.floor(diff / 1000);
   const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-  const weeks = Math.floor(days / 7);
+  const hours   = Math.floor(minutes / 60);
+  const days    = Math.floor(hours / 24);
+  const weeks   = Math.floor(days / 7);
   if (seconds < 60) return 'just now';
   if (minutes < 60) return `${minutes}m ago`;
-  if (hours < 24) return `${hours}h ago`;
-  if (days < 7) return `${days}d ago`;
-  if (weeks < 4) return `${weeks}w ago`;
-  const date = new Date(timestamp);
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  if (hours   < 24) return `${hours}h ago`;
+  if (days    < 7)  return `${days}d ago`;
+  if (weeks   < 4)  return `${weeks}w ago`;
+  return new Date(timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 function statusLabel(status) {
-  const labels = { 'submitted': 'Submitted', 'reviewed': 'Under Review', 'implemented': 'Implemented', 'rejected': 'Not Viable' };
+  const labels = { submitted: 'Submitted', reviewed: 'Under Review', implemented: 'Implemented', rejected: 'Not Viable' };
   return labels[status] || status;
 }
 
 function statusColorBg(status) {
-  const colors = { 'submitted': 'rgba(251, 191, 36, 0.12)', 'reviewed': 'rgba(96, 165, 250, 0.12)', 'implemented': 'rgba(74, 222, 128, 0.12)', 'rejected': 'rgba(248, 113, 113, 0.12)' };
-  return colors[status] || 'rgba(122, 148, 133, 0.12)';
+  const colors = { submitted: 'rgba(251,191,36,0.12)', reviewed: 'rgba(96,165,250,0.12)', implemented: 'rgba(74,222,128,0.12)', rejected: 'rgba(248,113,113,0.12)' };
+  return colors[status] || 'rgba(122,148,133,0.12)';
 }
 
-// SEARCH & FILTERING
+function statusColor(status) {
+  if (status === 'implemented') return 'var(--accent)';
+  if (status === 'reviewed')    return 'var(--blue)';
+  if (status === 'rejected')    return 'var(--red)';
+  return 'var(--amber)';
+}
+
+function feasColor(f) {
+  return f > 70 ? 'var(--accent)' : f > 40 ? 'var(--amber)' : 'var(--red)';
+}
+
+// ─── Search & filtering ───────────────────────────────────────────────────────
+
 function searchIdeas(ideas, query) {
   if (!query || !query.trim()) return ideas;
   const q = query.toLowerCase();
-  return ideas.filter(i => 
-    i.title.toLowerCase().includes(q) || 
+  return ideas.filter(i =>
+    i.title.toLowerCase().includes(q) ||
     i.text.toLowerCase().includes(q) ||
     i.author.toLowerCase().includes(q) ||
     i.role.toLowerCase().includes(q)
@@ -188,9 +312,9 @@ function searchIdeas(ideas, query) {
 
 function findSimilarIdeas(ideas, newTitle, newText, excludeId) {
   const titleWords = newTitle.toLowerCase().split(/\s+/);
-  const textWords = newText.toLowerCase().split(/\s+/);
+  const textWords  = newText.toLowerCase().split(/\s+/);
   const searchWords = new Set([...titleWords, ...textWords].filter(w => w.length > 3));
-  
+
   return ideas
     .filter(i => i.id !== excludeId)
     .map(idea => {
@@ -204,40 +328,35 @@ function findSimilarIdeas(ideas, newTitle, newText, excludeId) {
     .map(({ idea }) => idea);
 }
 
-// TOTAL VOTES
+// ─── Stats ────────────────────────────────────────────────────────────────────
+
 function totalVotes(ideas) {
-  return ideas.reduce(function(s, i) { return s + i.votes; }, 0);
+  return ideas.reduce((s, i) => s + i.votes, 0);
 }
 
-// FEASIBILITY COLOR
-function feasColor(f) {
-  return f > 70 ? 'var(--accent)' : f > 40 ? 'var(--amber)' : 'var(--red)';
-}
+// ─── UI notifications ─────────────────────────────────────────────────────────
 
-// UI NOTIFICATIONS
 function showToast(msg, icon) {
-  var t = document.getElementById('toast');
+  const t = document.getElementById('toast');
   if (!t) return;
-  var toastText = t.querySelector('.toast-text');
-  var toastIcon = t.querySelector('.toast-icon');
+  const toastText = t.querySelector('.toast-text');
+  const toastIcon = t.querySelector('.toast-icon');
   if (toastText) toastText.textContent = msg;
   if (toastIcon) toastIcon.textContent = icon || '✓';
   t.classList.add('show');
-  setTimeout(function() { t.classList.remove('show'); }, 3500);
+  setTimeout(() => t.classList.remove('show'), 3500);
 }
 
-function statusColor(status) {
-  if (status === 'implemented') return 'var(--accent)';
-  if (status === 'reviewed') return 'var(--blue)';
-  if (status === 'rejected') return 'var(--red)';
-  return 'var(--amber)';
-}
+// ─── Comments management ──────────────────────────────────────────────────────
 
-// COMMENTS MANAGEMENT
 function addComment(ideas, ideaId, text, author) {
   const idea = ideas.find(i => i.id === ideaId);
   if (!idea) return false;
-  const comment = { text: sanitizeText(text, 500), author: sanitizeText(author || 'You', 100), submittedAt: Date.now() };
+  const comment = {
+    text:        sanitizeText(text, 500),
+    author:      sanitizeText(author || 'You', 100),
+    submittedAt: Date.now()
+  };
   idea.comments.push(comment);
   return true;
 }
@@ -256,24 +375,25 @@ function deleteComment(ideas, ideaId, commentIndex) {
   return false;
 }
 
-// IDEA OPERATIONS
+// ─── Idea operations ──────────────────────────────────────────────────────────
+
 function createIdea(data) {
-  const ideas = getIdeas();
-  const maxId = Math.max(0, ...ideas.map(i => i.id));
+  const ideas  = getIdeas();
+  const maxId  = Math.max(0, ...ideas.map(i => i.id));
   const newIdea = {
-    id: maxId + 1,
-    votes: 0,
-    category: data.category || 'governance',
-    title: sanitizeText(data.title, 150),
-    text: sanitizeText(data.text, 1000),
-    author: data.anonymous ? 'Anonymous' : sanitizeText(data.author || 'Anonymous', 100),
-    role: sanitizeText(data.role || 'Other', 50),
+    id:          maxId + 1,
+    votes:       0,
+    category:    data.category || 'governance',
+    title:       sanitizeText(data.title, 150),
+    text:        sanitizeText(data.text, 1000),
+    author:      data.anonymous ? 'Anonymous' : sanitizeText(data.author || 'Anonymous', 100),
+    role:        sanitizeText(data.role || 'Other', 50),
     submittedAt: Date.now(),
     feasibility: parseInt(data.feasibility) || 50,
-    status: 'submitted',
-    comments: [],
-    flagCount: 0,
-    flagged: false
+    status:      'submitted',
+    comments:    [],
+    flagCount:   0,
+    flagged:     false
   };
   ideas.push(newIdea);
   saveIdeas(ideas);
@@ -302,8 +422,8 @@ function exportData(ideas) {
   const data = { exportedAt: new Date().toISOString(), totalIdeas: ideas.length, totalVotes: totalVotes(ideas), ideas };
   const json = JSON.stringify(data, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
   a.href = url;
   a.download = `medreform-${new Date().toISOString().split('T')[0]}.json`;
   document.body.appendChild(a);
