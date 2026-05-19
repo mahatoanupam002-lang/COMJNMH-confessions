@@ -25,68 +25,7 @@
   }
 </script>
 
-<style>
-  .ideas-wrap { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 40px 20px 100px; }
-  .ideas-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; gap: 16px; flex-wrap: wrap; }
-  .ideas-header h1 { font-family: 'Instrument Serif', serif; font-size: 32px; color: var(--text); }
-  .fab { background: var(--accent); color: var(--bg); border: none; border-radius: 50%; width: 56px; height: 56px; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: 0 4px 12px rgba(74, 222, 128, 0.2); }
-  .fab:hover { transform: scale(1.1); box-shadow: 0 8px 20px rgba(74, 222, 128, 0.3); }
-  @media (max-width: 700px) { .fab { display: none; } }
-  .search-box { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; color: var(--text); font-family: 'Epilogue', sans-serif; font-size: 14px; margin-bottom: 20px; transition: all 0.2s; }
-  .search-box:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
-  .filters-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; align-items: center; }
-  .filter-group { display: flex; gap: 6px; align-items: center; }
-  .filter-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); text-transform: uppercase; }
-  .filter-btn { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; font-family: 'Epilogue', sans-serif; font-size: 12px; transition: all 0.2s; }
-  .filter-btn:hover { background: var(--surface2); color: var(--text); }
-  .filter-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
-  .range-slider-group { display: flex; gap: 8px; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; }
-  .range-slider { flex: 1; height: 4px; border-radius: 2px; background: var(--border); outline: none; -webkit-appearance: none; appearance: none; }
-  .range-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); cursor: pointer; }
-  .range-slider::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--accent); cursor: pointer; border: none; }
-  .range-val { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); min-width: 30px; text-align: right; }
-  .ideas-list { display: flex; flex-direction: column; gap: 16px; }
-  .idea-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: grid; grid-template-columns: 52px 1fr; gap: 16px; transition: all 0.2s; }
-  .idea-card:hover { border-color: var(--accent); box-shadow: 0 8px 24px rgba(74, 222, 128, 0.08); }
-  .vote-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  .vote-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); width: 40px; height: 40px; border-radius: 8px; cursor: pointer; font-size: 18px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
-  .vote-btn:hover { border-color: var(--text-dim); background: var(--surface2); }
-  .vote-btn.voted { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
-  .vote-count { font-family: 'Instrument Serif', serif; font-size: 16px; font-weight: 700; color: var(--text); }
-  .idea-content { display: flex; flex-direction: column; gap: 12px; }
-  .idea-header { display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
-  .idea-badges { display: flex; gap: 6px; flex-wrap: wrap; }
-  .cat-badge { padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 600; background: var(--accent-dim); color: var(--accent); }
-  .status-badge { padding: 4px 10px; border-radius: 5px; font-size: 11px; font-weight: 600; }
-  .status-badge.submitted { background: rgba(251, 191, 36, 0.12); color: var(--amber); }
-  .status-badge.reviewed { background: rgba(96, 165, 250, 0.12); color: var(--blue); }
-  .status-badge.implemented { background: rgba(74, 222, 128, 0.12); color: var(--accent); }
-  .status-badge.rejected { background: rgba(248, 113, 113, 0.12); color: var(--red); }
-  .idea-title { font-size: 16px; font-weight: 600; color: var(--text); flex: 1; }
-  .idea-meta { display: flex; gap: 12px; font-size: 12px; color: var(--text-dim); flex-wrap: wrap; }
-  .idea-text { color: var(--text-muted); font-size: 14px; line-height: 1.5; }
-  .idea-footer { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-  .idea-feasibility { display: flex; gap: 6px; align-items: center; }
-  .feasibility-bar { height: 4px; flex: 1; min-width: 60px; background: var(--border); border-radius: 2px; overflow: hidden; }
-  .feasibility-fill { height: 100%; background: var(--accent); border-radius: 2px; }
-  .feasibility-pct { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); min-width: 28px; text-align: right; }
-  .comment-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s; }
-  .comment-btn:hover { background: var(--surface2); color: var(--text); }
-  .comments-section { grid-column: 2; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
-  .comments-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; max-height: 300px; overflow-y: auto; }
-  .comment-item { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; font-size: 12px; }
-  .comment-author { color: var(--text); font-weight: 600; }
-  .comment-time { color: var(--text-dim); font-size: 11px; margin-left: 4px; }
-  .comment-text { color: var(--text-muted); margin-top: 4px; }
-  .comment-input-group { display: flex; gap: 6px; }
-  .comment-textarea { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; color: var(--text); font-family: 'Epilogue', sans-serif; font-size: 12px; resize: none; min-height: 32px; }
-  .comment-textarea:focus { outline: none; border-color: var(--accent); }
-  .comment-post-btn { background: var(--accent); color: var(--bg); border: none; border-radius: 6px; padding: 6px 12px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
-  .comment-post-btn:hover { background: var(--accent2); }
-  .empty-state { text-align: center; color: var(--text-muted); padding: 60px 20px; }
-  .empty-state h3 { color: var(--text); margin-bottom: 8px; }
-  @media (max-width: 700px) { .ideas-wrap { padding: 24px 16px 100px; } .idea-card { grid-template-columns: 1fr; } .idea-header { flex-direction: column; } .filters-bar { gap: 8px; } }
-</style>
+
 </head>
 <body>
 
@@ -112,7 +51,7 @@
     <a href="/submit" class="fab" title="Submit idea">✎</a>
   </div>
 
-  <input type="text" class="search-box" id="search-input" placeholder="Search ideas by title, description, or author..." onkeyup="filterIdeas()">
+  <input type="text" class="search-box" id="search-input" placeholder="Search ideas by title, description, or author...">
 
   <div class="filters-bar">
     <div class="filter-group">
@@ -154,13 +93,14 @@
   <div class="empty-state" id="empty-state" style="display: none;">
     <h3>No ideas match your filters</h3>
     <p>Try adjusting your search or filters.</p>
+    <button class="filter-btn" onclick="clearAllFilters()" style="margin-top: 16px; padding: 10px 24px;">Clear all filters</button>
   </div>
 </div>
 
 <nav class="mobile-nav">
   <a href="/" class="mob-tab"><span class="mob-icon">⌂</span><span>Home</span></a>
-  <a href="/ideas" class="mob-tab active" style="background: var(--accent-dim); color: var(--accent);"><span class="mob-icon">≡</span><span>Ideas</span></a>
-  <a href="/submit" class="mob-tab" style="background: var(--accent-dim); color: var(--accent);"><span class="mob-icon">✎</span><span>Submit</span></a>
+  <a href="/ideas" class="mob-tab active"><span class="mob-icon">≡</span><span>Ideas</span></a>
+  <a href="/submit" class="mob-tab"><span class="mob-icon">✎</span><span>Submit</span></a>
 </nav>
 
 <div class="toast" id="toast">
@@ -176,87 +116,285 @@ var ideas = [];
 var voted = new Set();
 var filters = { sort: 'top', category: 'all', status: 'all', search: '', feasMin: 0, feasMax: 100 };
 var expandedComments = new Set();
+var cardCache = new Map();
+var ideaDataSnapshot = new Map();
+var searchTimer = null;
+var voting = new Set();
+var DOM = {};
+
+function initDOM() {
+  DOM.list      = document.getElementById('ideas-list');
+  DOM.empty     = document.getElementById('empty-state');
+  DOM.count     = document.getElementById('ideas-count');
+  DOM.search    = document.getElementById('search-input');
+  DOM.feasMin   = document.getElementById('feas-min');
+  DOM.feasMax   = document.getElementById('feas-max');
+  DOM.feasMinVal = document.getElementById('feas-min-val');
+  DOM.feasMaxVal = document.getElementById('feas-max-val');
+  DOM.search.addEventListener('input', function() {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(filterIdeas, 200);
+  });
+}
 
 function loadData() {
   ideas = getIdeas();
   voted = getVoted();
+  initDOM();
   render();
 }
 
 function setSort(el, sort) {
-  document.querySelectorAll('[data-sort]').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('[data-sort]').forEach(function(b) { b.classList.remove('active'); });
   el.classList.add('active');
   filters.sort = sort;
   render();
 }
 
 function setCat(el, cat) {
-  document.querySelectorAll('[data-cat]').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('[data-cat]').forEach(function(b) { b.classList.remove('active'); });
   el.classList.add('active');
   filters.category = cat;
   render();
 }
 
 function setStatus(el, status) {
-  document.querySelectorAll('[data-status]').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('[data-status]').forEach(function(b) { b.classList.remove('active'); });
   el.classList.add('active');
   filters.status = status;
   render();
 }
 
 function filterIdeas() {
-  filters.search = document.getElementById('search-input').value;
-  filters.feasMin = parseInt(document.getElementById('feas-min').value);
-  filters.feasMax = parseInt(document.getElementById('feas-max').value);
-  document.getElementById('feas-min-val').textContent = filters.feasMin + '%';
-  document.getElementById('feas-max-val').textContent = filters.feasMax + '%';
+  filters.search  = DOM.search.value;
+  filters.feasMin = parseInt(DOM.feasMin.value);
+  filters.feasMax = parseInt(DOM.feasMax.value);
+  DOM.feasMinVal.textContent = filters.feasMin + '%';
+  DOM.feasMaxVal.textContent = filters.feasMax + '%';
   if (filters.feasMin > filters.feasMax) {
-    var temp = filters.feasMin;
+    var tmp = filters.feasMin;
     filters.feasMin = filters.feasMax;
-    filters.feasMax = temp;
-    document.getElementById('feas-min').value = filters.feasMin;
-    document.getElementById('feas-max').value = filters.feasMax;
+    filters.feasMax = tmp;
+    DOM.feasMin.value = filters.feasMin;
+    DOM.feasMax.value = filters.feasMax;
   }
+  render();
+}
+
+function clearAllFilters() {
+  filters.search = ''; filters.category = 'all'; filters.status = 'all';
+  filters.feasMin = 0; filters.feasMax = 100; filters.sort = 'top';
+  DOM.search.value = '';
+  DOM.feasMin.value = 0; DOM.feasMax.value = 100;
+  DOM.feasMinVal.textContent = '0%'; DOM.feasMaxVal.textContent = '100%';
+  document.querySelectorAll('[data-sort]').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelector('[data-sort="top"]').classList.add('active');
+  document.querySelectorAll('[data-cat]').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelector('[data-cat="all"]').classList.add('active');
+  document.querySelectorAll('[data-status]').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelector('[data-status="all"]').classList.add('active');
   render();
 }
 
 function getFiltered() {
-  var filtered = ideas.filter(i => !i.flagged);
+  var filtered = ideas.filter(function(i) { return !i.flagged; });
   if (filters.search) filtered = searchIdeas(filtered, filters.search);
-  if (filters.category !== 'all') filtered = filtered.filter(i => i.category === filters.category);
-  if (filters.status !== 'all') filtered = filtered.filter(i => i.status === filters.status);
-  filtered = filtered.filter(i => i.feasibility >= filters.feasMin && i.feasibility <= filters.feasMax);
+  if (filters.category !== 'all') filtered = filtered.filter(function(i) { return i.category === filters.category; });
+  if (filters.status !== 'all')   filtered = filtered.filter(function(i) { return i.status === filters.status; });
+  filtered = filtered.filter(function(i) { return i.feasibility >= filters.feasMin && i.feasibility <= filters.feasMax; });
   return filtered;
 }
 
 function getSorted(filtered) {
-  var sorted = [...filtered];
+  var sorted = filtered.slice();
   if (filters.sort === 'top') {
-    sorted.sort((a, b) => b.votes - a.votes);
+    sorted.sort(function(a, b) { return b.votes - a.votes; });
   } else if (filters.sort === 'new') {
-    sorted.sort((a, b) => b.submittedAt - a.submittedAt);
+    sorted.sort(function(a, b) { return b.submittedAt - a.submittedAt; });
   } else if (filters.sort === 'feasible') {
-    sorted.sort((a, b) => b.feasibility - a.feasibility);
+    sorted.sort(function(a, b) { return b.feasibility - a.feasibility; });
   } else if (filters.sort === 'trending') {
-    sorted.sort((a, b) => (b.votes / (1 + (Date.now() - b.submittedAt) / (7*24*60*60*1000))) - (a.votes / (1 + (Date.now() - a.submittedAt) / (7*24*60*60*1000))));
+    var now = Date.now();
+    sorted.sort(function(a, b) {
+      return (b.votes / (1 + (now - b.submittedAt) / (7*24*60*60*1000))) -
+             (a.votes / (1 + (now - a.submittedAt) / (7*24*60*60*1000)));
+    });
   }
   return sorted;
 }
 
-function vote(ideaId) {
-  var idea = ideas.find(i => i.id === ideaId);
-  if (!idea) return;
-  if (voted.has(ideaId)) {
-    idea.votes--;
-    voted.delete(ideaId);
+/* ── Card building ─────────────────────────────────────────── */
+
+function snapshotOf(idea) {
+  return {
+    votes:        idea.votes,
+    voted:        voted.has(idea.id),
+    status:       idea.status,
+    commentCount: idea.comments ? idea.comments.length : 0,
+    showComments: expandedComments.has(idea.id)
+  };
+}
+
+function buildCommentsSectionHTML(idea) {
+  var html = '<div class="comments-section"><div class="comments-list">';
+  if (idea.comments && idea.comments.length > 0) {
+    html += idea.comments.map(function(c) {
+      return '<div class="comment-item"><span class="comment-author">' + escHtml(c.author) +
+        '</span><span class="comment-time">' + formatTime(c.submittedAt) +
+        '</span><div class="comment-text">' + escHtml(c.text) + '</div></div>';
+    }).join('');
   } else {
-    idea.votes++;
-    voted.add(ideaId);
+    html += '<p style="color:var(--text-dim);font-size:12px;">No comments yet.</p>';
   }
-  saveIdeas(ideas);
-  saveVoted(voted);
-  trackEvent('ideas', 'vote', ideaId);
-  render();
+  html += '</div><div class="comment-input-group">' +
+    '<textarea class="comment-textarea" id="comment-textarea-' + idea.id +
+    '" placeholder="Add comment..." maxlength="500"></textarea>' +
+    '<button class="comment-post-btn" onclick="postComment(' + idea.id + ')">Post</button>' +
+    '</div></div>';
+  return html;
+}
+
+function cardInnerHTML(idea) {
+  var isVoted = voted.has(idea.id);
+  var showComments = expandedComments.has(idea.id);
+  var commentCount = idea.comments ? idea.comments.length : 0;
+  return '<div class="vote-col">' +
+    '<button class="vote-btn' + (isVoted ? ' voted' : '') + '" onclick="vote(' + idea.id + ')" title="Vote">▲</button>' +
+    '<div class="vote-count">' + idea.votes + '</div></div>' +
+    '<div class="idea-content">' +
+    '<div class="idea-header"><div class="idea-badges">' +
+    '<span class="cat-badge">' + escHtml(idea.category.toUpperCase()) + '</span>' +
+    '<span class="status-badge ' + idea.status + '">' + statusLabel(idea.status) + '</span>' +
+    '</div><div class="idea-title">' + escHtml(idea.title) + '</div></div>' +
+    '<div class="idea-meta"><span>' + escHtml(idea.author) + '</span><span>·</span>' +
+    '<span>' + formatTime(idea.submittedAt) + '</span><span>·</span>' +
+    '<span>' + escHtml(idea.role) + '</span></div>' +
+    '<div class="idea-text">' + escHtml(idea.text) + '</div>' +
+    '<div class="idea-footer">' +
+    '<div class="idea-feasibility"><div class="feasibility-bar">' +
+    '<div class="feasibility-fill" style="width:' + idea.feasibility + '%"></div>' +
+    '</div><span class="feasibility-pct">' + idea.feasibility + '%</span></div>' +
+    '<button class="comment-btn" onclick="toggleComments(' + idea.id + ')">💬 ' + commentCount + '</button>' +
+    '</div>' + (showComments ? buildCommentsSectionHTML(idea) : '') + '</div>';
+}
+
+function buildCard(idea) {
+  var el = document.createElement('div');
+  el.className = 'idea-card';
+  el.dataset.ideaId = idea.id;
+  el.innerHTML = cardInnerHTML(idea);
+  ideaDataSnapshot.set(idea.id, snapshotOf(idea));
+  return el;
+}
+
+function patchCard(el, idea) {
+  var snap = ideaDataSnapshot.get(idea.id) || {};
+  var isVoted = voted.has(idea.id);
+  var showComments = expandedComments.has(idea.id);
+  var commentCount = idea.comments ? idea.comments.length : 0;
+
+  if (snap.votes !== idea.votes) {
+    el.querySelector('.vote-count').textContent = idea.votes;
+  }
+  var voteBtn = el.querySelector('.vote-btn');
+  if (snap.voted !== isVoted || voteBtn.disabled) {
+    voteBtn.classList.toggle('voted', isVoted);
+    voteBtn.disabled = false;
+    voteBtn.textContent = '▲';
+  }
+  if (snap.status !== idea.status) {
+    var badge = el.querySelector('.status-badge');
+    badge.className = 'status-badge ' + idea.status;
+    badge.textContent = statusLabel(idea.status);
+  }
+  if (snap.commentCount !== commentCount) {
+    el.querySelector('.comment-btn').textContent = '💬 ' + commentCount;
+  }
+
+  var existingSection = el.querySelector('.comments-section');
+  if (showComments) {
+    if (!existingSection || snap.commentCount !== commentCount || snap.showComments !== showComments) {
+      var wrapper = document.createElement('div');
+      wrapper.innerHTML = buildCommentsSectionHTML(idea);
+      if (existingSection) {
+        existingSection.replaceWith(wrapper.firstChild);
+      } else {
+        el.querySelector('.idea-content').appendChild(wrapper.firstChild);
+      }
+    }
+  } else if (existingSection) {
+    existingSection.remove();
+  }
+
+  ideaDataSnapshot.set(idea.id, snapshotOf(idea));
+}
+
+/* ── Render ────────────────────────────────────────────────── */
+
+function render() {
+  var filtered = getFiltered();
+  var sorted   = getSorted(filtered);
+
+  DOM.count.textContent = 'Ideas (' + ideas.length + ')';
+
+  if (sorted.length === 0) {
+    DOM.empty.style.display = 'block';
+    cardCache.forEach(function(el) { if (el.parentNode) el.parentNode.removeChild(el); });
+    cardCache.clear();
+    ideaDataSnapshot.clear();
+    return;
+  }
+
+  DOM.empty.style.display = 'none';
+
+  var newIds = new Set(sorted.map(function(i) { return i.id; }));
+  cardCache.forEach(function(el, id) {
+    if (!newIds.has(id)) {
+      if (el.parentNode) el.parentNode.removeChild(el);
+      cardCache.delete(id);
+      ideaDataSnapshot.delete(id);
+    }
+  });
+
+  sorted.forEach(function(idea) {
+    var el = cardCache.get(idea.id);
+    if (!el) {
+      el = buildCard(idea);
+      cardCache.set(idea.id, el);
+    } else {
+      patchCard(el, idea);
+    }
+    DOM.list.appendChild(el);
+  });
+}
+
+/* ── Actions ───────────────────────────────────────────────── */
+
+function vote(ideaId) {
+  if (voting.has(ideaId)) return;
+  voting.add(ideaId);
+  var card = cardCache.get(ideaId);
+  if (card) {
+    var btn = card.querySelector('.vote-btn');
+    btn.disabled = true;
+    btn.textContent = '…';
+  }
+  setTimeout(function() {
+    var idea = ideas.find(function(i) { return i.id === ideaId; });
+    if (!idea) { voting.delete(ideaId); return; }
+    if (voted.has(ideaId)) {
+      idea.votes--;
+      voted.delete(ideaId);
+    } else {
+      idea.votes++;
+      voted.add(ideaId);
+    }
+    saveIdeas(ideas);
+    saveVoted(voted);
+    trackEvent('ideas', 'vote', ideaId);
+    voting.delete(ideaId);
+    if (card) patchCard(card, idea);
+  }, 0);
 }
 
 function toggleComments(ideaId) {
@@ -265,72 +403,34 @@ function toggleComments(ideaId) {
   } else {
     expandedComments.add(ideaId);
   }
-  render();
+  var idea = ideas.find(function(i) { return i.id === ideaId; });
+  var card = cardCache.get(ideaId);
+  if (card && idea) patchCard(card, idea);
 }
 
 function postComment(ideaId) {
   var textarea = document.getElementById('comment-textarea-' + ideaId);
-  var text = textarea.value.trim();
-  if (!text || text.length < 2) {
-    showToast('✗ Comment too short', '✗');
-    return;
-  }
-  if (text.length > 500) {
-    showToast('✗ Comment too long (max 500 chars)', '✗');
-    return;
-  }
-  if (!canPostComment()) {
-    showToast('✗ Too many comments recently. Please wait.', '✗');
-    return;
-  }
+  var text = textarea ? textarea.value.trim() : '';
+  if (!text || text.length < 2) { showToast('Comment too short', '✗'); return; }
+  if (text.length > 500) { showToast('Comment too long (max 500 chars)', '✗'); return; }
+  if (!canPostComment()) { showToast('Too many comments recently. Please wait.', '✗'); return; }
   addComment(ideas, ideaId, text, 'You');
   recordCommentPost();
   saveIdeas(ideas);
-  textarea.value = '';
+  if (textarea) textarea.value = '';
   trackEvent('ideas', 'comment_posted', ideaId);
-  render();
-  showToast('✓ Comment posted', '✓');
-}
-
-function render() {
-  var filtered = getFiltered();
-  var sorted = getSorted(filtered);
-  var container = document.getElementById('ideas-list');
-  var empty = document.getElementById('empty-state');
-  
-  document.getElementById('ideas-count').textContent = 'Ideas (' + ideas.length + ')';
-  
-  if (sorted.length === 0) {
-    container.innerHTML = '';
-    empty.style.display = 'block';
-    return;
+  var idea = ideas.find(function(i) { return i.id === ideaId; });
+  var card = cardCache.get(ideaId);
+  if (card && idea) {
+    ideaDataSnapshot.delete(ideaId);
+    patchCard(card, idea);
   }
-  
-  empty.style.display = 'none';
-  container.innerHTML = sorted.map(function(idea) {
-    var isVoted = voted.has(idea.id);
-    var showComments = expandedComments.has(idea.id);
-    var commentsHtml = '';
-    
-    if (showComments) {
-      commentsHtml = '<div class="comments-section"><div class="comments-list">';
-      if (idea.comments && idea.comments.length > 0) {
-        commentsHtml += idea.comments.map(function(c) {
-          return '<div class="comment-item"><span class="comment-author">' + escHtml(c.author) + '</span><span class="comment-time">' + formatTime(c.submittedAt) + '</span><div class="comment-text">' + escHtml(c.text) + '</div></div>';
-        }).join('');
-      } else {
-        commentsHtml += '<p style="color: var(--text-dim); font-size: 12px;">No comments yet.</p>';
-      }
-      commentsHtml += '</div><div class="comment-input-group"><textarea class="comment-textarea" id="comment-textarea-' + idea.id + '" placeholder="Add comment..." maxlength="500"></textarea><button class="comment-post-btn" onclick="postComment(' + idea.id + ')">Post</button></div></div>';
-    }
-    
-    return '<div class="idea-card"><div class="vote-col"><button class="vote-btn ' + (isVoted ? 'voted' : '') + '" onclick="vote(' + idea.id + ')" title="Vote">▲</button><div class="vote-count">' + idea.votes + '</div></div><div class="idea-content"><div class="idea-header"><div class="idea-badges"><span class="cat-badge">' + idea.category.toUpperCase() + '</span><span class="status-badge ' + idea.status + '">' + statusLabel(idea.status) + '</span></div><div class="idea-title">' + escHtml(idea.title) + '</div></div><div class="idea-meta"><span>' + escHtml(idea.author) + '</span><span>·</span><span>' + formatTime(idea.submittedAt) + '</span><span>·</span><span>' + escHtml(idea.role) + '</span></div><div class="idea-text">' + escHtml(idea.text) + '</div><div class="idea-footer"><div class="idea-feasibility"><div class="feasibility-bar"><div class="feasibility-fill" style="width:' + idea.feasibility + '%"></div></div><span class="feasibility-pct">' + idea.feasibility + '%</span></div><button class="comment-btn" onclick="toggleComments(' + idea.id + ')">💬 ' + (idea.comments ? idea.comments.length : 0) + '</button></div>' + commentsHtml + '</div></div>';
-  }).join('');
+  showToast('Comment posted', '✓');
 }
 
 var params = new URLSearchParams(window.location.search);
 if (params.get('submitted') === '1') {
-  showToast('✓ Idea submitted! Thank you for contributing.', '✓');
+  showToast('Idea submitted! Thank you for contributing.', '✓');
 }
 
 loadData();
